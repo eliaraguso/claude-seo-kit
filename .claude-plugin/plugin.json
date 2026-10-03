@@ -1,0 +1,16 @@
+{
+  "name": "seo-kit",
+  "version": "0.2.0",
+  "description": "SEO agnostico per siti nuovi ed esistenti: profilo del sito, regole durante lo sviluppo, audit, contenuti, identità e SEO locale, monitoraggio. Basato sulla documentazione Google Search Central (ottobre 2026).",
+  "author": {
+    "name": "Elia Raguso"
+  },
+  "keywords": [
+    "seo",
+    "audit",
+    "google-search",
+    "structured-data",
+    "local-seo",
+    "ai-search"
+  ]
+}

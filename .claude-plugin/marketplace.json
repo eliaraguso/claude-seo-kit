@@ -1,0 +1,14 @@
+{
+  "name": "seo-kit-marketplace",
+  "description": "Plugin SEO agnostico basato sulla documentazione Google Search Central.",
+  "owner": {
+    "name": "Elia Raguso"
+  },
+  "plugins": [
+    {
+      "name": "seo-kit",
+      "source": "./",
+      "description": "SEO agnostico per siti nuovi ed esistenti: profilo del sito, regole durante lo sviluppo, audit, contenuti, identità e SEO locale, monitoraggio. Basato sulla documentazione Google Search Central (ottobre 2026)."
+    }
+  ]
+}

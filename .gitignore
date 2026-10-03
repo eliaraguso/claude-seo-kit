@@ -1,0 +1,9 @@
+# Testi integrali scaricati per la ricerca: restano solo in locale.
+# Gli articoli SEJ sono protetti da copyright e non vanno ridistribuiti.
+sources/sej/articles/
+sources/google-search-central/pages/
+sources/**/*.json
+
+# Workspace di test delle skill
+*-workspace/
+__pycache__/

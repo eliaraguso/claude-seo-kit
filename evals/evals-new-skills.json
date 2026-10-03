@@ -1,0 +1,77 @@
+{
+  "skill_name": "seo-kit",
+  "evals": [
+    {
+      "id": 4,
+      "name": "build-chi-sono",
+      "skill": "seo-build",
+      "prompt": "Nel mio portfolio (E:\\REPOS\\sito-vetrina-elia-ui\\angular-portfolio, online su https://eliaraguso.dev) voglio aggiungere una pagina /chi-sono. Prima controlla che la build attuale sia a posto lato SEO, poi dimmi esattamente cosa deve avere la nuova route e come implementarla nel progetto.",
+      "assertions": [
+        "Controlla la build esistente in dist/ pagina per pagina (title, canonical, H1, meta, JSON-LD) e riporta un esito preciso, senza trattare come errori le pagine noindex (404, not-found) o il file di fallback index.csr.html",
+        "Controlla anche il sito online e segnala che www.eliaraguso.dev risponde 200 senza redirect al dominio principale",
+        "Per /chi-sono indica title unico con nome e ruolo, meta description, canonical assoluto, un solo H1 con il nome",
+        "Propone dati strutturati ProfilePage con mainEntity Person e un @id stabile richiamato dalla home e dagli autori dei case study",
+        "Prevede link interni verso /chi-sono (navigazione o footer) e l'aggiunta alla sitemap",
+        "Verifica dal codice che la nuova route verrà prerenderizzata (o dice cosa fare perché lo sia)",
+        "Il codice proposto usa i file e i servizi esistenti del progetto (es. app.routes.ts, il servizio SEO), con percorsi reali",
+        "Indica una foto reale per Person.image e non usa come immagine della persona lo screenshot/og-image",
+        "Non raccomanda llms.txt come leva per Google e non propone schema FAQ/HowTo",
+        "Indica come verificare dopo l'implementazione (es. rilanciare il controllo della build)"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "content-orientamento-scolastico",
+      "skill": "seo-content",
+      "prompt": "Per il sito della mia ragazza (https://elisabettacarrara.com, codice in E:\\REPOS\\sito-vetrina-betty-ui\\sito-vetrina-betty-ui), orientatrice di carriera a Verona, in presenza e online: scrivi la pagina servizio 'Orientamento scolastico e universitario' per ragazzi e famiglie.",
+      "assertions": [
+        "Consegna il testo completo della pagina con title (con conteggio caratteri), meta description e H1",
+        "Usa segnaposto espliciti (es. [DA COMPLETARE]) dove servono esperienza, casi, credenziali o prezzi dell'autrice, invece di inventarli",
+        "Usa indizi reali su come le persone cercano (es. suggerimenti di ricerca di Google) citandone la fonte",
+        "Segnala il conflitto tra 'lavora anche in presenza' e la decisione documentata nel progetto 'solo online'",
+        "Segnala che la privacy policy dichiara servizi rivolti a maggiorenni, in conflitto con una pagina per ragazzi",
+        "Non promette risultati (es. 'scelta giusta garantita') e non inventa credenziali o normative senza segnalarle come da verificare",
+        "Non propone schema FAQ/HowTo per risultati avanzati né aggregateRating su recensioni proprie",
+        "Prevede link interni coerenti (es. verso /servizi/, /contatti/, articoli pertinenti)",
+        "Indica dove inserire la pagina nel progetto (route, componente o file di contenuto reali)",
+        "Il testo è in italiano corretto (nessun 'é' al posto di 'è', 'perchè' ecc.)"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "entity-local-betty",
+      "skill": "seo-entity-local",
+      "prompt": "La mia ragazza Elisabetta Carrara è orientatrice di carriera a Verona, lavora in presenza e online. Sito https://elisabettacarrara.com (codice in E:\\REPOS\\sito-vetrina-betty-ui\\sito-vetrina-betty-ui). Vogliamo aprire la scheda Google e rendere coerente tutta la sua presenza online. Preparaci tutto il necessario.",
+      "assertions": [
+        "Contiene una definizione unica dell'identità: nome, ruolo, presentazione breve e bio lunga, servizi, modalità e area",
+        "Rileva che sito e documenti del progetto dicono 'solo online' mentre lavora anche in presenza, e spiega l'impatto sulla scheda Google",
+        "Indica che il nome della scheda Google deve essere quello reale senza parole chiave, e segnala eventuali proposte contrarie nella documentazione del progetto",
+        "Distingue tra scheda con indirizzo e attività con area servita, dichiarando l'ipotesi scelta",
+        "Fornisce testi pronti per almeno Google Business Profile e LinkedIn",
+        "Fornisce JSON-LD con @id stabili coerente con il contenuto visibile, senza aggregateRating su recensioni proprie",
+        "Dà regole corrette sulle recensioni: clienti reali, nessun incentivo, nessuna recensione scritta da sé",
+        "Segna come da verificare sulla guida ufficiale le regole del Business Profile non documentate in Search Central",
+        "Contiene una checklist di azioni fuori dal sito in ordine, con chi le fa",
+        "Verifica da sé ciò che è pubblico (sito, dati strutturati) e lascia da verificare solo ciò che richiede accessi"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "monitor-settembre",
+      "skill": "seo-monitor",
+      "prompt": "Ho scaricato da Search Console i dati del mio portfolio eliaraguso.dev per agosto e settembre: sono in E:\\REPOS\\PLUGIN-SKILLS\\seo-claude\\seo-kit-workspace\\new-skills\\gsc-test\\ (i due .zip). Com'è andata a settembre e cosa devo fare adesso? Il codice del sito è in E:\\REPOS\\sito-vetrina-elia-ui\\angular-portfolio.",
+      "assertions": [
+        "Riporta correttamente i totali: settembre 63 clic e 1101 impressioni, agosto 43 clic e 825 impressioni",
+        "Separa le ricerche col nome dalle altre in entrambi i periodi",
+        "Avverte che con volumi così piccoli le variazioni possono essere rumore",
+        "Incrocia i dati con il codice e segnala che /case-study/passkey-webauthn non esiste nel progetto",
+        "Collega la pagina www.eliaraguso.dev presente nei dati al problema del mancato redirect www",
+        "Segnala le query con molte impressioni e pochi clic come candidate per title/description o contenuti",
+        "Propone al massimo 3-5 prossime azioni concrete",
+        "Propone un set fisso di domande per controllare gli assistenti AI",
+        "Non inventa dati non presenti negli export",
+        "Il report inizia con una sintesi in linguaggio semplice"
+      ]
+    }
+  ]
+}

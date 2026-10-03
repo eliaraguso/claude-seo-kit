@@ -1,0 +1,91 @@
+{
+  "skill_name": "seo-kit",
+  "evals": [
+    {
+      "id": 1,
+      "name": "audit-portfolio-personal-brand",
+      "skill": "seo-audit",
+      "prompt": "Fammi un audit SEO completo del mio portfolio https://www.eliaraguso.dev/ — il codice è in E:\\REPOS\\sito-vetrina-elia-ui\\angular-portfolio. Sono uno sviluppatore dipendente e il sito mi serve per farmi trovare dai recruiter. Dimmi cosa sistemare e in che ordine.",
+      "expected_output": "Report di audit con priorità, basato su verifiche reali del sito online e del codice Angular (prerender statico), focalizzato su personal brand: SERP del nome, ProfilePage/Person+sameAs, title/meta per route, soft 404, accesso bot. Nessun consiglio obsoleto (es. llms.txt come leva SEO).",
+      "files": [],
+      "assertions": [
+        "Il report è un file Markdown nella cartella outputs con una sintesi iniziale in linguaggio semplice e un elenco di priorità ordinato",
+        "Il report si basa su verifiche reali del sito online: riporta almeno stato HTTP, title e canonical di pagine reali ottenuti da richieste effettive",
+        "Il report verifica cosa risponde il server a un URL inesistente (404 reale vs soft 404) e riporta il codice ottenuto",
+        "Il report analizza robots.txt e sitemap del sito online",
+        "Il report verifica se CDN/WAF o robots.txt bloccano Googlebot o i bot di ricerca AI (es. confronto tra user agent)",
+        "Il report identifica correttamente dal codice che le route sono prerenderizzate (SSG, outputMode static) e servite come file statici",
+        "Il report collega almeno un problema al file del repository da correggere",
+        "Il report NON raccomanda llms.txt come leva per Google (se lo cita, dice che Google lo ignora)",
+        "Il report NON raccomanda dati strutturati FAQ/HowTo per ottenere risultati avanzati",
+        "Il report NON assegna un punteggio SEO numerico inventato (es. 72/100)",
+        "Il report separa le azioni fuori dal sito (Search Console, profili, recensioni) e ciò che non è stato possibile verificare",
+        "Il report tratta la SERP del nome e l'identità: ProfilePage/Person con sameAs verso LinkedIn/GitHub o equivalente",
+        "Le priorità sono coerenti con un personal brand (ricerca per nome, recruiter) e non con un'attività locale",
+        "Il report si apre con una sintesi e un piano d'azione in linguaggio semplice, diviso per orizzonte temporale (es. questa settimana / prossime settimane), senza codici di alcun tipo nel piano (né ID dei controlli come CI-17 né codici interni del progetto come A-18) e con una legenda dello sforzo",
+        "Il report contiene testi pronti da usare: title e/o meta description riscritti (con conteggio caratteri) per almeno 2 pagine",
+        "Il report verifica i nameserver/DNS e riconosce correttamente che il dominio usa i nameserver di Cloudflare",
+        "Il report tiene conto della documentazione del progetto: non propone come da fare cose che i file di stato danno già fatte senza dirlo, e segnala i documenti interni in contrasto con la realtà",
+        "Il report segnala i dati personali o le incoerenze nel CV PDF pubblico (data di nascita/telefono e/o nome del datore di lavoro in contrasto con la scelta del sito)",
+        "Il report segnala che l'H1 della home non contiene nome né ruolo e propone un'alternativa",
+        "Il report verifica direttamente (non lascia solo 'da verificare') se il sito di Elisabetta linka il portfolio",
+        "La parte del report per l'utente (dalla sintesi fino a 'Ricerca AI e misurazione', esclusa l'appendice) è più breve di circa 12.000 caratteri"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "audit-professionista-locale",
+      "skill": "seo-audit",
+      "prompt": "Il sito della mia ragazza https://elisabettacarrara.com/ (codice in E:\\REPOS\\sito-vetrina-betty-ui\\sito-vetrina-betty-ui) è online ma da Google non arriva quasi nessuna richiesta. Lei è orientatrice di carriera, libera professionista, lavora in presenza e online. Fai un controllo SEO e dimmi cosa fare per primo.",
+      "expected_output": "Report di audit con priorità per archetipo professionista-servizi/locale: Business Profile e NAP, LocalBusiness corretto, pagine servizio senza doorway, recensioni senza auto-stelle, accesso bot/Cloudflare, SSR verificato. Azioni off-site incluse.",
+      "files": [],
+      "assertions": [
+        "Il report è un file Markdown nella cartella outputs con una sintesi iniziale in linguaggio semplice e un elenco di priorità ordinato",
+        "Il report si basa su verifiche reali del sito online: riporta almeno stato HTTP, title e canonical di pagine reali ottenuti da richieste effettive",
+        "Il report verifica cosa risponde il server a un URL inesistente (404 reale vs soft 404) e riporta il codice ottenuto",
+        "Il report analizza robots.txt e sitemap del sito online",
+        "Il report verifica se CDN/WAF o robots.txt bloccano Googlebot o i bot di ricerca AI (es. confronto tra user agent)",
+        "Il report identifica correttamente dal codice che le route sono prerenderizzate (RenderMode.Prerender) e nomina esplicitamente che outputMode è 'server', spiegando che le pagine sono comunque servite come HTML statico da Cloudflare Pages",
+        "Il report collega almeno un problema al file del repository da correggere",
+        "Il report NON raccomanda llms.txt come leva per Google (se lo cita, dice che Google lo ignora)",
+        "Il report NON raccomanda dati strutturati FAQ/HowTo per ottenere risultati avanzati",
+        "Il report NON assegna un punteggio SEO numerico inventato (es. 72/100)",
+        "Il report separa le azioni fuori dal sito (Search Console, profili, recensioni) e ciò che non è stato possibile verificare",
+        "Il report tratta Google Business Profile e la coerenza di nome/indirizzo/telefono tra sito e schede",
+        "Il report valuta i dati strutturati LocalBusiness (o sottotipo) del sito",
+        "Il report avverte di non usare stelle/aggregateRating su recensioni gestite dalla professionista stessa, oppure verifica che non ci siano",
+        "Il report mette in guardia dalle pagine servizio+città clonate (doorway) o verifica che non ci siano",
+        "Il report si apre con una sintesi e un piano d'azione in linguaggio semplice, diviso per orizzonte temporale (es. questa settimana / prossime settimane), senza codici di alcun tipo nel piano (né ID dei controlli come CI-17 né codici interni del progetto come A-18) e con una legenda dello sforzo",
+        "Il report contiene testi pronti da usare: title e/o meta description riscritti (con conteggio caratteri) per almeno 2 pagine",
+        "Il report verifica i nameserver/DNS e riconosce correttamente che il dominio usa i nameserver di Cloudflare",
+        "Il report tiene conto della documentazione del progetto: non propone come da fare cose che i file di stato danno già fatte senza dirlo, e segnala i documenti interni in contrasto con la realtà",
+        "Il report segnala ENTRAMBI i title con accento sbagliato: 'a 50 anni: é tardi?' e 'cos'é e per chi'",
+        "Il report segnala che l'H1 della home non dice mestiere né luogo e propone un'alternativa",
+        "Il report segnala che 'orientamento scolastico' non compare nei testi del sito, citando come fonte i suggerimenti di ricerca di Google",
+        "Il report non contiene affermazioni errate sui link interni (es. che gli articoli non linkano /servizi/, mentre l'articolo sul bilancio di competenze lo fa)",
+        "La parte del report per l'utente (dalla sintesi fino a 'Ricerca AI e misurazione', esclusa l'appendice) è più breve di circa 12.000 caratteri"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "discovery-portfolio",
+      "skill": "seo-discovery",
+      "prompt": "Voglio iniziare a lavorare sulla SEO del mio portfolio (codice in E:\\REPOS\\sito-vetrina-elia-ui\\angular-portfolio, online su https://www.eliaraguso.dev/). Prepara il profilo SEO del sito: per quali ricerche dovrei farmi trovare e con quali pagine.",
+      "expected_output": "SEO.md compilato dal modello: archetipo personal-brand, entità ricavata dal sito, intenti brand/competenza con pagina associata, ipotesi marcate come tali, nessun volume inventato, nessuna pagina doorway.",
+      "files": [],
+      "assertions": [
+        "Esiste outputs/SEO.md compilato con le sezioni del profilo (sito, archetipo, entità, intenti, accessi, baseline)",
+        "L'archetipo indicato è personal-brand (o equivalente esplicito) con una motivazione",
+        "Il profilo ricava dal sito/codice dati concreti: framework e rendering, nome esatto, profili collegati",
+        "C'è una tabella di intenti/query con, per ciascuna, la pagina che risponde (o 'da creare')",
+        "Le query sono dichiarate come ipotesi da validare (es. con Search Console)",
+        "Il profilo NON contiene volumi di ricerca numerici inventati",
+        "Il profilo NON pianifica pagine fotocopia per città o varianti",
+        "Esiste outputs/domande.md con le domande per l'utente e le risposte di default proposte",
+        "Il profilo contiene un elenco di ricerche da non inseguire, ciascuna con la motivazione",
+        "Il profilo propone title, meta description e H1 per le pagine principali, con conteggio dei caratteri del title",
+        "Il profilo usa indizi reali sulla domanda (suggerimenti di ricerca di Google o osservazione dei risultati) e ne dichiara la fonte"
+      ]
+    }
+  ]
+}
