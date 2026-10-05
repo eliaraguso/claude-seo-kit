@@ -19,29 +19,42 @@ Le skill condividono `SEO.md` nella radice del progetto del sito: è la memoria 
 
 ## Installazione
 
-Da GitHub (il repository è anche un marketplace; per un repository privato serve un account con accesso, configurato in git/`gh`):
-```bash
+Requisiti: [Claude Code](https://docs.claude.com/en/docs/claude-code) e Python 3 (gli script usano solo la libreria standard).
+
+Dal terminale:
+
+```
 claude plugin marketplace add eliaraguso/claude-seo-kit
 claude plugin install seo-kit@seo-kit-marketplace
 ```
 
-Da una copia locale:
-```bash
-claude plugin marketplace add E:/REPOS/PLUGIN-SKILLS/seo-claude
-claude plugin install seo-kit@seo-kit-marketplace
+Oppure da dentro una sessione di Claude Code:
+
+```
+/plugin marketplace add eliaraguso/claude-seo-kit
+/plugin install seo-kit@seo-kit-marketplace
 ```
 
-Durante lo sviluppo del plugin, per leggere sempre i file aggiornati:
-```bash
-claude --plugin-dir E:/REPOS/PLUGIN-SKILLS/seo-claude
-```
+Per aggiornare alla versione più recente:
 
-Per portare le modifiche nella copia installata: alza `version` in `.claude-plugin/plugin.json`, poi
-```bash
+```
 claude plugin marketplace update seo-kit-marketplace
 ```
 
-Poi, in una sessione aperta nella cartella del sito: `/seo-kit:seo-discovery`, `/seo-kit:seo-audit`, ecc. Le skill si attivano anche da sole quando la richiesta è pertinente.
+## Uso
+
+Apri Claude Code nella cartella del tuo sito e parti da `/seo-kit:seo-discovery`, poi usa le altre skill (`/seo-kit:seo-audit`, `/seo-kit:seo-build`, ecc.). Le skill si attivano anche da sole quando la richiesta è pertinente.
+
+## Sviluppo
+
+Per lavorare sul plugin, clona la repository e avvia Claude Code puntando alla cartella, così legge sempre i file aggiornati:
+
+```
+git clone https://github.com/eliaraguso/claude-seo-kit.git
+claude --plugin-dir ./claude-seo-kit
+```
+
+Per pubblicare una nuova versione, alza `version` in `.claude-plugin/plugin.json` prima del commit.
 
 ## Struttura
 
