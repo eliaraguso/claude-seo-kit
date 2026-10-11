@@ -31,12 +31,12 @@ Check signals in the repository first, then in the served HTML or headers. When 
 | `astro.config.*`; HTML `<astro-island>`, `/_astro/` | [astro](astro.md) | ready |
 | `wp-config.php`, `wp-content/`; HTML `<meta name="generator" content="WordPress`; WooCommerce: `wp-content/plugins/woocommerce` | [wordpress](wordpress.md) | ready |
 | Only `.html` files, no framework config or build step | [static-html](static-html.md) | ready |
-| `svelte.config.js` | sveltekit | planned |
-| `remix.config.*`, `react-router.config.*` | remix-react-router | planned |
-| `gatsby-config.*` | gatsby | planned |
-| `hugo.toml` / `config.toml` + `content/`; `_config.yml` (Jekyll); `.eleventy.js` / `eleventy.config.*` | static-generators | planned |
-| `manage.py` (Django); `artisan` (Laravel); `Gemfile` + `config/routes.rb` (Rails) | classic-ssr | planned |
-| `theme/layout/theme.liquid`; `shopify.theme.toml` | shopify | planned |
-| `core/lib/Drupal` | drupal | planned |
-| `administrator/` + `configuration.php` | joomla | planned |
-| HTML `data-wf-page` (Webflow); `X-Wix-*` response headers (Wix); `static1.squarespace.com` assets (Squarespace) | hosted-builders | planned |
+| `svelte.config.js` | sveltekit | ready |
+| `remix.config.*`, `react-router.config.*` | remix-react-router | ready |
+| `gatsby-config.*` | gatsby | ready |
+| `hugo.toml` / `config.toml` + `content/`; `_config.yml` (Jekyll); `.eleventy.js` / `eleventy.config.*` | static-generators | ready |
+| `manage.py` (Django); `artisan` (Laravel); `Gemfile` + `config/routes.rb` (Rails) | classic-ssr | ready |
+| `theme/layout/theme.liquid`; `shopify.theme.toml` | shopify | ready |
+| `core/lib/Drupal` | drupal | ready |
+| `administrator/` + `configuration.php` | joomla | ready |
+| HTML `data-wf-page` (Webflow); `X-Wix-*` response headers (Wix); `static1.squarespace.com` assets (Squarespace) | hosted-builders | ready |
