@@ -29,7 +29,13 @@ Output: a Markdown summary on stdout and the full results as JSON in
 tools/trigger-runs/<timestamp>.json (git-ignored). Each real run is a billable Claude
 Code session; use --dry-run first.
 
-Exit codes: 0 done, 2 usage error (missing queries file, plugin dir or claude executable).
+The executable is resolved with shutil.which() and started with an argv list, never
+with shell=True. On Windows an npm install resolves to `claude.cmd`, and Windows runs a
+.cmd/.bat file through cmd.exe, which would rewrite `%`, `"`, `&`, `|`, `<`, `>` or `^`
+inside a query; the tool refuses such queries in that case (exit 2).
+
+Exit codes: 0 done, 2 usage error (missing queries file, plugin dir or claude executable,
+or a query unsafe for a .cmd/.bat claude).
 """
 import argparse
 import datetime as _dt
@@ -72,6 +78,16 @@ def build_command(claude, query, plugin_dir, model=None, max_budget_usd=None, ke
     if max_budget_usd:
         cmd += ["--max-budget-usd", str(max_budget_usd)]
     return cmd
+
+
+CMD_SHIM_UNSAFE = set('%"&|<>^')
+
+
+def cmd_shim_unsafe(claude, queries):
+    """Queries that cmd.exe would rewrite when `claude` resolves to a .cmd/.bat shim."""
+    if Path(claude).suffix.lower() not in (".cmd", ".bat"):
+        return []
+    return [q for q in queries if CMD_SHIM_UNSAFE & set(q)]
 
 
 def child_env():
@@ -416,6 +432,11 @@ def main(argv=None):
     claude = shutil.which(args.claude)
     if not claude:
         print("error: '%s' not found on PATH" % args.claude, file=sys.stderr)
+        return 2
+    unsafe = cmd_shim_unsafe(claude, [it["query"] for it in items])
+    if unsafe:
+        print("error: %s is a batch shim run through cmd.exe, which would alter these queries"
+              " (characters %s): %s" % (claude, "".join(sorted(CMD_SHIM_UNSAFE)), unsafe), file=sys.stderr)
         return 2
 
     got = defaultdict(list)

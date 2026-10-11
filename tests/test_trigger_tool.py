@@ -161,6 +161,13 @@ class StreamParsing(unittest.TestCase):
         self.assertNotIn("--setting-sources", keep)
         self.assertEqual(keep[keep.index("--max-budget-usd") + 1], "0.5")
 
+    def test_cmd_shim_unsafe_queries(self):
+        qs = ["why is my site not on Google", "50% off & free", 'say "hi"']
+        self.assertEqual(tt.cmd_shim_unsafe("C:/npm/claude.CMD", qs), qs[1:])
+        self.assertEqual(tt.cmd_shim_unsafe("C:/npm/claude.bat", qs[:1]), [])
+        self.assertEqual(tt.cmd_shim_unsafe("/usr/local/bin/claude", qs), [])
+        self.assertEqual(tt.cmd_shim_unsafe("C:/bin/claude.exe", qs), [])
+
 
 class Cli(unittest.TestCase):
     def setUp(self):
