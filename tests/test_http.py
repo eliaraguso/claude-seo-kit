@@ -32,6 +32,12 @@ class UrlTests(unittest.TestCase):
         self.assertEqual(out, "https://xn--bcher-kva.example/%C3%BCber%20uns/?q=ni%C3%B1o")
         out.encode("ascii")
 
+    def test_urllib_value_error_becomes_invalid_url(self):  # review fix: unbalanced IPv6 bracket
+        for bad in ("http://[::1", "https://[x/path"):
+            with self.subTest(url=bad), self.assertRaises(urls.InvalidURL):
+                urls.normalize_url(bad)
+        self.assertIsNone(urls.safe_normalize("http://[::1"))
+
     def test_existing_escapes_kept(self):
         self.assertEqual(urls.normalize_url("http://a.example/a%20b"), "http://a.example/a%20b")
 
@@ -56,6 +62,19 @@ class FetchTests(unittest.TestCase):
         r = seohttp.fetch("example.com")
         self.assertIsNone(r.status)
         self.assertIn("http://", r.error)
+
+    def test_malformed_url_never_raises(self):  # review fix
+        r = seohttp.fetch("http://[::1")
+        self.assertIsNone(r.status)
+        self.assertIn("invalid URL", r.error)
+
+    def test_malformed_location_header(self):  # review fix: urllib used to raise inside open()
+        with FixtureServer() as srv:
+            srv.add("/", status=301, headers=[("Location", "http://[::1/x")])
+            r = seohttp.fetch(srv.url("/"))
+        self.assertEqual(r.status, 301)
+        self.assertEqual(len(r.chain), 1)
+        self.assertIn("invalid redirect target", r.error)
 
     def test_network_error_never_raises(self):
         r = seohttp.fetch(f"http://127.0.0.1:{_closed_port()}/", timeout=5, retries=0)

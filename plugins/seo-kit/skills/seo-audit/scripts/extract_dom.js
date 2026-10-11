@@ -8,9 +8,9 @@
  * css_background_images, hash_routing_links, hidden_text_containers.
  *
  * Usage
- *   Chrome DevTools MCP: pass the whole arrow function below as the `function`
- *   argument of evaluate_script:
- *     evaluate_script({ function: "() => { ...contents of this file... }" })
+ *   Chrome DevTools MCP: pass the arrow function below verbatim (from `() => {`
+ *   to the final `}`, without this comment) as the `function` argument:
+ *     evaluate_script({ function: "<the arrow function below, unchanged>" })
  *   Browser console: run it as an immediately invoked function:
  *     (() => { ...body of the function below... })()
  *   or the older form:

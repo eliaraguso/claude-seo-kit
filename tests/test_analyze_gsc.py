@@ -90,7 +90,9 @@ class AnalyzeGscCliTests(unittest.TestCase):
 
     def test_help_example(self):
         proc = run_script("analyze_gsc", "--help")
-        self.assertIn('"northwind|physio"', proc.stdout)
+        self.assertIn('--brand "northwind"', proc.stdout)
+        self.assertIn("generic service words", proc.stdout)
+        self.assertNotIn("northwind|physio", proc.stdout)
 
 
 class CheckUrlsTests(unittest.TestCase):

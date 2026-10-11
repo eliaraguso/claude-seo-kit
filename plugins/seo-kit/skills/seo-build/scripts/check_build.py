@@ -41,7 +41,7 @@ def _bootstrap():
 
 _bootstrap()
 
-from seokit import __version__, report, robots, sitemap, typos, urls  # noqa: E402
+from seokit import __version__, dns, report, robots, sitemap, typos, urls  # noqa: E402
 from seokit import html as seohtml  # noqa: E402
 from seokit import http as seohttp  # noqa: E402
 
@@ -83,14 +83,22 @@ def same_page(url, page):
     return page.endswith(".html") and key == urls.compare_key(page[: -len(".html")])
 
 
-def bad_host(host, base_host):
-    """'localhost' / 'staging' when a URL host should never appear in production HTML."""
+def bad_host(host, base_host, any_host=False):
+    """'localhost' / 'staging' when a URL host should never appear in production HTML.
+
+    Local hosts (localhost, 127.0.0.1, 0.0.0.0, *.local) always count. The staging
+    pattern only applies to hosts on the --base registrable domain (e.g.
+    staging.acme-widgets.example): external sites such as web.dev or dev.to are never
+    "staging". any_host=True (used for the canonical) also applies it to other hosts,
+    since a canonical must point to the production site anyway.
+    """
     host = (host or "").lower()
     if host == base_host:
         return None
     if host in LOCAL_HOSTS or host.endswith(".local") or host.endswith(".localhost"):
         return "localhost"
-    if STAGING_RE.search(host):
+    same_site = dns.registrable_domain(host) == dns.registrable_domain(base_host)
+    if (same_site or any_host) and STAGING_RE.search(host):
         return "staging"
     return None
 
@@ -183,7 +191,7 @@ def analyze(path, url, site, lang_arg):
         href = (canon["href"] or "").strip()
         resolved = canon["resolved"] or ""
         host = (urllib.parse.urlsplit(resolved).hostname or "").lower()
-        kind = bad_host(host, site.base_host)
+        kind = bad_host(host, site.base_host, any_host=True)
         if not href:
             f.append(finding("high", "canonical-empty", "canonical href is empty"))
         elif kind:

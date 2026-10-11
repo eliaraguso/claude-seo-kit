@@ -49,7 +49,7 @@ def site(srv, challenge_for_googlebot=False):
     srv.add("/noindex/", NOINDEX)
     srv.add("/nolang/", NO_LANG)
     srv.add("/private/page", ABOUT.replace("Same title", "Private"))
-    srv.add("/robots.txt", "﻿User-agent: *\nDisallow: /private/\n\nUser-agent: GPTBot\nDisallow: /\n\n"
+    srv.add("/robots.txt", "\ufeffUser-agent: *\nDisallow: /private/\n\nUser-agent: GPTBot\nDisallow: /\n\n"
                            f"Sitemap: {srv.url('/sitemap.xml')}\n", content_type="text/plain")
     locs = "".join(f"<url><loc>{srv.url(p)}</loc></url>" for p in ("/", "/about/", "/dup/", "/noindex/",
                                                                      "/private/page"))
@@ -72,6 +72,12 @@ class SeoFetchCliTests(unittest.TestCase):
         proc = run_script("seo_fetch", "northwind-physio.example")
         self.assertEqual(proc.returncode, 2)
         self.assertIn("http://", proc.stderr)
+
+    def test_malformed_url_exit_2(self):  # review fix: was a traceback with exit 1
+        proc = run_script("seo_fetch", "http://[::1")
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("Invalid IPv6 URL", proc.stderr)
+        self.assertNotIn("Traceback", proc.stderr)
 
     def test_unreachable_exit_2(self):
         proc, data = self.run_json(f"http://127.0.0.1:{closed_port()}/")
@@ -186,6 +192,31 @@ class HostVariantTests(unittest.TestCase):
         self.assertTrue(res["all_reach_same_final_url"])
         self.assertEqual(res["variants"][0]["hops"], 0)
         self.assertEqual(res["variants"][1]["hops"], 1)
+
+
+    def test_subdomain_gets_no_www_variants(self):  # review minor
+        mod = load_script("seo_fetch")
+        seen = []
+
+        def fake_fetch(url, **kw):
+            seen.append(url)
+            return seohttp.Response(url=url, final_url=url, status=200)
+
+        mod.check_host_variants("https://shop.northwind-physio.example", fake_fetch)
+        self.assertEqual(seen, ["https://shop.northwind-physio.example/", "http://shop.northwind-physio.example/"])
+
+
+class ChallengeMarkerTests(unittest.TestCase):
+    def test_phrase_in_ordinary_copy_not_flagged(self):  # review minor
+        mod = load_script("seo_fetch")
+        big = "<title>FAQ</title><p>What if I see Access denied on the portal?</p>" + "<p>text</p>" * 3000
+        with FixtureServer() as srv:
+            srv.add("/", big)
+            srv.add("/blocked", "<title>Access denied</title>", status=403)
+            ok = mod.ua_comparison(srv.url("/"), seohttp.fetch, ["browser"], None)
+            blocked = mod.ua_comparison(srv.url("/blocked"), seohttp.fetch, ["browser"], None)
+        self.assertEqual(ok["results"]["browser"]["challenge_markers"], [])
+        self.assertEqual(blocked["results"]["browser"]["challenge_markers"], ["Access denied"])
 
 
 if __name__ == "__main__":

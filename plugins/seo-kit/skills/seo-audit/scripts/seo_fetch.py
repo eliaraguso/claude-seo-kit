@@ -52,6 +52,9 @@ ROBOTS_LIMIT = 500 * 1024                  # Google reads the first 500 KiB of r
 VISIBLE_TEXT_PREVIEW = 1500
 CHALLENGE_MARKERS = ("cf-challenge", "_cf_chl_opt", "captcha-delivery", "Just a moment", "Access denied",
                      "Request unsuccessful", "datadome")
+# Plain phrases that also occur in ordinary copy: only counted on an error status or a small page.
+CHALLENGE_PHRASES = ("Just a moment", "Access denied", "Request unsuccessful")
+CHALLENGE_SMALL_PAGE = 20_000
 CDN_HEADERS = (("cf-ray", "cloudflare"), ("x-vercel-id", "vercel"), ("x-nf-request-id", "netlify"),
                ("x-amz-cf-id", "cloudfront"), ("x-served-by", "fastly"), ("x-akamai-transformed", "akamai"))
 LOCAL_HOSTS = ("localhost", "127.0.0.1", "::1", "[::1]")
@@ -186,7 +189,8 @@ def check_host_variants(origin, fetch):
         names = [host]
     else:
         bare = host[4:] if host.startswith("www.") else host
-        names = [bare, "www." + bare]
+        # www. variants only for the registrable domain: www.shop.<domain> usually does not exist.
+        names = [bare, "www." + bare] if bare == dns.registrable_domain(bare) else [host]
     variants = []
     for name in names:
         for scheme in ("https", "http"):
@@ -229,7 +233,8 @@ def ua_comparison(url, fetch, names, lang):
     for name in names:
         r = fetch(url, ua=name, lang=lang if name == "browser" else None, retries=0)
         head = r.text[:200_000].lower()
-        markers = [m for m in CHALLENGE_MARKERS if m.lower() in head]
+        suspicious = r.status is None or not 200 <= r.status < 300 or len(r.body) < CHALLENGE_SMALL_PAGE
+        markers = [m for m in CHALLENGE_MARKERS if m.lower() in head and (suspicious or m not in CHALLENGE_PHRASES)]
         title, main_chars = None, None
         if r.status is not None and r.text:
             parsed = seohtml.parse_page(r.text, r.final_url or url)

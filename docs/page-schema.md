@@ -69,3 +69,14 @@ Compare the two outputs key by key to find content that only appears after rende
 | `typo_suspects` | list | Present only when a typo pack exists for `--lang` or the page `lang` (packs: `it`, `en`). |
 | `term_coverage` | dict term → object | With `--terms`: `{in_title, in_description, in_h1, in_headings, text_count}`. Matching is case-insensitive (casefold) and respects word boundaries. |
 | `not_html` | bool | The response is not HTML. Only the fetch keys are present. |
+
+## Site-level keys of `seo_fetch.py` (under `site`)
+
+| Key | Notes |
+|---|---|
+| `site.robots` | `{url, status, final_url, error, status_semantics, content_type, bytes, over_500kib, html_suspect, groups, sitemaps, invalid_lines, verdicts_root, note}`. `status_semantics` (the robots status semantics) ∈ `parse`, `allow_all` (4xx), `unavailable` (5xx, 429, no response). |
+| `site.sitemaps` | `{sitemaps: [...], total_urls}`; each item has `url_count`, `files`, `errors`, `warnings`, `truncated`, `host_mismatch_count`, `host_mismatch_sample`, `sample_urls`. |
+| `site.host_variants` | `{variants: [{url, status, hops, final_url, chain, error}], all_reach_same_final_url, final_urls, multi_hop}`. `www.` variants are tried only for a registrable domain. |
+| `site.not_found_probe` | `{url, status, final_url, hops, verdict, error}`; verdict ∈ `ok`, `soft_404`, `soft_404_redirect_to_home`, `server_error`, `other`, `error`. |
+| `site.dns` | `seokit.dns.summary()`: `{domain, nameservers, txt, cloudflare_dns, txt_verifications, google_domain_property_likely}`. |
+| `site.ua_comparison` | `{url, results: {ua: {status, final_url, hops, bytes, title, main_text_chars, challenge_markers, error}}, differences, note}`. |

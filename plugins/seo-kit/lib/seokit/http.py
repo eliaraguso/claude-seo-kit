@@ -102,8 +102,20 @@ class Response:
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Never follow redirects inside urllib: fetch() follows them by hand.
+
+    The http_error_30x overrides skip urllib's own Location parsing, which raises
+    ValueError on malformed values (e.g. "http://[::1/x"); returning None lets the
+    response surface as an HTTPError carrying the original headers.
+    """
+
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
+
+    def http_error_302(self, req, fp, code, msg, headers):
+        return None
+
+    http_error_301 = http_error_303 = http_error_307 = http_error_308 = http_error_302
 
 
 _opener = urllib.request.build_opener(_NoRedirect)
@@ -220,14 +232,14 @@ def decode_text(body: bytes, content_type: str = ""):
     if m:
         enc = _codec(m.group(1))
         if enc:
-            return body.decode(enc, "replace").lstrip("﻿"), enc, "header", warnings
+            return body.decode(enc, "replace").lstrip("\ufeff"), enc, "header", warnings
         warnings.append(f"unknown charset {m.group(1)!r} in Content-Type; ignored")
     m = _META_CHARSET.search(body[:META_SCAN_BYTES])
     if m:
         declared = m.group(1).decode("ascii", "replace")
         enc = _codec(declared)
         if enc:
-            return body.decode(enc, "replace").lstrip("﻿"), enc, "meta", warnings
+            return body.decode(enc, "replace").lstrip("\ufeff"), enc, "meta", warnings
         warnings.append(f"unknown charset {declared!r} in <meta>; ignored")
     for bom, enc in ((codecs.BOM_UTF8, "utf-8"), (codecs.BOM_UTF16_LE, "utf-16-le"),
                      (codecs.BOM_UTF16_BE, "utf-16-be")):
@@ -283,7 +295,7 @@ def fetch(url: str, *, ua: str = "browser", lang: Optional[str] = None, timeout:
             try:
                 target = urls.normalize_url(
                     urllib.parse.urljoin(current, urls.fix_header_text(location)))
-            except urls.InvalidURL as exc:
+            except (urls.InvalidURL, ValueError) as exc:
                 hop["location"] = location
                 resp.chain.append(hop)
                 resp.status, resp.headers = status, hdrs

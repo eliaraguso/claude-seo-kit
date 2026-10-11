@@ -10,11 +10,12 @@ otherwise pass the previous period's export with --previous.
 
 Usage:
   python analyze_gsc.py current.zip
-  python analyze_gsc.py current.zip --previous previous.zip --brand "northwind|physio"
+  python analyze_gsc.py current.zip --previous previous.zip --brand "northwind"
   python analyze_gsc.py export-folder --check-urls --json gsc.json
 
 --brand is a regular expression matched case-insensitively and accent-insensitively
-against each query, e.g. "northwind|physio".
+against each query, e.g. "northwind". Use distinctive tokens only; generic service words
+(e.g. physio) would count non-brand queries as brand.
 
 Note: anonymised queries are not listed in the queries table, so the sum of clicks
 by query is lower than the total; the reliable total is the dates table.
@@ -254,7 +255,8 @@ def build_parser():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("export", help=".zip or folder of the Performance export (current period)")
     ap.add_argument("--previous", help="export of the previous period, for the comparison")
-    ap.add_argument("--brand", help='regex of queries containing the brand or person name, e.g. "northwind|physio"')
+    ap.add_argument("--brand", help='regex of queries containing the brand or person name, e.g. "northwind". Use distinctive '
+                    'tokens only; generic service words (e.g. physio) would count non-brand queries as brand')
     ap.add_argument("--top", type=int, default=15, help="rows per table (default 15)")
     ap.add_argument("--min-impressions", type=float, default=20, help="opportunities: minimum impressions (default 20)")
     ap.add_argument("--max-ctr", type=float, default=2.0, help="opportunities: CTR below this percent (default 2.0)")

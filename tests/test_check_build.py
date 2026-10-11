@@ -101,9 +101,30 @@ class CheckBuildTests(unittest.TestCase):
         self.assertEqual(proc.returncode, 1)
         self.assertIn(("canonical-home-everywhere", "critical"), checks(data))
 
+    def test_external_dev_looking_hosts_are_not_staging(self):  # review fix
+        root = Path(self.tmp.name) / "links"
+        root.mkdir()
+        links = ('<a href="https://web.dev/articles/lcp">LCP</a> <a href="https://dev.to/ada/post">post</a> '
+                 '<a href="https://acme.vercel.app/">demo</a> <a href="https://test.com/">test</a>')
+        (root / "index.html").write_text(page("Home", BASE + "/").replace("</p>", "</p>" + links), encoding="utf-8")
+        proc, data = self.run_build(root, "--base", BASE)
+        self.assertNotIn("links-to-dev-hosts", [c for c, _ in checks(data)])
+        self.assertEqual(proc.returncode, 0, proc.stdout)
+        (root / "index.html").write_text(
+            page("Home", BASE + "/").replace("</p>", '</p><a href="https://staging.acme-widgets.example/">s</a>'
+                                             '<a href="http://127.0.0.1:3000/">l</a>'), encoding="utf-8")
+        proc, data = self.run_build(root, "--base", BASE)
+        self.assertIn(("links-to-dev-hosts", "high"), checks(data))
+        dev = [f for f in data["pages"][0]["findings"] if f["check"] == "links-to-dev-hosts"][0]
+        self.assertIn("staging.acme-widgets.example", dev["message"])
+        self.assertIn("127.0.0.1", dev["message"])
+
     def test_usage_errors_exit_2(self):
         self.assertEqual(run_script("check_build", fixture("build", "static_site")).returncode, 2)  # no --base
         self.assertEqual(run_script("check_build", fixture("build", "static_site"), "--base", "acme").returncode, 2)
+        proc = run_script("check_build", fixture("build", "static_site"), "--base", "http://[x")
+        self.assertEqual(proc.returncode, 2)
+        self.assertNotIn("Traceback", proc.stderr)
         missing = os.path.join(self.tmp.name, "nope")
         proc = run_script("check_build", missing, "--base", BASE)
         self.assertEqual(proc.returncode, 2)

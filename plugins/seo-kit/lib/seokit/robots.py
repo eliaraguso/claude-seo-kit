@@ -44,7 +44,7 @@ def parse(text) -> dict:
     """
     if isinstance(text, bytes):
         text = text.decode("utf-8", "replace")
-    text = (text or "").lstrip("﻿")
+    text = (text or "").lstrip("\ufeff")
     head = text[:1024].lstrip().lower()
     result = {
         "groups": [], "sitemaps": [], "invalid_lines": [],
@@ -53,7 +53,7 @@ def parse(text) -> dict:
     current = None
     last_was_ua = False
     for lineno, raw in enumerate(text.splitlines(), 1):
-        line = raw.split("#", 1)[0].replace("﻿", "").strip()
+        line = raw.split("#", 1)[0].replace("\ufeff", "").strip()
         if not line:
             continue
         m = _LINE_RE.match(line)

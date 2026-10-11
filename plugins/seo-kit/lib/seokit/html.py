@@ -148,7 +148,11 @@ class PageParser(HTMLParser):
         return any(t in names for t in self.stack)
 
     def _resolve(self, href: str) -> str:
-        joined = urllib.parse.urljoin(self.base, (href or "").strip())
+        href = (href or "").strip()
+        try:
+            joined = urllib.parse.urljoin(self.base, href)
+        except ValueError:  # malformed href such as "http://[::1"
+            return href
         return urls.safe_normalize(joined) or joined
 
     # -- tag handling ----------------------------------------------------
@@ -327,7 +331,10 @@ class PageParser(HTMLParser):
         resolved = self._resolve(href)
         link = {"href": href, "resolved": resolved, "text": text, "rel": anc["rel"],
                 "nofollow": "nofollow" in anc["rel"]}
-        path = urllib.parse.urlsplit(resolved).path
+        try:
+            path = urllib.parse.urlsplit(resolved).path
+        except ValueError:
+            path = ""
         if DOC_RE.search(path) and resolved not in self.d["documents"]:
             self.d["documents"].append(resolved)
         if urls.site_key(resolved) == self.page_site:

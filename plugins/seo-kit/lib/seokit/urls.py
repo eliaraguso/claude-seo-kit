@@ -63,16 +63,20 @@ def normalize_url(url: str, *, header_value: bool = False) -> str:
     url = str(url).strip()
     if header_value:
         url = fix_header_text(url)
-    parts = urllib.parse.urlsplit(url)
+    try:  # urllib raises ValueError for e.g. "http://[::1" (unbalanced IPv6 bracket)
+        parts = urllib.parse.urlsplit(url)
+        hostname = parts.hostname
+    except ValueError as exc:
+        raise InvalidURL(f"{exc}: {url!r}") from None
     scheme = parts.scheme.lower()
     if scheme not in ("http", "https"):
         hint = ""
         if not parts.scheme or "." in parts.scheme or not parts.netloc:
             hint = f" - did you mean https://{url.split('://')[-1]}?"
         raise InvalidURL(f"URL must start with http:// or https:// (got {url!r}){hint}")
-    if not parts.hostname:
+    if not hostname:
         raise InvalidURL(f"URL has no host name: {url!r}")
-    host = idna_host(parts.hostname)
+    host = idna_host(hostname)
     if ":" in host:  # IPv6 literal
         host = f"[{host}]"
     try:
