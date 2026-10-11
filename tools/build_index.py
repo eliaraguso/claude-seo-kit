@@ -43,14 +43,14 @@ def read_text(path):
 def split_row(line):
     """Split a markdown table row into stripped cells.
 
-    Honours backslash-escaped pipes and pipes inside backtick code spans.
+    Honours backslash-escaped pipes only (as GitHub does: a bare pipe splits the
+    cell even inside a code span).
     Returns None when the line is not a table row.
     """
     s = line.strip()
     if not s.startswith("|"):
         return None
     cells, buf = [], []
-    in_code = False
     i = 1
     while i < len(s):
         ch = s[i]
@@ -58,9 +58,7 @@ def split_row(line):
             buf.append("|")
             i += 2
             continue
-        if ch == "`":
-            in_code = not in_code
-        if ch == "|" and not in_code:
+        if ch == "|":
             cells.append("".join(buf).strip())
             buf = []
         else:

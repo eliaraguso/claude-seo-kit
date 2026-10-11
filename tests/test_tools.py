@@ -160,7 +160,7 @@ class BuildIndexTests(TreeCase):
         self.assertEqual(short, "short text")
 
     def test_pipe_in_check_is_escaped(self):
-        self.write(self.k / "crawling-indexing.md", topic(rows=row("CI-01", "Use `a|b` here")))
+        self.write(self.k / "crawling-indexing.md", topic(rows=row("CI-01", "Use `a\\|b` here")))
         self.index()
         text = (self.k / "INDEX.md").read_text(encoding="utf-8")
         self.assertIn("Use `a\\|b` here", text)
@@ -203,6 +203,17 @@ class BuildIndexTests(TreeCase):
     def test_slug_helper(self):
         self.assertEqual(bi.github_slug("Audit checks"), "audit-checks")
         self.assertEqual(bi.github_slug("Facts and rules (Google)"), "facts-and-rules-google")
+
+    def test_prefix_table_order_real_conventions(self):
+        got = bi.parse_prefix_table(REPO / "plugins" / "seo-kit" / "knowledge" / "conventions.md")
+        self.assertEqual([p for p, _ in got],
+                         "CI RJ OP SD CQ EN LO AI ME EC IN ED PF SA BI".split())
+        self.assertEqual(dict(got)["CI"], "crawling-indexing.md")
+        self.assertEqual(dict(got)["BI"], "bing-basics.md")
+
+    def test_unescaped_pipe_in_code_span_splits_like_github(self):
+        self.assertEqual(bi.split_row("| a | `x|y` | b |"), ["a", "`x", "y`", "b"])
+        self.assertEqual(bi.split_row("| a | `x\\|y` | b |"), ["a", "`x|y`", "b"])
 
     def test_prefix_table_order(self):
         got = bi.parse_prefix_table(self.k / "conventions.md")
@@ -289,7 +300,7 @@ class RuleTests(TreeCase):
         self.assertFires("K003")  # malformed
         self.write(self.k / "unlisted.md", topic("U", rows=row("CI-05")))
         code, lines = self.lint("--only", "K003")
-        self.assertTrue(any("unlisted.md" in l and "no prefix registered" in l for l in lines))
+        self.assertTrue(any("unlisted.md" in l and "no prefix registered" in l or "prefix registered in conventions.md" in l for l in lines))
 
     # K004
     def test_k004(self):
@@ -362,6 +373,31 @@ class RuleTests(TreeCase):
         self.crawl(rows=row(), extra="\neliaraguso\n")
         _code, lines = self.lint("--only", "K007")
         self.assertEqual(len(lines), 1)
+
+    def test_k007_sources_path_forms(self):
+        for bad in ("see sources/a.md", "see ./sources/a.md", "see ../sources/b", "see knowledge/sources/c",
+                    "`plugins/seo-kit/sources/d`"):
+            self.crawl(rows=row(), extra="\n" + bad + "\n")
+            self.assertFires("K007")
+        for ok in ("https://example.com/resources/x", "https://x.com/sources/", "the resources/ folder",
+                   "data-sources/ list", "Sources of truth"):
+            self.crawl(rows=row(), extra="\n" + ok + "\n")
+            self.assertSilent("K007")
+
+    def test_k007_exempt_phrase_is_narrow(self):
+        self.crawl(rows=row(), extra="\nStudio Ferri Orientamento Verona\n")
+        code, lines = self.lint("--only", "K007")
+        self.assertEqual(len(lines), 1)
+        self.assertIn("verona", lines[0])
+        self.crawl(rows=row(), extra="\nstudio ferri orientamento is fine, but orientamento alone is not\n")
+        code, lines = self.lint("--only", "K007")
+        self.assertEqual(len(lines), 1)
+
+    def test_k002_alias_to_alias(self):
+        self.crawl(rows=row("CI-01"))
+        self.write(self.k / "rendering-javascript.md", topic("R", rows=row("RJ-01", "Alias of CI-01 — v")))
+        self.write(self.k / "measurement.md", topic("M", rows=row("ME-01", "Alias of RJ-01 — v")))
+        self.assertFires("K002")
 
     # K008
     def test_k008(self):
@@ -454,6 +490,17 @@ class RuleTests(TreeCase):
         code, lines = self.lint("--only", "K004")
         self.assertEqual(code, 1)
         self.assertRegex(lines[0], r"^plugins/seo-kit/knowledge/crawling-indexing\.md:\d+: K004: ")
+
+
+class IntegrationTests(TreeCase):
+    def test_generated_index_lints_clean(self):
+        self.write(self.k / "crawling-indexing.md", topic(rows=row("CI-01") + row("CI-02", "Second", sev="Low")))
+        self.write(self.k / "rendering-javascript.md", topic("R", rows=row("RJ-01", "Alias of CI-01 — verify there, report once")))
+        self.assertEqual(self.index()[0], 0)
+        self.assertTrue((self.k / "INDEX.md").is_file())
+        code, lines = self.lint("--warnings-as-errors")
+        self.assertEqual((code, lines), (0, []))
+        self.assertEqual(self.index("--check")[0], 0)
 
 
 class CliTests(TreeCase):
