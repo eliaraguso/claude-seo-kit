@@ -1,0 +1,36 @@
+{
+  "language": "it",
+  "description": "Frequent Italian accent and apostrophe mistakes. Heuristics: confirm each match by reading the context.",
+  "patterns": [
+    {
+      "pattern": "(?<![\\w'])é(?![\\w'])",
+      "flags": "",
+      "why": "isolated 'é': the verb form is written 'è'"
+    },
+    {
+      "pattern": "\\b(cos|com|dov|quand)'é\\b",
+      "flags": "i",
+      "why": "'é' after an apostrophe: write 'è' (e.g. cos'è)"
+    },
+    {
+      "pattern": "\\b(perchè|poichè|affinchè|finchè|benchè|sicchè|nè|sè|ventitrè|trentatrè)\\b",
+      "flags": "i",
+      "why": "grave accent where an acute one is required (perché, né, sé...)"
+    },
+    {
+      "pattern": "\\bpò\\b",
+      "flags": "i",
+      "why": "'pò' is written \"po'\""
+    },
+    {
+      "pattern": "\\bqual'è\\b",
+      "flags": "i",
+      "why": "'qual'è' is written 'qual è' (no apostrophe)"
+    },
+    {
+      "pattern": "\\bE'\\s",
+      "flags": "",
+      "why": "\"E'\" with an apostrophe instead of the accented capital 'È'"
+    }
+  ]
+}

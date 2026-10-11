@@ -1,0 +1,16 @@
+{
+  "language": "en",
+  "description": "Obvious English typos only. Heuristics: confirm each match by reading the context.",
+  "patterns": [
+    {
+      "pattern": "\\b([^\\W\\d_]+)\\s+\\1\\b",
+      "flags": "i",
+      "why": "doubled word"
+    },
+    {
+      "pattern": "\\bteh\\b",
+      "flags": "i",
+      "why": "'teh' is a typo for 'the'"
+    }
+  ]
+}

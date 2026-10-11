@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /*.pdf$
+Disallow: /search
+Allow: /search/about
+Disallow: /*?sessionid=
+Allow: /p
+Disallow: /p/
+Allow: /page
+Disallow: /*.php
+Allow: /*.php$

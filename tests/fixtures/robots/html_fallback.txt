@@ -1,0 +1,3 @@
+<!doctype html>
+<html lang="en"><head><title>Acme Widgets</title></head>
+<body><div id="root"></div></body></html>

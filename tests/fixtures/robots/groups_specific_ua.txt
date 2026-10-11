@@ -1,0 +1,15 @@
+# Googlebot gets its own group: the * rules do not apply to it.
+User-agent: *
+Disallow: /
+
+User-agent: Googlebot
+User-agent: Bingbot
+Disallow: /admin/
+Allow: /admin/public/
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: googlebot
+Disallow: /tmp/
+Crawl-delay: 5

@@ -1,0 +1,9 @@
+useragent: GPTBot
+disallow: /
+
+User agent: ClaudeBot
+Disallow: /
+
+USER-AGENT: *
+DISALLOW: /cart/
+Dissallow: /checkout/

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Blue widget | Acme Widgets</title>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {"@type": "Organization", "@id": "https://acme-widgets.example/#org", "name": "Acme Widgets",
+     "address": {"@type": "PostalAddress", "addressLocality": "Springfield"}},
+    {"@type": "Product", "name": "Blue widget",
+     "brand": {"@type": "Brand", "name": "Acme"},
+     "offers": {"@type": "Offer", "price": "19.90", "priceCurrency": "EUR",
+                "seller": {"@type": "Organization", "name": "Acme Widgets"},
+                "shippingDetails": {"@type": "OfferShippingDetails",
+                                    "shippingDestination": {"@type": "DefinedRegion", "addressCountry": "NO"}}},
+     "review": [{"@type": "Review", "author": {"@type": "Person", "name": "Ada Novak"}}]}
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":["WebPage","ItemPage"]}</script>
+</head>
+<body><h1>Blue widget</h1></body>
+</html>
