@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests (no network)
+        run: python -m unittest discover -s tests -v
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: extract_dom.js syntax
+        run: node --check plugins/seo-kit/skills/seo-audit/scripts/extract_dom.js
+      - name: Manifests are valid JSON
+        run: python -c "import json,sys; [json.load(open(p, encoding='utf-8')) for p in sys.argv[1:]]" .claude-plugin/marketplace.json plugins/seo-kit/.claude-plugin/plugin.json
+      - name: Knowledge index is up to date
+        run: |
+          if [ -f tools/build_index.py ]; then python tools/build_index.py --check; else echo "tools/build_index.py not present, skipped"; fi
+      - name: Knowledge lint
+        run: |
+          if [ -f tools/check_knowledge.py ]; then python tools/check_knowledge.py; else echo "tools/check_knowledge.py not present, skipped"; fi

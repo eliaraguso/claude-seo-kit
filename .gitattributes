@@ -1,0 +1,2 @@
+# Test fixtures are byte-exact inputs (charsets, BOMs, line endings): never convert them.
+tests/fixtures/** -text
