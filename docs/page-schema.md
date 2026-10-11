@@ -80,3 +80,7 @@ Compare the two outputs key by key to find content that only appears after rende
 | `site.not_found_probe` | `{url, status, final_url, hops, verdict, error}`; verdict ∈ `ok`, `soft_404`, `soft_404_redirect_to_home`, `server_error`, `other`, `error`. |
 | `site.dns` | `seokit.dns.summary()`: `{domain, nameservers, txt, cloudflare_dns, txt_verifications, google_domain_property_likely}`. |
 | `site.ua_comparison` | `{url, results: {ua: {status, final_url, hops, bytes, title, main_text_chars, challenge_markers, error}}, differences, note}`. |
+
+## Findings of `check_build.py --json`
+
+Each item of `pages[].findings` and `site_findings` is `{severity, check, message}`. In the JSON, `severity` is lowercase (`critical`, `high`, `medium`, `low`), like the `--fail-on` values; the Markdown output and `conventions.md` write the same levels as Critical, High, Medium, Low.

@@ -4,8 +4,8 @@ Thank you for helping. This guide covers the four kinds of change people usually
 
 ## Ground rules
 
-- **English** in every committed file: knowledge, skills, scripts, tests and docs. The plugin answers users in their own language; the sources stay in English.
-- **No real people, clients or small businesses** in examples, tests, fixtures or evals. Use only the fictional entities in [`conventions.md` › Fictional examples](../plugins/seo-kit/knowledge/conventions.md): Northwind Physio, Studio Ferri Orientamento, Acme Widgets, Ada Novak and Daily Fjord. Their domains end in `.example`. Well-known platforms and tools (Google, GitHub, Shopify…) can be named.
+- **English** in every committed file: knowledge, skills, scripts, tests and docs (except the Italian research notes in `sources/`, which are not shipped). The plugin answers users in their own language; the sources stay in English.
+- **No real people, clients or small businesses** in examples, tests, fixtures or evals. Use only the fictional entities in [`conventions.md` › Fictional examples](../plugins/seo-kit/knowledge/conventions.md): Northwind Physio, Studio Ferri Orientamento, Acme Widgets, Ada Novak, Daily Fjord and Fjordly. Their domains end in `.example`. Well-known platforms and tools (Google, GitHub, Shopify…) can be named.
 - **Google documentation is the primary source.** Third-party views are reported as views and never become rules. Do not promise rankings or timelines.
 - **Standard library only** for Python, which must stay compatible with Python 3.9. Do not add runtime dependencies.
 
@@ -13,7 +13,7 @@ Thank you for helping. This guide covers the four kinds of change people usually
 
 1. Read [`plugins/seo-kit/knowledge/conventions.md`](../plugins/seo-kit/knowledge/conventions.md) (the binding rules) and [`docs/knowledge-style-guide.md`](knowledge-style-guide.md) (how to apply them).
 2. Find the **owning file**. Each topic has one owner. If another file needs the same check, it gets an alias row (`Alias of CI-17 — verify there, report once`) with the same severity, never a second copy.
-3. **A source is required.** Use a Google URL whenever one exists (`[G](url)`). Use the other tags in `conventions.md` for Business Profile, web.dev, Bing, IndexNow, framework docs or SEJ. If a check has only third-party evidence, say so in the Check text. Mark deductions *(inference)*, and claims still to confirm *(re-verify)*.
+3. **A source is required.** Use a Google URL whenever one exists (`[G](url)`). Use the other tags in `conventions.md` for Business Profile, web.dev, Bing, IndexNow, framework docs or SEJ. If a check has only third-party evidence, say so in the Check text. Mark deductions *(inference)*, and claims still to confirm *(re-verify)*. Open items are listed in [`docs/research-backlog.md`](research-backlog.md); confirm a claim, then drop its marker.
 4. **IDs are append-only.** Never renumber a check and never reuse a retired number. A new check takes the next free number in its prefix. To retire a check, keep its row: make it "(informational) Retired — merged into XX-NN", with severity Low.
 5. **Severity** follows the Critical / High / Medium / Low scale in `conventions.md`. When in doubt, choose the lower one and write the condition that raises it as a `Caveat:`. Use **⚠** only for deprecated, unsupported or not-recommended items.
 6. **Keep the table header exact**: `| ID | Check | How to verify | Severity | Source |`. Update the `> Updated YYYY-MM-DD` line of the file, and use absolute dates in the text.
@@ -48,6 +48,7 @@ Thank you for helping. This guide covers the four kinds of change people usually
 python -m unittest discover -s tests -v      # unit tests, no network (Windows: py -3 -m unittest ...)
 python tools/check_knowledge.py              # knowledge lint
 python tools/build_index.py --check          # index freshness
+claude plugin validate plugins/seo-kit       # manifest and skill frontmatter (not run in CI)
 claude --plugin-dir plugins/seo-kit          # try the working copy in Claude Code
 claude plugin eval plugins/seo-kit --scaffold --allow-tools Bash Write Edit "WebFetch(domain:127.0.0.1)"   # 7 eval cases (costs tokens)
 python tools/trigger_test.py --dry-run       # what the trigger test would run (free)
