@@ -1,29 +1,31 @@
-# Brief — {{titolo di lavoro}}
+# Brief — {{working title}}
 
-- **Intento / domanda a cui risponde:** {{...}}
-- **Chi lo cerca e in che situazione:** {{...}}
-- **Pagina di destinazione:** {{URL esistente o nuovo}} · **Tipo:** servizio | articolo | case study | chi sono | altro
-- **Formulazioni del pubblico** (fonte: suggerimenti di ricerca / Search Console / clienti): {{...}}
-- **Cosa c'è già sul sito su questo tema** (da collegare, non ripetere): {{...}}
+> Brief headings and notes in the working language (`SEO.md › 1. Site`); title, description, H1 and body text in the site language.
 
-## Materiale dell'autore
-- Esempi/casi reali: {{...}}
-- Numeri o dati propri: {{...}}
-- Opinione motivata / cosa sconsiglia: {{...}}
-- Per chi non è adatto: {{...}}
+- **Intent / question it answers:** {{...}}
+- **Who searches for it and in what situation:** {{...}}
+- **Target page:** {{existing or new URL}} · **Type:** service | article | case study | about | other
+- **How the audience phrases it** (source: autocomplete suggestions / Search Console / customers): {{...}}
+- **What the site already has on this topic** (link to it, do not repeat it): {{...}}
 
-## Struttura proposta
+## Author's material
+- Real examples / cases: {{...}}
+- Own numbers or data: {{...}}
+- Reasoned opinion / what the author advises against: {{...}}
+- Who it is not for: {{...}}
+
+## Proposed structure
 - H1: {{...}}
-- Apertura (risposta in 2-3 righe): {{...}}
-- Sezioni (H2): {{...}}
-- Invito all'azione: {{...}}
-- Link interni: {{...}}
+- Opening (answer in 2-3 lines): {{...}}
+- Sections (H2): {{...}}
+- Call to action: {{...}}
+- Internal links: {{to add from this page, and existing pages that should link here}}
 
-## Elementi per Google
-- Title ({{n}} caratteri): {{...}}
+## Elements for Google
+- Title ({{n}} characters): {{...}}
 - Meta description: {{...}}
-- Dati strutturati: {{Article/BlogPosting con author, ecc.}}
-- Immagini: {{...}}
+- Structured data: {{Article/BlogPosting with author @id, etc.}}
+- Images: {{...}}
 
-## Da verificare prima di pubblicare
-- {{fatti, cifre, credenziali da controllare}}
+## To verify before publishing
+- {{facts, figures, credentials to check}}

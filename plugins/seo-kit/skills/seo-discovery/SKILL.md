@@ -1,77 +1,143 @@
 ---
 name: seo-discovery
-description: Crea o aggiorna il profilo SEO di un sito (file SEO.md nella radice del progetto) - tipo di sito, obiettivo, pubblico, ricerche da presidiare e pagina che risponde a ciascuna, identità della persona o attività, profili esterni, area servita, accessi a Search Console e Business Profile, baseline. È il primo passo prima di audit, contenuti o interventi SEO, sia per un sito in costruzione sia per uno già online, con qualsiasi framework. Usa questa skill quando l'utente vuole iniziare a lavorare sulla SEO di un sito, vuole capire per quali ricerche farsi trovare, sta progettando le pagine di un sito nuovo, o quando un'altra skill SEO non trova SEO.md.
+description: Creates or updates a site's SEO profile (SEO.md in the project root) - site type and goal, audience, searches to win and the page answering each, identity of the person or business, profiles, area served, languages and markets, Search Console and Business Profile access, baseline, monitoring. First step before audits, content or SEO fixes, for new and live sites of any archetype (personal brand, professional services, local business, editorial, ecommerce, SaaS) and stack (Next.js, Nuxt, Angular, Astro, SvelteKit, WordPress, Shopify, static HTML). Use it when starting SEO work, planning a new site's pages, choosing which searches to target, or when another seo-kit skill finds no SEO.md.
+when_to_use: |
+  English: start SEO on my site; which searches should we target; create SEO.md; plan the pages of a new site; keyword and page map; migrate SEO.md to v2
+  Italian: iniziare la SEO del sito; per quali ricerche farmi trovare; creare SEO.md; progettare le pagine di un sito nuovo; mappa parole chiave; profilo SEO
+  Spanish: empezar el SEO de mi web; qué búsquedas atacar; crear SEO.md; planificar las páginas de una web nueva; mapa de palabras clave; perfil SEO
+  German: SEO für meine Website starten; für welche Suchanfragen gefunden werden; SEO.md anlegen; Seiten einer neuen Website planen; Keyword-Map; SEO-Profil
+  French: démarrer le SEO de mon site; sur quelles recherches me positionner; créer SEO.md; planifier les pages d'un nouveau site; carte des mots-clés; profil SEO
+argument-hint: "[site URL or project path]"
 ---
 
-# Profilo SEO del sito
+# Site SEO profile
 
-Questa skill produce `SEO.md`: la memoria SEO del progetto. Le altre skill del plugin lo leggono per sapere che tipo di sito è, chi deve trovarlo, con quali ricerche e quale pagina deve rispondere. Senza questo contesto un audit controlla regole generiche; con questo contesto controlla quello che conta per *quel* sito.
+> **Working language.** Answer in the language of the user's message. Files written into the project (`SEO.md`, `seo-reports/*`) use the report language recorded in `SEO.md › 1. Site › Working language` (if `SEO.md` is missing, use the user's language and record it when creating `SEO.md`). Page copy (titles, descriptions, H1, body text, alt text) is always written in the site language(s) from `SEO.md › 1. Site › Languages and markets`. Check IDs, severities, JSON keys and script flags stay in English; report headings are translated.
 
-## Base di conoscenza
-In `${CLAUDE_PLUGIN_ROOT}/knowledge/` (se la variabile non è espansa: la cartella `knowledge/` due livelli sopra questa skill):
-- `archetypes.md` — tipi di sito, priorità e rischi tipici: leggilo sempre;
-- `entity-personal-brand.md` e `local-seo.md` — per definire bene identità, profili e area servita;
-- `content-quality-spam.md` — per non pianificare pagine che Google tratta come spam (es. pagine città clonate).
+This skill produces `SEO.md`: the SEO memory of the project. The other seo-kit skills read it to know what kind of site it is, who must find it, with which searches, and which page must answer. Without this context an audit checks generic rules; with it, it checks what matters for *that* site.
 
-Il modello del file è in `assets/SEO-template.md`, nella cartella di questa skill.
+## Knowledge base
+Files live in `${CLAUDE_PLUGIN_ROOT}/knowledge/` (if the variable is not expanded: the `knowledge/` folder two levels above this skill's folder). Read by tier, as defined in `conventions.md › Reading tiers`: for Tier 1, Grep the heading (e.g. `^## Build rules`) in the named file and Read only that section with offset/limit, up to the next `## ` heading. Never load a whole topic file for this skill.
 
-## Procedura
+| Tier | What to read | When |
+|---|---|---|
+| 0 | `conventions.md` (Working language, SEO.md v2, Archetypes with the legacy alias line, Fictional examples) | Always, at the start |
+| 0 | `archetypes.md` (How to choose, the archetype's section, Modifiers, Priority matrix) | Always, at the start |
+| 0 | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = `file#section`, `Alias of`); read the header, then Grep it for an ID or a word | Always, at the start; never edit it |
+| 0 | `adapters/README.md › Detection table`, then only the matching `adapters/<stack>.md` | When code or live HTML is available |
+| 1 | `entity-personal-brand.md › ## Build rules` | Identity, entity home, profiles (section 3) |
+| 1 | `local-seo.md › ## Build rules` | Area served, service pages vs city pages |
+| 1 | `content-quality-spam.md › ## Build rules` (no pages in series) | Page map (section 4) |
+| 1 | `on-page-appearance.md › ## Build rules` (title and description: OP-02, OP-03, OP-08) | Title, description and H1 proposals |
+| 1 | `international.md › ## Build rules` | More than one language or market |
+| 1 | `ai-search.md › ## Procedures` ("Procedure: AI visibility with fixed questions") | Monitoring setup |
+| 2 | `measurement.md › ### Branded queries filter and the brand / non-brand split`; any `## Facts and rules` subsection named in an INDEX line | Brand regex; when a rule needs explaining |
+| 3 | `myths-deprecated.md` in full | Before recommending a tactic you are not sure is current |
 
-### 1. Parti da ciò che esiste
-- Se `SEO.md` esiste già, leggilo e lavora in **aggiornamento**: chiedi solo cosa è cambiato e non riscrivere le decisioni prese.
-- Raccogli da solo tutto quello che puoi prima di fare domande, così l'utente risponde solo a ciò che non si può dedurre:
-  - **dalla documentazione del progetto** (README, CLAUDE.md, stato, TODO, decisioni, brief, report precedenti): obiettivi, pubblico, scelte deliberate (es. cosa non pubblicare), strumenti già configurati;
-  - **dal codice:** framework e versione, tipo di rendering, routing, pagine e route esistenti, title e testi, dati strutturati, contatti, lingue;
-  - **dal sito online** (se c'è): `python "${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/seo_fetch.py" <url> --sitemap 50 --no-ua --json seo-fetch.json` per pagine, title e sitemap;
-  - **dalla pagina Chi sono/contatti:** nome esatto, ruolo, sede, profili collegati.
+If a rule is missing, fetch the Google URL in the Source column with WebFetch; there is no local copy of Google's pages.
 
-### 2. Intervista breve
-Fai domande raggruppate (al massimo 2-3 giri) solo su ciò che manca. Proponi sempre una risposta di default ricavata dal sito, così l'utente può solo confermare. Temi:
-1. **Obiettivo e conversione:** cosa deve succedere quando una persona arriva sul sito (contatto, prenotazione, download CV, acquisto)?
-2. **Pubblico:** chi cerca e in che situazione si trova (es. recruiter tech, persona che vuole cambiare lavoro, azienda).
-3. **Servizi/offerta** e **area**: in presenza, online o entrambi; quale città o zona.
-4. **Identità:** nome esatto da usare ovunque, profili ufficiali, credenziali verificabili, omonimi noti.
-5. **Accessi:** Search Console (proprietà Dominio?), Business Profile, analytics, Bing Webmaster Tools.
-6. **Concorrenti** che oggi compaiono per le ricerche desiderate (se l'utente li conosce).
+The template of the file is `assets/SEO-template.md` in this skill's folder.
 
-### 3. Archetipo
-Scegli archetipo principale ed eventuali secondari con la tabella "Come scegliere" di `archetypes.md`. Spiega la scelta in una riga: l'archetipo cambia l'ordine delle priorità dell'audit.
+## Scripts
+```bash
+# Live site: pages, titles, sitemaps (no user-agent comparison; site language sent as Accept-Language)
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/seo_fetch.py" https://northwind-physio.example --sitemap 50 --no-ua --json seo-fetch.json --lang en
 
-### 4. Intenti di ricerca e mappa delle pagine
-Costruisci la tabella degli intenti partendo dall'archetipo:
-- **brand:** il nome della persona/attività, anche con ruolo o città;
-- **servizio:** come il pubblico descrive l'offerta, con le sue parole e non con il gergo del settore;
-- **locale:** servizio + zona, solo se c'è una presenza reale in quella zona;
-- **informativo:** domande e problemi che il pubblico ha prima di cercare il servizio.
+# How people phrase searches (Google autocomplete; no volumes)
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-discovery/scripts/suggest.py" "physio oslo" "northwind physio" --lang en --expand
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-discovery/scripts/suggest.py" "back pain exercises" --lang en --gl no --json
+```
+On Windows use `py -3` (or `python`) if `python3` is not available. The scripts need Python 3.9+ and only the standard library.
 
-Regole:
-- **una pagina per intento**, e ogni pagina deve avere contenuto davvero diverso;
-- niente pagine fotocopia per città o varianti: Google le considera doorway/spam (`content-quality-spam.md`);
-- se un intento non ha ancora una pagina, segnala "da creare" invece di inventare un URL.
+- `seo_fetch.py` reads the raw server HTML (no JavaScript). Useful output: `pages[]` (`title`, `meta_description`, `h1`, `lang`, `hreflang`, `jsonld_types`, `internal_links`, `visible_text`) and `site.sitemaps`. Exit code 2 = invalid URL or site unreachable.
+- `suggest.py`: `--hl`/`--gl` default from `--lang` (en → en/us, it → it/it, de → de/de, es → es/es, fr → fr/fr, pt → pt/br); pass `--gl` (and `--hl`) when the market differs from that default. `--expand` adds "query a".."query z", "query 0".."query 9" and the language's question words. Exit code 3 = rate-limited by Google: stop and retry later, do not loop.
 
-**Indizi sulla domanda reale.** Le query restano **ipotesi** finché non ci sono dati, ma puoi ridurre l'incertezza:
-- **Suggerimenti di ricerca di Google** (gratuiti, nessun volume): mostrano come le persone formulano le ricerche e quali varianti esistono.
-  ```bash
-  python "${CLAUDE_PLUGIN_ROOT}/skills/seo-discovery/scripts/suggest.py" "orientamento verona" "nome cognome" --expand
-  ```
-  Una formulazione che compare nei suggerimenti è usata davvero; l'assenza non prova nulla (volumi bassi).
-- **Chi occupa oggi i risultati:** se hai uno strumento di ricerca web, guarda cosa esce per le query principali e dichiara quale motore hai usato (un motore diverso da Google, o di un altro paese, è solo un indizio). Capisci l'intento: se una ricerca è dominata da annunci di lavoro, portali o aggregatori, chi la fa cerca altro e il sito difficilmente compete. Altrimenti chiedi all'utente di controllare in finestra anonima su google.it.
-- **Search Console:** se l'utente ha accesso, chiedi l'export delle query (Prestazioni → Query, ultimi 3-12 mesi): è la fonte migliore.
-- Google Trends e il Keyword Planner di Google Ads sono alternative gratuite per confrontare formulazioni. Non inventare volumi.
+## Procedure
 
-**Ricerche da non inseguire.** Elenca anche le ricerche che sembrano pertinenti ma non lo sono: intento diverso (es. chi cerca "lavoro sviluppatore Verona" cerca un posto, non un candidato), nomi di altre persone o clienti, temi che il sito ha scelto di non trattare, ricerche dominate da portali. Evita lavoro sprecato e pagine forzate.
+### 1. Start from what exists
+- **`SEO.md` v2 exists** (first line `# SEO profile`): read it and work in **update mode**. Ask only what has changed; do not rewrite decisions already taken.
+- **`SEO.md` v1 exists** (first line `# Profilo SEO`, Italian, seo-kit 0.2.x): offer to migrate it to v2 and explain what changes; never rewrite it silently. If the user agrees:
+  - keep sections 1-7 (headings translated into the working language), then map `8. Decisioni e vincoli` → `8. Decisions and constraints`, `8b. Monitoraggio` → `9. Monitoring`, `8c. Registro interventi` → `10. Change log` (add the `Skill` column, empty for old rows), `9. Storico audit` → `11. Audit history`;
+  - map the archetype slugs with the alias table of `conventions.md › Archetypes`: `professionista-servizi` → `professional-services`, `attivita-locale` → `local-business`, `editoriale` → `editorial`, `prodotto-saas` → `saas-product` (`personal-brand` and `ecommerce` unchanged);
+  - add the new v2 fields (Languages and markets, Working language, Adapter, Modifiers, IndexNow key) and ask for the values you cannot deduce;
+  - keep the user's own notes and data as they are (translate them only if the user asks); show a short summary of what moved where.
 
-**Proposte per le pagine.** Per le pagine principali proponi title (circa 50-60 caratteri per evitare troncamenti, o il limite del progetto se ne ha uno; conta i caratteri con uno strumento), meta description e H1, scritti con le parole del pubblico e senza elenchi di parole chiave. Google può riscrivere i title, ma un title chiaro e specifico è la base.
+  If the user declines, leave the file untouched: the other skills read v1 as is.
+- **Gather everything you can before asking**, so the user answers only what cannot be deduced:
+  - **project documentation** (README, CLAUDE.md, status notes, TODO, decision records, briefs, previous reports): goals, audience, deliberate choices (e.g. what not to publish), tools already set up;
+  - **code**: detect the stack with the `adapters/README.md` detection table (the most specific signal wins) and read only that adapter; note framework and version, rendering mode, routing, existing pages and routes, titles and copy, structured data, contacts, languages;
+  - **live site** (if any): run `seo_fetch.py` as in Scripts for pages, titles and sitemaps;
+  - **About / contact page**: exact name, role, location, linked profiles.
 
-### 5. Scrivi SEO.md
-Compila il modello `assets/SEO-template.md` e salvalo come `SEO.md` nella radice del progetto. Indica la data. Lascia `{{...}}` solo dove l'informazione manca davvero e riportalo nel riepilogo finale.
+### 2. Short interview
+Ask grouped questions (at most 2-3 rounds), only about what is missing. Always propose a default answer deduced from the site, so the user can just confirm. Topics:
+1. **Goal and conversion**: what should happen when a person lands on the site (contact, booking, CV download, purchase)?
+2. **Audience**: who searches and in what situation (e.g. a recruiter hiring developers, a runner with a knee injury, a company looking for a supplier).
+3. **Services / offer** and **area**: in person, online or both; which city or region.
+4. **Identity**: exact name to use everywhere, official profiles, verifiable credentials, known homonyms.
+5. **Languages and markets**: the site language(s) and the countries or regions served (e.g. `en-GB` primary, `de-DE` secondary). Page copy will be written in these languages.
+6. **Working language**: the language for `SEO.md` and the reports in `seo-reports/` (default: the language of the conversation).
+7. **Access**: Search Console (Domain property?), Business Profile, analytics, Bing Webmaster Tools, IndexNow.
+8. **Competitors** that currently appear for the target searches (if the user knows them).
 
-Se l'utente ha dati di Search Console, registra la baseline (clic, impressioni, ricerche col proprio nome, ultimi 3 mesi): servirà a misurare l'effetto delle modifiche.
+### 3. Archetype and stack
+- Pick the primary archetype and any secondary ones with `archetypes.md › How to choose`, using the English slugs (`personal-brand`, `professional-services`, `local-business`, `editorial`, `ecommerce`, `saas-product`), and add the modifiers that apply (`multilingual`, `marketplace-ugc`, `paywall`, `app-and-site`). Explain the choice in one line: the archetype changes the order of audit priorities (`archetypes.md › Priority matrix`).
+- Record the stack, the adapter slug, the rendering mode and the router in section 1. If no row of the detection table matches, write "unknown" and say that the audit will fall back to the topic files.
+- More than one language or market → modifier `multilingual`; read `international.md › ## Build rules` before planning pages per language.
 
-### 6. Chiudi con i prossimi passi
-Riepiloga in poche righe, in linguaggio semplice: archetipo, 3-5 ricerche principali e la pagina che risponde a ciascuna, pagine da creare, ricerche da non inseguire, informazioni mancanti. Se durante la raccolta hai visto problemi evidenti (es. dominio che non reindirizza, profili che non linkano il sito), elencali come spunti per l'audit. Suggerisci il passo successivo: di solito `seo-audit` se il sito esiste, oppure le regole di costruzione se è in sviluppo.
+### 4. Search intents and page map
+Build the intents table starting from the archetype:
+- **brand**: the name of the person or business, also with role or city;
+- **service**: how the audience describes the offer, in their words, not the industry jargon;
+- **local**: service + area, only where there is a real presence in that area;
+- **informational**: questions and problems the audience has before searching for the service.
 
-## Note
-- L'identità deve essere **vera e verificabile**: Google vieta autori, credenziali e recensioni fittizi. Se l'utente propone di "gonfiare" qualcosa, spiega il rischio.
-- Dati personali: nel profilo metti solo ciò che è già pubblico o che l'utente vuole rendere pubblico (es. indirizzo di casa di una professionista che lavora a domicilio: chiedi prima).
-- Scrivi il profilo nella lingua del sito/utente.
+Rules:
+- **one page per intent**, and each page must have genuinely different content;
+- no copy-paste pages per city or variant: Google treats them as doorways / spam (`content-quality-spam.md › ## Build rules`, `local-seo.md › ## Build rules`);
+- if an intent has no page yet, mark it "to create" instead of inventing a URL;
+- on a multilingual site, one row per language when the searches differ, each answered by the page in that language.
+
+**Evidence of real demand.** Queries stay **assumptions** until there is data, but you can reduce the uncertainty:
+- **Google autocomplete suggestions** (free, no volumes): `suggest.py` with `--lang` set to the site language (and `--gl` for the market), `--expand` for variants, `--json` to keep the output. They show how people phrase searches and which variants exist. A phrasing that appears is really used; its absence proves nothing (low volumes).
+- **Who holds the results today**: if you have a web search tool, look at what comes up for the main queries and state which engine you used (a different engine, or a different country, is only a hint). Read the intent: if a search is dominated by job ads, portals or aggregators, the people making it want something else and the site will hardly compete. Otherwise ask the user to check in a private window on the Google domain of the target market.
+- **Search Console**: if the user has access, ask for the query export (Performance → Queries, last 3-12 months): it is the best source.
+- Google Trends and Google Ads Keyword Planner are free alternatives to compare phrasings. Never invent volumes.
+
+**Queries not to chase.** Also list searches that look relevant but are not: different intent (e.g. people searching "physiotherapist jobs Oslo" want a job, not a clinic), names of other people or clients, topics the site has chosen not to cover, searches dominated by portals. This avoids wasted work and forced pages.
+
+**Proposals for the pages.** For the main pages propose a title, a meta description and an H1, written in the site language with the audience's words and without keyword lists. Follow `on-page-appearance.md › ## Build rules` (title and description length: OP-02, OP-03, OP-08) or the project's own length check if it has one, and count the characters with a tool, not by eye. Google may rewrite titles, but a clear, specific title is the basis.
+
+### 5. Monitoring setup
+Fill `SEO.md › 9. Monitoring`, so that every `seo-monitor` run uses the same definitions:
+- **Brand regex.** Derive it from the entity name and its aliases (section 3): the distinctive tokens only, plus the joined domain form and frequent misspellings (e.g. `northwind`; for a person `ada ?novak|novak ?ada|adanovak`). Exclude generic words: a service word (`physio`) or a bare common surname also matches searches by people who do not know the brand (`physio oslo`); those would be counted as brand and hide the real non-brand growth. Explain this choice to the user in one line. `analyze_gsc.py --brand` matches the regex case- and accent-insensitively; the same regex works in the Search Console query filter when the built-in branded filter is not available (`measurement.md › ### Branded queries filter and the brand / non-brand split`).
+- **Three fixed AI questions**, written in the site language with the audience's words and never changed between runs: one **accuracy** question about the entity (e.g. "What is Northwind Physio in Oslo?"), one **decision** question without the name (e.g. "Which physiotherapist in Oslo treats running injuries?"), one **service** question (e.g. "Who offers home physiotherapy visits in Oslo?"). For sites with active PR or content work, extend the set as described in `ai-search.md › ## Procedures`.
+- Leave the AI log table empty: `seo-monitor` fills it.
+
+### 6. Write SEO.md
+Fill `assets/SEO-template.md` and save it as `SEO.md` in the project root, in the working language, with today's date. Leave `{{...}}` only where the information is really missing, and list those gaps in the closing summary. Use only facts from the project, the site or the user; never invent people, credentials or numbers.
+
+If the user has Search Console data, record the baseline in section 7 (clicks, impressions, brand queries, last 3 months): it is how the effect of later changes will be measured.
+
+### 7. Close with the next steps
+- Summarise in a few plain-language lines: archetype and modifiers, the 3-5 main searches and the page that answers each, pages to create, queries not to chase, missing information. If you noticed obvious problems while gathering (e.g. the domain variants do not redirect, profiles do not link the site), list them as leads for the audit.
+- Suggest the next step: usually `seo-audit` if the site is live, `seo-build` if it is in development, `seo-entity-local` when identity or local presence is the main gap.
+- **Change log step.** Before finishing, append one row to `SEO.md › 10. Change log` (date · change · pages/area · skill) for every file you created or modified in the project (e.g. `YYYY-MM-DD | SEO.md created (v2) | SEO.md | seo-discovery`, or `SEO.md migrated from v1 to v2`).
+
+## Output format
+Two outputs. Headings are translated into the working language; their order and meaning stay as below.
+1. **`SEO.md`** in the project root, following `assets/SEO-template.md` (sections 1-11, v2).
+2. **Closing summary** in the conversation (language of the user's message):
+   - **In short**: archetype (+ modifiers), stack and adapter, languages and markets;
+   - **Main searches → page**: 3-5 rows, "to create" where needed;
+   - **Queries not to chase**;
+   - **Missing information** (the remaining `{{...}}`);
+   - **Leads for the audit**;
+   - **Next step** (which skill).
+
+## Things to keep in mind
+- Identity must be **true and verifiable**: Google's policies forbid invented authors, credentials and reviews. If the user proposes to "inflate" something, explain the risk.
+- Personal data: put in the profile only what is already public or what the user wants to make public (e.g. the home address of a professional who works at clients' homes: ask first).
+- Queries are hypotheses until data confirms them; never invent search volumes or promise rankings or timelines.
+- Write `SEO.md` in the working language; the titles, descriptions and H1 you propose are in the site language(s).
+- Respect deliberate choices recorded in section 8 or in the project documentation.
