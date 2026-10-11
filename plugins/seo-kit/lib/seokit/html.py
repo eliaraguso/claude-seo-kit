@@ -395,6 +395,7 @@ class PageParser(HTMLParser):
         d["jsonld_types"] = types
         visible = " ".join(self.text)
         d["visible_text"] = visible
+        d["text_blocks"] = list(self.text)
         d["visible_text_chars"] = len(visible)
         d["main_text_chars"] = len(" ".join(self.main_text))
         root = self.spa_root
@@ -488,6 +489,8 @@ def parse_page(html_text: str, url: str, headers=None, status: Optional[int] = N
     """Parse raw HTML into the page schema.
 
     headers: a seokit.http.Headers (or anything with get_all) for X-Robots-Tag.
+    The result also holds ``text_blocks`` (visible text per text node) for the typo
+    check; scripts drop it from their output.
     """
     parser = PageParser(url)
     parse_error = None

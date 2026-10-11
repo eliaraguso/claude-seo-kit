@@ -298,6 +298,7 @@ def analyze_page(url, fetch, *, lang=None, robots_info=None, robots_parsed=None,
         page["typo_suspects"] = found
     if terms:
         page["term_coverage"] = term_coverage(page, terms)
+    page.pop("text_blocks", None)
     return page
 
 

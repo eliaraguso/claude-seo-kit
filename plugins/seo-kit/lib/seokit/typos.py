@@ -60,7 +60,9 @@ def find(page: dict, lang: Optional[str]):
         "title": page.get("title") or [],
         "meta_description": page.get("meta_description") or [],
         "headings": [h.get("text", "") for h in page.get("headings") or []],
-        "visible_text": [page.get("visible_text") or ""],
+        # One entry per text node when available, so that a word ending one element and
+        # starting the next (menu "Contact", then H1 "Contact") is not a doubled word.
+        "visible_text": page.get("text_blocks") or [page.get("visible_text") or ""],
     }
     found = []
     for field, values in fields.items():
