@@ -1,187 +1,188 @@
-# Dati strutturati
+# Structured data
 
-> Aggiornato al 2026-10-03. Serve a scegliere, generare e validare JSON-LD per qualsiasi sito (nuovo o esistente, qualsiasi framework).
-> Fonti: documentazione Google Search Central (copia italiana scaricata il 2026-10-03), blog Google 2024–2026, sintesi Search Engine Journal (SEJ, secondaria).
-> Legenda: **[G]** fatto dalla documentazione Google · **[G-blog]** annuncio sul blog Google · **[D]** deduzione operativa (non testo Google) · **[T]** fonte terza/opinione · **⚠** affermazione da non trasformare in raccomandazione.
-> Regola d'oro: Google non garantisce mai un risultato avanzato, anche con markup valido [G]. Prima di proporre un tipo, controllare la sezione "Tipi ritirati" e, per novità successive a questa data, il changelog `https://developers.google.com/search/updates`.
+> Updated 2026-10-11. Scope: choosing, generating and validating JSON-LD for any site (new or live, any framework). Primary source: Google Search Central; third-party views marked [SEJ].
+> Sources: Google Search Central documentation (read 2026-10-03; retirement statuses re-checked against the Google changelog on 2026-10-11), Google Search Central blog 2023–2026, Search Engine Journal summaries (secondary). Tags: `[G](url)` Google documentation or blog · `[SEJ YYYY-MM]` third-party view · *(inference)* operational deduction, not Google text · ⚠ deprecated or not to be recommended.
+> Golden rule: Google never guarantees a rich result, even with valid markup [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data). Before proposing a type, check [Retired or restricted rich results](#retired-or-restricted-rich-results) and, for changes after this date, the changelog `https://developers.google.com/search/updates`.
 
-## Indice
-- [Regole generali (Google)](#regole-generali-google)
-- [Matrice di scelta per tipo di sito](#matrice-di-scelta-per-tipo-di-sito)
-- [Schede per tipo](#schede-per-tipo)
-- [Tipi ritirati o non disponibili in Italia/italiano](#tipi-ritirati-o-non-disponibili-in-italiaitaliano)
-- [Controlli per l'audit](#controlli-per-laudit)
-- [Note per SPA/JavaScript](#note-per-spajavascript)
-- [Cosa dicono le fonti terze](#cosa-dicono-le-fonti-terze)
+## Contents
+- [Facts and rules (Google)](#facts-and-rules-google)
+  - [Formats](#formats) · [Required and recommended properties](#required-and-recommended-properties) · [Visible content and quality guidelines](#visible-content-and-quality-guidelines) · [Manual actions](#manual-actions) · [JavaScript-generated markup](#javascript-generated-markup) · [Testing and validation](#testing-and-validation) · [@id and the graph](#id-and-the-graph)
+  - [Choice matrix by site type](#choice-matrix-by-site-type)
+  - Types: [WebSite](#website-site-name) · [Organization](#organization) · [LocalBusiness](#localbusiness-and-subtypes) · [Person / ProfilePage](#person--profilepage) · [Article](#article--blogposting--newsarticle) · [BreadcrumbList](#breadcrumblist) · [Review / AggregateRating](#review--aggregaterating) · [Event](#event) · [Course](#course) · [VideoObject](#videoobject) · [Product and merchant listings](#product-offer-productgroup-and-merchant-listings) · [JobPosting](#jobposting)
+  - [JavaScript and SPA notes](#javascript-and-spa-notes)
+- [Retired or restricted rich results](#retired-or-restricted-rich-results)
+- [Audit checks](#audit-checks)
+- [Build rules](#build-rules)
+- [Notes by site type](#notes-by-site-type)
+- [Third-party views](#third-party-views)
+- [Myths and outdated advice](#myths-and-outdated-advice)
 
-## Regole generali (Google)
+## Facts and rules (Google)
 
-### Formati
-- Tre formati supportati: **JSON-LD (consigliato)**, Microdati, RDFa. Tutti validi se corretti; JSON-LD è preferito perché più facile da gestire su larga scala e meno soggetto a errori [G].
-- JSON-LD va in `<script type="application/ld+json">`, in `<head>` o `<body>`; non si mescola al testo visibile. Google legge anche il JSON-LD **inserito dinamicamente** (JavaScript, widget CMS) [G].
-- Eccezione: per `DiscussionForumPosting` Google consiglia Microdati/RDFa (evita di duplicare lunghi testi), ma JSON-LD resta supportato [G].
-- Vocabolario: quasi sempre schema.org, ma **il riferimento per Google è Search Central, non schema.org**; molte proprietà schema.org non servono a Google [G]. `data-vocabulary.org` non è più idoneo [G].
-- `@context`: `https://schema.org`. Un solo valore per campo quando la proprietà è un identificatore (es. GTIN): niente liste separate da virgole [G, Office Hours 2022].
-- CMS (WordPress, Wix, Shopify…): usare le impostazioni SEO o un plug-in invece di scrivere a mano [G]. [D] Prima di aggiungere markup manuale, verificare che il CMS/plug-in non ne generi già (evitare doppioni contraddittori).
+### Formats
+- Three supported formats: **JSON-LD (recommended)**, Microdata, RDFa. All are valid when correct; JSON-LD is preferred because it is easier to maintain at scale and less error-prone [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data).
+- JSON-LD goes in `<script type="application/ld+json">`, in `<head>` or `<body>`; it is not interleaved with visible text. Google also reads JSON-LD **injected dynamically** (JavaScript, CMS widgets) [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data).
+- Exception: for `DiscussionForumPosting` Google suggests Microdata/RDFa (avoids duplicating long texts), but JSON-LD remains supported [G](https://developers.google.com/search/docs/appearance/structured-data/discussion-forum).
+- Vocabulary: almost always schema.org, but **Google's reference is Search Central, not schema.org**; many schema.org properties are not used by Google [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data). `data-vocabulary.org` is no longer eligible [G](https://developers.google.com/search/updates).
+- `@context`: `https://schema.org`. One value per field when the property is an identifier (e.g. GTIN, `sku`): no comma-separated lists [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing) (also said in Google Search Office Hours, 2022).
+- CMS (WordPress, Wix, Shopify…): use the SEO settings or a plugin instead of hand-writing markup [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data). *(inference)* Before adding manual markup, check that the CMS or plugin does not already emit some (avoid contradictory duplicates).
 
-### Obbligatorie e consigliate
-- Tutte le proprietà **obbligatorie** servono per l'idoneità; le **consigliate** aumentano la probabilità di visualizzazione [G].
-- Meglio **poche consigliate complete e accurate** che molte incomplete o errate [G].
-- Google può fare un uso generale di `sameAs` e di altri dati schema.org non documentati, anche per funzionalità future [G].
+### Required and recommended properties
+- All **required** properties are needed for eligibility; **recommended** properties increase the chance of the feature being shown [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
+- **Fewer recommended properties, complete and accurate,** are better than many incomplete or wrong ones [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
+- Google may make general use of `sameAs` and other undocumented schema.org data, including for future features [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data).
 
-### Contenuto visibile e norme di qualità
-- Il markup descrive **la pagina in cui si trova**: niente pagine vuote create solo per i dati strutturati, niente markup di informazioni **non visibili** all'utente, anche se vere [G].
-- Norme sulla qualità (non verificabili da strumenti; violarle può bloccare i risultati avanzati o far marcare il markup come spam) [G]:
-  - rispettare le norme sullo spam; informazioni **aggiornate**; contenuti **originali** (tuoi o dei tuoi utenti);
-  - niente contenuti irrilevanti o fuorvianti (es. **recensioni fittizie**); niente impersonificazione di persone/organizzazioni né falsa rappresentazione di proprietà, affiliazione o scopo;
-  - **pertinenza**: il markup rappresenta fedelmente la pagina (esempi di errori: streaming sportivo marcato come evento locale; istruzioni di falegnameria marcate come ricetta);
-  - **località**: markup sulla pagina che descrive; con pagine duplicate, **stesso markup su tutte**, non solo sulla canonica;
-  - **specificità**: tipo e proprietà schema.org **più specifici** applicabili;
-  - **immagini**: pertinenti alla pagina, URL scansionabili e indicizzabili.
-- Più elementi in una pagina: si possono **nidificare** (un elemento principale con gli altri dentro) o dichiarare **separati** (array JSON-LD). Includere sempre il **tipo principale** che rispecchia lo scopo della pagina; se si marcano più recensioni, marcarle **tutte** quelle visibili [G].
-- Accesso: non bloccare le pagine con markup con robots.txt, `noindex` o login [G].
+### Visible content and quality guidelines
+- Markup describes **the page it is on**: no empty pages created only to carry structured data, no markup of information **not visible** to users, even if true [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
+- Quality guidelines (not testable by tools; violating them can block rich results or get the markup flagged as spam) [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies):
+  - follow the spam policies; keep information **up to date**; content must be **original** (yours or your users');
+  - no irrelevant or misleading content (e.g. **fake reviews**); no impersonation of people or organisations and no misrepresentation of ownership, affiliation or purpose;
+  - **relevance**: the markup faithfully represents the page (examples of errors: a sports live stream marked up as a local event; woodworking instructions marked up as a recipe);
+  - **location**: markup on the page it describes; with duplicate pages, **the same markup on all of them**, not only on the canonical;
+  - **specificity**: use the **most specific** applicable schema.org type and properties;
+  - **images**: relevant to the page, crawlable and indexable URLs.
+- Several items on one page: either **nest** them (one main item with the others inside) or declare them **separately** (JSON-LD array). Always include the **main type** that reflects the purpose of the page; if you mark up several reviews, mark up **all** the visible ones [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
+- Access: do not block pages carrying markup with robots.txt, `noindex` or a login [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
 
-### Azioni manuali
-- Un problema di dati strutturati può causare un'**azione manuale**: la pagina perde l'idoneità ai risultati avanzati, **ma il ranking non cambia**; il markup della pagina viene **ignorato** [G].
-- Si verifica nel report Azioni manuali di Search Console; dopo la correzione si chiede la riconsiderazione [G].
-- Il Test dei risultati avanzati **non rileva** problemi di spam o di norme (solo sintassi e campi) [G].
+### Manual actions
+- A structured data problem can lead to a **manual action**: the page loses rich result eligibility, **but its ranking does not change**; the page's markup is **ignored** [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
+- Check the Manual actions report in Search Console; after fixing, request reconsideration [G](https://support.google.com/webmasters/answer/9044175).
+- The Rich Results Test **does not detect** spam or policy problems (only syntax and fields) [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
 
-### Generato con JavaScript
-- Metodi: Google Tag Manager, JavaScript personalizzato, rendering lato server [G].
-- Google elabora i dati strutturati **presenti nel DOM al momento del rendering** [G].
-- Con GTM usare **variabili che leggono la pagina** invece di copiare i dati nel tag (la duplicazione crea discrepanze) [G].
-- `Product`: il markup generato via JS può rendere le scansioni Shopping **meno frequenti e affidabili**; Google consiglia `Product` nell'**HTML iniziale** [G]. Dettagli in [Note per SPA/JavaScript](#note-per-spajavascript).
+### JavaScript-generated markup
+- Methods: Google Tag Manager, custom JavaScript, server-side rendering [G](https://developers.google.com/search/docs/appearance/structured-data/generate-structured-data-with-javascript).
+- Google processes the structured data **present in the DOM at render time** [G](https://developers.google.com/search/docs/appearance/structured-data/generate-structured-data-with-javascript).
+- With GTM, use **variables that read the page** instead of copying the data into the tag (duplication creates mismatches) [G](https://developers.google.com/search/docs/appearance/structured-data/generate-structured-data-with-javascript).
+- `Product`: JS-generated markup can make Shopping crawls **less frequent and less reliable**; Google recommends `Product` in the **initial HTML** [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing). Details in [JavaScript and SPA notes](#javascript-and-spa-notes).
 
-### Test e validazione
-| Strumento | Quando | Note |
+### Testing and validation
+| Tool | When | Notes |
 |---|---|---|
-| Test dei risultati avanzati (`search.google.com/test/rich-results`) | Sviluppo e verifica | Usare l'input **via URL** (l'input via codice ha limiti JS, es. CORS) [G]. Non supporta i nomi dei siti né i tipi ritirati [G]. |
-| Validatore schema.org (`validator.schema.org`) | Sintassi di tipi non coperti dal Test (es. `WebSite` per il nome del sito) | [G] lo indica per i nomi dei siti. |
-| Controllo URL (Search Console) | Dopo il deploy | Verifica HTML renderizzato, blocchi robots/noindex/login; richiesta di nuova scansione (giorni) [G]. |
-| Report sullo stato dei risultati avanzati, "Dati strutturati non analizzabili", Azioni manuali | Post-deploy e dopo ogni nuovo template | Aumento di errori = template rotto; **calo dei validi senza aumento degli invalidi** = markup non più incorporato [G]. |
-| Report Rendimento (filtro aspetto/URL) | Misura dell'effetto | Test prima/dopo su pagine stabili per alcuni mesi [G]. |
-- Gli errori "critici" del Test vanno corretti; i "non critici" migliorano la qualità ma non servono per l'idoneità [G]. Sitemap consigliata per segnalare le modifiche [G].
+| Rich Results Test (`search.google.com/test/rich-results`) | Development and verification | Use **URL input** (code input has JS limits, e.g. CORS). It does not support site names or retired types [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data). |
+| Schema Markup Validator (`validator.schema.org`) | Syntax of types the Rich Results Test does not cover (e.g. `WebSite` for the site name) | Google points to it for site names [G](https://developers.google.com/search/docs/appearance/site-names). |
+| URL Inspection (Search Console) | After deploy | Checks the rendered HTML and robots/`noindex`/login blocks; request recrawl (takes days) [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing). |
+| Rich result status reports, "Unparsable structured data", Manual actions | After deploy and after every new template | A rise in errors = broken template; **a drop in valid items without a rise in invalid ones** = markup no longer embedded [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing). |
+| Performance report (search appearance / URL filter) | Measuring the effect | Before/after test on stable pages over a few months [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data). |
 
-### @id e grafo
-- Google: se elementi separati sono collegati (es. ricetta e video), usare **`@id`** per collegarli, altrimenti Google potrebbe non capire la relazione [G]. L'esempio `ProfilePage` usa `"@id": "#main-author"` per collegare l'autore ai suoi articoli [G]. In `BreadcrumbList`, `item` può essere un oggetto con `@id` [G].
-- In home un **solo nodo `WebSite`**: nidificare lì le proprietà (nome del sito incluso) invece di creare blocchi multipli [G, Office Hours 2022 + doc nomi dei siti].
-- [D] Convenzione consigliata: `@id` **assoluti e stabili** per entità, riusati in tutto il sito: `https://example.com/#website`, `https://example.com/#organization`, `https://example.com/chi-sono/#person`. Altre pagine referenziano (`"author": {"@id": ".../#person"}`) invece di ridefinire l'entità con dati diversi.
-- [D] Un array JSON-LD (documentato da Google) e `@graph` (sintassi JSON-LD standard, non citata nella doc letta) sono equivalenti; scegliere uno stile per sito e non mescolare entità duplicate con `@id` diversi per la stessa cosa.
+- "Critical" errors in the test must be fixed; "non-critical" ones improve quality but are not needed for eligibility [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data). A sitemap is recommended to signal changes [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data).
 
-## Matrice di scelta per tipo di sito
-Gli archetipi corrispondono a `knowledge/archetypes.md`. "Rich result in Italia" = esiste una funzionalità visibile per utenti italiani / pagine in italiano secondo la doc al 2026-10-03.
+### @id and the graph
+- Google: if separate items are related (e.g. a recipe and a video), use **`@id`** to link them, otherwise Google may not understand the relationship [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data). The `ProfilePage` example uses `"@id": "#main-author"` to link the author to their articles [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page). In `BreadcrumbList`, `item` can be an object with `@id` [G](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb).
+- On the home page, **a single `WebSite` node**: nest its properties there (site name included) instead of creating several blocks [G](https://developers.google.com/search/docs/appearance/site-names) (also said in Google Search Office Hours, 2022).
+- *(inference)* Recommended convention: **absolute, stable** `@id`s per entity, reused across the site: `https://acme-widgets.example/#website`, `https://acme-widgets.example/#organization`, `https://adanovak.example/about#person`. Other pages reference the entity (`"author": {"@id": "https://adanovak.example/about#person"}`) instead of redefining it with different data. Full rules in [Build rules](#build-rules).
+- *(inference)* A JSON-LD array (documented by Google) and `@graph` (standard JSON-LD syntax, not mentioned in the documentation read) are equivalent; choose one style per site and never create duplicate entities with different `@id`s for the same thing.
 
-| Sito / pagina | Tipi consigliati | Rich result ottenibile in Italia |
-|---|---|---|
-| Qualsiasi sito – home | `WebSite` (`name`, `url`, `alternateName`) + `Organization` (o sottotipo) se c'è un brand/azienda | **Sì**: nome del sito nei risultati; logo in risultati/scheda informativa possibile (non garantito) |
-| personal-brand – pagina Chi sono | `ProfilePage` con `mainEntity` `Person` (`sameAs`, `image`, `description`) | **No** risultato avanzato dedicato; aiuta comprensione dell'entità e collegamento autore [G] [D] |
-| personal-brand / editoriale – articoli | `BlogPosting`/`Article`/`NewsArticle` con `author` → `@id` della persona + `BreadcrumbList` | **Sì** (titolo, immagine, data meglio rappresentati; breadcrumb solo desktop) |
-| professionista-servizi senza sede aperta al pubblico | `Organization` (o `Person` via `ProfilePage`) con `contactPoint`; `LocalBusiness` solo se c'è un indirizzo reale mostrato [D] | Logo/scheda possibili; **no stelle** da recensioni proprie |
-| attivita-locale (una o più sedi) | `LocalBusiness` sottotipo specifico, **uno per sede**, su pagina contatti/sede o home | **Sì** (dettagli nella scheda informativa; il Profilo dell'attività su Google resta la fonte principale [G]); **no stelle** per auto-recensioni; caroselli beta SEE solo per aggregatori/accesso su modulo |
-| ecommerce – scheda prodotto | `Product` + `Offer` (o `ProductGroup` per varianti), `BreadcrumbList`, `Review`/`AggregateRating` di utenti reali | **Sì** (snippet prodotto, schede del commerciante, pro e contro in italiano); programmi fedeltà **no** in Italia |
-| ecommerce – pagina "Chi siamo"/norme | `OnlineStore` con `hasMerchantReturnPolicy`, `hasShippingService` | Sì (schede commerciante) — le impostazioni Merchant Center/Search Console **prevalgono** sul markup [G] |
-| Sito di recensioni (di terzi) | `Review`/`AggregateRating` nidificati nel tipo recensito (`Product`, `LocalBusiness` altrui, `Book`…) | **Sì** |
-| prodotto-saas / app | `SoftwareApplication` (`WebApplication`/`MobileApplication`) + `Organization` | **Sì solo con valutazioni/recensioni reali** (obbligatorie) |
-| Pagina evento | `Event` (una pagina per evento) | **No** (Italia/italiano non tra i mercati); utile solo per mercati supportati |
-| Corsi / formazione | `Course` + `ItemList` (≥ 3 corsi) | **No** per contenuti in italiano (elenco di corsi solo in inglese; "Course info" ritirato) |
-| Pagina con video ospitato | `VideoObject` (+ `Clip`/`SeekToAction`, `BroadcastEvent` per dirette) | **Sì** (risultati video, momenti chiave; `SeekToAction` supporta l'italiano) |
-| Offerte di lavoro (datore o portale) | `JobPosting` su pagina della singola offerta | **Sì** (Italia supportata) |
-| Ricette | `Recipe` (+ `ItemList` per carosello) | **Sì** |
-| Forum / community | `DiscussionForumPosting` o `QAPage` (una domanda) + `ProfilePage` utenti | **Sì** |
-| Foto/illustrazioni originali | `ImageObject` con `license`, `acquireLicensePage`, `creator` | **Sì** (badge "Su licenza" in Google Immagini) |
-| Contenuti a pagamento | `isAccessibleForFree: false` + `hasPart` con `cssSelector` | Non è un rich result: serve a distinguere il paywall dal cloaking [G] |
-| Pagina FAQ / guida "come fare" | Nessun markup per rich result (`FAQPage`, `HowTo` ritirati); `QAPage` **non** va usato per FAQ scritte dal sito | **No** |
+### Choice matrix by site type
+Archetypes match `knowledge/archetypes.md`. "Rich result" = a visible Search feature exists for this markup according to Google's documentation as read on 2026-10-03; the notes say where it is limited by region, language or programme.
 
-## Schede per tipo
+| Site / page | Recommended types | Rich result (Yes / No / Limited) | Availability notes |
+|---|---|---|---|
+| Any site – home | `WebSite` (`name`, `url`, `alternateName`) + `Organization` (or subtype) if there is a brand or company | Yes | Site name: all languages, domain or subdomain level only [G](https://developers.google.com/search/docs/appearance/site-names); logo in results / knowledge panel possible, not guaranteed [G](https://developers.google.com/search/docs/appearance/structured-data/organization) |
+| personal-brand – About page | `ProfilePage` with `mainEntity` `Person` (`sameAs`, `image`, `description`) | No | No dedicated rich result; helps entity understanding and author linking [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page) *(inference)* |
+| personal-brand / editorial – articles | `BlogPosting` / `Article` / `NewsArticle` with `author` → the person's `@id` + `BreadcrumbList` | Yes | Article: no regional limits stated (better title, image, date) [G](https://developers.google.com/search/docs/appearance/structured-data/article); breadcrumbs shown on desktop only since 23 January 2025, all regions and languages [G](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb) |
+| professional-services without premises open to the public | `Organization` (or `Person` via `ProfilePage`) with `contactPoint`; `LocalBusiness` only if a real address is shown *(inference)* | Limited | Logo / knowledge panel possible; **no stars** from own reviews (SD-16) [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
+| local-business (one or more locations) | Specific `LocalBusiness` subtype, **one per location**, on the contact/location page or home | Yes | Details in the knowledge panel; the Google Business Profile remains the main source [G](https://developers.google.com/search/docs/appearance/structured-data/local-business); **no stars** for self-reviews; restaurant carousel limited access; beta carousels only in EEA, Türkiye, South Africa for aggregators via interest form [G](https://developers.google.com/search/docs/appearance/structured-data/carousels-beta) |
+| ecommerce – product page | `Product` + `Offer` (or `ProductGroup` for variants), `BreadcrumbList`, `Review` / `AggregateRating` from real users | Yes | Product snippets and merchant listings [G](https://developers.google.com/search/docs/appearance/structured-data/product); pros and cons in Dutch, English, French, German, Italian, Japanese, Polish, Portuguese, Spanish, Turkish [G](https://developers.google.com/search/docs/appearance/structured-data/product-snippet); loyalty programmes (member prices) only in AU, BR, CA, FR, DE, MX, UK, US [G](https://developers.google.com/search/docs/appearance/structured-data/loyalty-program) |
+| ecommerce – About / policies page | `OnlineStore` with `hasMerchantReturnPolicy`, `hasShippingService` | Yes | Merchant listings; Merchant Center / Search Console settings **take precedence** over markup [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing) |
+| Review site (third-party reviews) | `Review` / `AggregateRating` nested in the reviewed type (`Product`, someone else's `LocalBusiness`, `Book`…) | Yes | No regional limits stated [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
+| saas-product / app | `SoftwareApplication` (`WebApplication` / `MobileApplication`) + `Organization` | Limited | **Only with real ratings or reviews** (required) [G](https://developers.google.com/search/docs/appearance/structured-data/software-app) |
+| Event page | `Event` (one page per event) | Limited | Event experience only in Australia (en), Brazil (pt), Canada (en), Germany (de), India (en), Latin America (es), Spain (es), United Kingdom (en), United States (en) [G](https://developers.google.com/search/docs/appearance/structured-data/event) |
+| Courses / training | `Course` + `ItemList` (≥ 3 courses) | Limited | Course list in English only, all regions; "Course info" was retired in 2025 [G](https://developers.google.com/search/docs/appearance/structured-data/course) |
+| Page with a hosted video | `VideoObject` (+ `Clip` / `SeekToAction`, `BroadcastEvent` for live streams) | Yes | Video results, key moments; `SeekToAction` in 12 languages (English, Spanish, Portuguese, Italian, Chinese, French, Japanese, German, Turkish, Korean, Dutch, Russian) [G](https://developers.google.com/search/docs/appearance/structured-data/video) |
+| Job postings (employer or job board) | `JobPosting` on the single-job page | Limited | Job search experience only in listed countries (much of Europe, Asia, Latin America, MENA, sub-Saharan Africa…); check the list [G](https://developers.google.com/search/docs/appearance/structured-data/job-posting) |
+| Recipes | `Recipe` (+ `ItemList` for a carousel) | Yes | No regional limits stated [G](https://developers.google.com/search/docs/appearance/structured-data/recipe) |
+| Forum / community | `DiscussionForumPosting` or `QAPage` (one question) + user `ProfilePage` | Yes | [G](https://developers.google.com/search/docs/appearance/structured-data/discussion-forum) [G](https://developers.google.com/search/docs/appearance/structured-data/qapage) |
+| Original photos / illustrations | `ImageObject` with `license`, `acquireLicensePage`, `creator` | Yes | "Licensable" badge in Google Images [G](https://developers.google.com/search/docs/appearance/structured-data/image-license-metadata) |
+| Paywalled content | `isAccessibleForFree: false` + `hasPart` with `cssSelector` | No | Not a rich result: it tells the paywall apart from cloaking [G](https://developers.google.com/search/docs/appearance/structured-data/paywalled-content) |
+| FAQ page / "how to" guide | No markup for a rich result (`FAQPage`, `HowTo` retired); `QAPage` must **not** be used for FAQs written by the site | No | See [Retired or restricted rich results](#retired-or-restricted-rich-results) |
 
-### WebSite (nome del sito)
-- **Disponibilità**: tutte le lingue, mobile e desktop; siti a livello di **dominio o sottodominio** (`www` e `m` equivalgono al dominio); **sottodirectory non supportate** [G].
-- **Dove**: solo nella **home page** (URI radice; `example.com/it/index.html` non è la home). Su tutte le home duplicate (http/https, www/non-www) [G]. Se il sottodominio non ha markup può ereditare il nome del dominio [G].
-- **Obbligatorie**: `name`, `url` (home canonica, es. `https://example.com/`). **Consigliata**: `alternateName` (anche array, in ordine di preferenza) [G].
-- **Scelta del nome** [G]: univoco, non fuorviante, conciso e comunemente riconosciuto ("Google", non "Google LLC"); nessun limite di caratteri ma può essere troncato; evitare nomi generici ("I migliori dentisti di X"); **coerente** con `<title>`, `og:site_name`, intestazioni della home; `Organization.name` uguale al nome del sito [G].
-- **Se il nome non viene scelto** [G]: verificare errori e coerenza; aggiungere `alternateName`; aggiungere il **dominio in minuscolo** come ultimo `alternateName`; come ultima istanza usare il dominio minuscolo come `name`. Tempi: giorni o settimane.
-- **Test**: validatore schema.org (il Test dei risultati avanzati non supporta i nomi dei siti) + Controllo URL [G].
-- **Errori comuni**: `WebSite` su pagine interne o sottocartelle; due nodi `WebSite` in home; rimuovere `WebSite` credendo che serva solo alla casella di ricerca (ritirata nel 2024: il nodo serve ancora al nome del sito) [G-blog 2024-10].
-- **Favicon** (attribuzione, non dati strutturati) [G]: `<link rel="icon" href="...">` nell'`<head>` della **home**; una per hostname; quadrata, **min 8x8 px, consigliata > 48x48 px**; formati BMP, GIF, ICO, PNG, JPEG, PPM, TIFF (SVG non elencato); URL stabile; file e home non bloccati a Googlebot/Googlebot-Image.
+### WebSite (site name)
+- **Availability**: all languages, mobile and desktop; sites at **domain or subdomain** level (`www` and `m` count as the domain); **subdirectories are not supported** [G](https://developers.google.com/search/docs/appearance/site-names).
+- **Where**: only on the **home page** (root URI; `example.com/en/index.html` is not the home page). On every duplicate home page (http/https, www/non-www) [G](https://developers.google.com/search/docs/appearance/site-names); the variants should redirect to one host anyway (CI-17). A subdomain without markup may inherit the domain's name [G](https://developers.google.com/search/docs/appearance/site-names).
+- **Required**: `name`, `url` (canonical home, e.g. `https://acme-widgets.example/`). **Recommended**: `alternateName` (an array is allowed, in order of preference, most important first) [G](https://developers.google.com/search/docs/appearance/site-names).
+- **Choosing the name** [G](https://developers.google.com/search/docs/appearance/site-names): unique, not misleading, concise and commonly recognised ("Google", not "Google LLC"); no character limit but it may be truncated; avoid generic names ("Best dentists in X"); **consistent** with `<title>`, `og:site_name` and the home page headings; `Organization.name` equal to the site name.
+- **If the name is not picked up** [G](https://developers.google.com/search/docs/appearance/site-names): check errors and consistency; add `alternateName`; add the **lowercase domain** as the last `alternateName`; as a last resort use the lowercase domain as `name`. Timing: days to weeks.
+- **Testing**: Schema Markup Validator (the Rich Results Test does not support site names) + URL Inspection [G](https://developers.google.com/search/docs/appearance/site-names).
+- **Common errors**: `WebSite` on inner pages or subfolders; two `WebSite` nodes on the home page; removing `WebSite` in the belief that it only served the sitelinks search box (retired in 2024: the node is still used for the site name) [G](https://developers.google.com/search/blog/2024/10/sitelinks-search-box).
+- **Favicon** (attribution, not structured data) [G](https://developers.google.com/search/docs/appearance/favicon-in-search): `<link rel="icon" href="...">` in the **home page** `<head>`; one per hostname; square, **minimum 8x8 px, recommended > 48x48 px**; formats BMP, GIF, ICO, PNG, JPEG, PPM, TIFF (SVG not listed); stable URL; file and home page not blocked to Googlebot / Googlebot-Image.
 ```json
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "@id": "https://example.com/#website",
-  "name": "Nome Sito",
-  "alternateName": ["NS"],
-  "url": "https://example.com/",
-  "publisher": { "@id": "https://example.com/#organization" }
+  "@id": "https://acme-widgets.example/#website",
+  "name": "Acme Widgets",
+  "alternateName": ["Acme", "acme-widgets.example"],
+  "url": "https://acme-widgets.example/",
+  "publisher": { "@id": "https://acme-widgets.example/#organization" }
 }
 ```
-(`publisher` e `@id` sono [D]: collegamento di grafo, non richiesto da Google.)
+(`publisher` and `@id` are *(inference)*: graph links, not required by Google.)
 
 ### Organization
-- **Disponibilità**: nessuna limitazione indicata. Influenza logo nei risultati e nella scheda informativa; per i commercianti anche scheda del commerciante e profilo del brand [G].
-- **Dove**: **home** o una **singola pagina** che descrive l'organizzazione (Chi siamo); **non serve in ogni pagina** [G].
-- **Obbligatorie: nessuna**. Concentrarsi su `name`/`alternateName`, presenza fisica (`address`, `telephone`), presenza online (`url`, `logo`) [G].
-- **Consigliate (nomi esatti)** [G]: `address` (`PostalAddress`, anche multipli: `streetAddress`, `addressLocality`, `addressRegion`, `postalCode`, `addressCountry` ISO 3166-1 alpha-2), `alternateName`, `contactPoint` (`telephone`, `email`), `description`, `duns`, `email`, `foundingDate` (ISO 8601), `globalLocationNumber`, `hasMerchantReturnPolicy`, `hasMemberProgram`, `hasShippingService`, `iso6523Code` (`ICD:identificatore`, es. `0060:` DUNS, `0088:` GLN, `0199:` LEI), `legalName`, `leiCode`, `logo`, `naics`, `name`, `numberOfEmployees` (`QuantitativeValue`), `sameAs`, `taxID` (coerente col paese di `address`), `telephone` (con prefisso internazionale), `url`, `vatID` (partita IVA: "importante indicatore di fiducia").
-- **Vincoli**: `logo` **≥ 112x112 px**, scansionabile, formato supportato da Google Immagini, leggibile su **sfondo bianco**; con `ImageObject` serve `contentUrl` o `url` [G].
-- **Sottotipo**: il più specifico (es. `OnlineStore` invece di `OnlineBusiness`); per sedi fisiche usare `LocalBusiness` e i suoi requisiti [G].
-- **Errori comuni**: `name` diverso dal nome del sito; `sameAs` verso profili non propri (impersonificazione); logo bianco/trasparente illeggibile; Organization ripetuta in ogni pagina con dati diversi [G] [D].
+- **Availability**: no limitation stated. Influences the logo in results and in the knowledge panel; for merchants also the merchant knowledge panel and brand profile [G](https://developers.google.com/search/docs/appearance/structured-data/organization).
+- **Where**: the **home page** or a **single page** describing the organisation (About); **not needed on every page** [G](https://developers.google.com/search/docs/appearance/structured-data/organization).
+- **Required: none**. Focus on `name` / `alternateName`, physical presence (`address`, `telephone`), online presence (`url`, `logo`) [G](https://developers.google.com/search/docs/appearance/structured-data/organization).
+- **Recommended (exact names)** [G](https://developers.google.com/search/docs/appearance/structured-data/organization): `address` (`PostalAddress`, multiple allowed: `streetAddress`, `addressLocality`, `addressRegion`, `postalCode`, `addressCountry` ISO 3166-1 alpha-2), `alternateName`, `contactPoint` (`telephone`, `email`), `description`, `duns`, `email`, `foundingDate` (ISO 8601), `globalLocationNumber`, `hasMerchantReturnPolicy`, `hasMemberProgram`, `hasShippingService`, `iso6523Code` (`ICD:identifier`, e.g. `0060:` DUNS, `0088:` GLN, `0199:` LEI), `legalName`, `leiCode`, `logo`, `naics`, `name`, `numberOfEmployees` (`QuantitativeValue`), `sameAs`, `taxID` (consistent with the country in `address`), `telephone` (with international prefix), `url`, `vatID` (VAT number, if applicable: "an important trust signal for users", who can look it up in public VAT registries).
+- **Constraints**: `logo` **≥ 112x112 px**, crawlable, in a format supported by Google Images, legible on a **white background**; with `ImageObject`, `contentUrl` or `url` is needed [G](https://developers.google.com/search/docs/appearance/structured-data/organization).
+- **Subtype**: the most specific one (e.g. `OnlineStore` rather than `OnlineBusiness`); for physical premises use `LocalBusiness` and its requirements [G](https://developers.google.com/search/docs/appearance/structured-data/organization).
+- **Common errors**: `name` different from the site name; `sameAs` pointing to profiles the entity does not own (impersonation); white or transparent logo that is illegible; `Organization` repeated on every page with different data [G](https://developers.google.com/search/docs/appearance/structured-data/organization) *(inference)*.
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://example.com/#organization",
-  "name": "Nome Sito",
-  "url": "https://example.com/",
-  "logo": "https://example.com/img/logo-512.png",
-  "email": "info@example.com",
-  "telephone": "+39-000-0000000",
+  "@id": "https://studioferri.example/#organization",
+  "name": "Studio Ferri Orientamento",
+  "url": "https://studioferri.example/",
+  "logo": "https://studioferri.example/img/logo-512.png",
+  "email": "info@studioferri.example",
+  "telephone": "+39-051-0000000",
   "vatID": "IT00000000000",
-  "sameAs": ["https://social.example/nomesito", "https://altro.example/nomesito"]
+  "sameAs": ["https://social.example/studioferri", "https://directory.example/studioferri"]
 }
 ```
 
-### LocalBusiness (+ sottotipi)
-- **Disponibilità**: nessuna limitazione indicata per la scheda; carosello ristoranti ad **accesso limitato**; prenotazioni/ordini dai risultati via API Maps Booking, non via markup [G]. Caroselli beta (`ItemList` + `LocalBusiness`) solo SEE/Turchia/Sudafrica, per pagine di riepilogo con ≥ 3 entità e modulo di interesse [G].
-- **Dove**: qualsiasi pagina, meglio quella con le informazioni dell'attività; **un'entità per sede** [G].
-- **Tipo**: sottotipo **più specifico** (`Restaurant`, `Dentist`, `HealthClub`, `LegalService`…); più categorie → array in `@type` (es. `["Electrician","Plumber"]`); **`additionalType` non supportato** [G]. È sottotipo di `Organization`: valgono anche i campi Organization [G].
-- **Obbligatorie**: `name`, `address` (`PostalAddress` il più completo possibile) [G].
-- **Consigliate**: `aggregateRating` e `review` (**solo** se il sito raccoglie recensioni su **altre** attività), `department`, `geo` (`latitude`/`longitude` **≥ 5 decimali**), `menu`, `openingHoursSpecification` (`dayOfWeek`, `opens`, `closes`, `validFrom`, `validThrough`), `priceRange`, `servesCuisine`, `telephone` (prefisso paese), `url` (URL della **sede specifica**, funzionante) [G]. Email/telefono principali a livello `LocalBusiness`, poi `contactPoint` per canali aggiuntivi [G].
-- **Vincoli** [G]: `priceRange` **< 100 caratteri** (≥ 100 non viene mostrato); orari `hh:mm:ss` (gli esempi Google usano `"09:00"`); giorni `https://schema.org/Monday` o forma breve `Monday`; aperto 24h = `00:00`–`23:59`; chiuso tutto il giorno = `00:00`–`00:00`; dopo mezzanotte = singolo oggetto (es. 18:00–03:00); chiusure stagionali con `validFrom`/`validThrough` (AAAA-MM-GG). Reparti: nome nel formato "{negozio} {reparto}".
-- **Errori comuni**: stelle sulle proprie recensioni (anche via widget Google/Facebook incorporato) [G]; `additionalType`; coordinate approssimate; telefono senza prefisso; indirizzo/orari diversi dal Profilo dell'attività o dalla pagina [D]; una sola entità per più sedi.
-- [D] Attività senza indirizzo pubblico (servizio a domicilio/online): `address` è obbligatorio per questo tipo → usare `Organization` oppure `LocalBusiness` solo con un indirizzo reale visibile in pagina. `areaServed` è schema.org valido ma non documentato da Google.
-- ⚠ [D] `ProfessionalService` è spesso consigliato da terzi [T], ma schema.org lo descrive come tipo generico deprecato per confusione con `Service` (da verificare su schema.org): preferire un sottotipo specifico o `LocalBusiness`.
+### LocalBusiness (and subtypes)
+- **Availability**: no limitation stated for the knowledge panel; restaurant carousel with **limited access**; bookings and orders from results go through the Maps Booking API, not markup [G](https://developers.google.com/search/docs/appearance/structured-data/local-business). Beta carousels (`ItemList` + `LocalBusiness`) only in the EEA, Türkiye and South Africa, for summary pages with ≥ 3 entities and an interest form [G](https://developers.google.com/search/docs/appearance/structured-data/carousels-beta).
+- **Where**: any page, preferably the one with the business information; **one entity per location** [G](https://developers.google.com/search/docs/appearance/structured-data/local-business).
+- **Type**: the **most specific** subtype (`Restaurant`, `Dentist`, `HealthClub`, `LegalService`, `Physiotherapy`…); several categories → array in `@type` (e.g. `["Electrician","Plumber"]`); **`additionalType` is not supported** [G](https://developers.google.com/search/docs/appearance/structured-data/local-business). It is a subtype of `Organization`: the Organization fields apply too [G](https://developers.google.com/search/docs/appearance/structured-data/local-business).
+- **Required**: `name`, `address` (`PostalAddress`, as complete as possible) [G](https://developers.google.com/search/docs/appearance/structured-data/local-business).
+- **Recommended**: `aggregateRating` and `review` (**only** if the site collects reviews about **other** businesses), `department`, `geo` (`latitude` / `longitude` with **≥ 5 decimals**), `menu`, `openingHoursSpecification` (`dayOfWeek`, `opens`, `closes`, `validFrom`, `validThrough`), `priceRange`, `servesCuisine`, `telephone` (country prefix), `url` (URL of the **specific location**, working) [G](https://developers.google.com/search/docs/appearance/structured-data/local-business). Main email and phone at `LocalBusiness` level, then `contactPoint` for additional channels [G](https://developers.google.com/search/docs/appearance/structured-data/local-business).
+- **Constraints** [G](https://developers.google.com/search/docs/appearance/structured-data/local-business): `priceRange` **< 100 characters** (≥ 100 is not shown); times `hh:mm:ss` (Google's examples use `"09:00"`); days `https://schema.org/Monday` or the short form `Monday`; open 24 hours = `00:00`–`23:59`; closed all day = `00:00`–`00:00`; past midnight = a single object (e.g. 18:00–03:00); seasonal closures with `validFrom` / `validThrough` (YYYY-MM-DD). Departments: name in the format "{store} {department}".
+- **Common errors**: stars on the business's own reviews (also via an embedded Google/Facebook widget) [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet); `additionalType`; approximate coordinates; phone without prefix; address or hours different from the Business Profile or the page *(inference)*; a single entity for several locations.
+- *(inference)* Business without a public address (home visits / online service): `address` is required for this type → use `Organization`, or `LocalBusiness` only with a real address shown on the page. `areaServed` is valid schema.org but not documented by Google.
+- ⚠ *(inference)* `ProfessionalService` is often recommended by third parties [SEJ], but schema.org states that this general type for local businesses "was deprecated due to confusion with Service" ([schema.org](https://schema.org/ProfessionalService), checked 2026-10-11): prefer a specific subtype or `LocalBusiness`.
 ```json
 {
   "@context": "https://schema.org",
-  "@type": "Dentist",
-  "@id": "https://example.com/sedi/citta/#localbusiness",
-  "name": "Nome Attività",
-  "url": "https://example.com/sedi/citta/",
-  "telephone": "+39-000-0000000",
-  "image": "https://example.com/img/sede-1200x900.jpg",
+  "@type": "Physiotherapy",
+  "@id": "https://northwind-physio.example/locations/oslo#localbusiness",
+  "name": "Northwind Physio",
+  "url": "https://northwind-physio.example/locations/oslo",
+  "telephone": "+47-00-00-00-00",
+  "image": "https://northwind-physio.example/img/oslo-clinic-1200x900.jpg",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Via Esempio 1",
-    "addressLocality": "Città",
-    "addressRegion": "XX",
-    "postalCode": "00000",
-    "addressCountry": "IT"
+    "streetAddress": "Example Street 1",
+    "addressLocality": "Oslo",
+    "postalCode": "0150",
+    "addressCountry": "NO"
   },
-  "geo": { "@type": "GeoCoordinates", "latitude": 45.00000, "longitude": 9.00000 },
+  "geo": { "@type": "GeoCoordinates", "latitude": 59.91000, "longitude": 10.75000 },
   "openingHoursSpecification": [{
     "@type": "OpeningHoursSpecification",
     "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
-    "opens": "09:00", "closes": "18:00"
+    "opens": "08:00", "closes": "17:00"
   }]
 }
 ```
 
 ### Person / ProfilePage
-- **Disponibilità**: nessuna limitazione indicata. Non produce un risultato avanzato dedicato: aiuta Google a capire i creator (es. "Discussioni e forum") ed è il bersaglio di `author.url` in Article, Recipe, forum, QAPage [G]. Il "profilo della Ricerca" (badge `profile.google.com`) è un'altra cosa e non si ottiene con il markup [G].
-- **Casi validi**: profilo utente su forum/social, pagina autore di un sito di notizie, **pagina "Chi sono" di un blog**, pagina dipendente sul sito aziendale. **Non validi**: home di un negozio (troppe informazioni non di profilo), pagina di recensioni su un'organizzazione non affiliata [G]. L'entità principale deve essere **una sola persona/organizzazione affiliata al sito** [G].
-- **ProfilePage – obbligatoria**: `mainEntity` (`Person` o `Organization`; se ignoto, `Person`). **Consigliate**: `dateCreated`, `dateModified` (ISO 8601; solo modifiche umane ai metadati) [G].
-- **Person/Organization – obbligatoria**: `name` (o `alternateName` se manca). **Consigliate**: `agentInteractionStatistic`, `alternateName` (handle), `description` (riga dell'autore/qualifiche), `identifier` (ID interno stabile), `image`, `interactionStatistic`, `sameAs` [G].
-- **Vincoli**: `image` reale (mai segnaposto/icona), ≥ 50.000 px, 16x9/4x3/1x1 consigliati; `interactionStatistic` **solo** con dati della piattaforma che ospita il profilo (non follower di altri social) [G]. Attività recenti: `hasPart` con `Article` che punta all'autore via `@id` [G].
-- [D] Un `Person` senza `ProfilePage` (es. in home) è lecito ma non abilita funzionalità documentate; per un personal brand mettere `ProfilePage` sulla pagina Chi sono e riusarne l'`@id` come `author` ovunque. `jobTitle`, `honorificPrefix` sono proprietà citate da Google per gli autori [G].
+- **Availability**: no limitation stated. It produces no dedicated rich result: it helps Google understand creators (e.g. "Discussions and forums") and is the target of `author.url` in Article, Recipe, forums, QAPage [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page). The Search "profile" (badge on `profile.google.com`) is a different thing and is not obtained through markup [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page).
+- **Valid cases**: user profile on a forum or social site, author page on a news site, **"About me" page of a blog**, employee page on a company site. **Not valid**: a shop's home page (too much non-profile information), a page of reviews about an unaffiliated organisation [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page). The main entity must be **a single person or organisation affiliated with the site** [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page).
+- **ProfilePage – required**: `mainEntity` (`Person` or `Organization`; if unknown, `Person`). **Recommended**: `dateCreated`, `dateModified` (ISO 8601; only human edits to the metadata) [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page).
+- **Person / Organization – required**: `name` (or `alternateName` if missing). **Recommended**: `agentInteractionStatistic`, `alternateName` (handle), `description` (author line / qualifications), `identifier` (stable internal ID), `image`, `interactionStatistic`, `sameAs` [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page).
+- **Constraints**: a real `image` (never a placeholder or icon), ≥ 50,000 px, 16x9 / 4x3 / 1x1 recommended; `interactionStatistic` **only** with data from the platform hosting the profile (not followers on other networks) [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page). Recent activity: `hasPart` with `Article` items pointing to the author via `@id` [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page).
+- *(inference)* A `Person` without `ProfilePage` (e.g. on the home page) is allowed but enables no documented feature; for a personal brand put `ProfilePage` on the About page and reuse its `@id` as `author` everywhere. `jobTitle` and `honorificPrefix` are properties Google mentions for authors [G](https://developers.google.com/search/docs/appearance/structured-data/article).
 ```json
 {
   "@context": "https://schema.org",
@@ -189,249 +190,384 @@ Gli archetipi corrispondono a `knowledge/archetypes.md`. "Rich result in Italia"
   "dateModified": "2026-01-15T10:00:00+01:00",
   "mainEntity": {
     "@type": "Person",
-    "@id": "https://example.com/chi-sono/#person",
-    "name": "Nome Cognome",
-    "jobTitle": "Ruolo professionale",
-    "description": "Breve bio con qualifiche verificabili.",
-    "image": "https://example.com/img/nome-cognome-800x800.jpg",
-    "sameAs": ["https://profilo1.example/nomecognome", "https://profilo2.example/nomecognome"]
+    "@id": "https://adanovak.example/about#person",
+    "name": "Ada Novak",
+    "jobTitle": "Software developer",
+    "description": "Short bio with verifiable qualifications.",
+    "image": "https://adanovak.example/img/ada-novak-800x800.jpg",
+    "sameAs": ["https://code.example/adanovak", "https://social.example/adanovak"]
   }
 }
 ```
 
 ### Article / BlogPosting / NewsArticle
-- **Disponibilità**: nessuna limitazione indicata; migliora titolo, immagini e data in Ricerca, Google News, Assistente. Non obbligatorio per le funzionalità di Google News [G].
-- **Obbligatorie: nessuna**. **Consigliate**: `author` (`Person`/`Organization`), `author.name`, `author.url` (pagina che identifica l'autore; se interna, marcarla `ProfilePage`; in alternativa `sameAs`), `dateModified`, `datePublished` (ISO 8601 **con fuso**, altrimenti fuso di Googlebot), `headline` (concisa), `image` [G].
-- **Immagini**: pertinenti, **non loghi o didascalie**, ≥ 50.000 px (larghezza × altezza), ideale 16x9, 4x3, 1x1 [G].
-- **Best practice autori** [G]: tutti gli autori visibili nel markup; **un oggetto per autore** (mai "Nome A, Nome B" in un solo `name`); `name` solo il nome (editore in `publisher`, ruolo in `jobTitle`, titoli in `honorificPrefix`/`honorificSuffix`, niente "di"/"pubblicato da"); `Person` per persone, `Organization` per enti, **mai `Thing`**.
-- **Tecniche**: articoli in più parti → canonical a ogni pagina o a una pagina panoramica (non alla prima); contenuti in abbonamento → markup paywall [G].
-- **Date** [G, pagina date di pubblicazione]: data visibile ed etichettata ("Pubblicato", "Aggiornato") coerente con il markup; niente date future.
+- **Availability**: no limitation stated; improves title, images and date in Search, Google News, Assistant. Not required for Google News features [G](https://developers.google.com/search/docs/appearance/structured-data/article).
+- **Required: none**. **Recommended**: `author` (`Person` / `Organization`), `author.name`, `author.url` (page identifying the author; if internal, mark it up as `ProfilePage`; alternatively `sameAs`), `dateModified`, `datePublished` (ISO 8601 **with time zone**, otherwise Googlebot's time zone is assumed), `headline` (concise), `image` [G](https://developers.google.com/search/docs/appearance/structured-data/article).
+- **Images**: relevant, **not logos or captions**, ≥ 50,000 px (width × height), ideally 16x9, 4x3, 1x1 [G](https://developers.google.com/search/docs/appearance/structured-data/article).
+- **Author best practices** [G](https://developers.google.com/search/docs/appearance/structured-data/article): every visible author in the markup; **one object per author** (never "Name A, Name B" in a single `name`); `name` contains only the name (publisher in `publisher`, role in `jobTitle`, titles in `honorificPrefix` / `honorificSuffix`, no "by" / "posted by"); `Person` for people, `Organization` for bodies, **never `Thing`**.
+- **Technical**: multi-part articles → canonical to each page or to a view-all page (not to the first page); subscription content → paywall markup [G](https://developers.google.com/search/docs/appearance/structured-data/article).
+- **Dates** [G](https://developers.google.com/search/docs/appearance/publication-dates): a visible, labelled date ("Published", "Updated") consistent with the markup; no future dates.
 ```json
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Titolo conciso dell'articolo",
-  "image": ["https://example.com/img/articolo-1x1.jpg", "https://example.com/img/articolo-4x3.jpg", "https://example.com/img/articolo-16x9.jpg"],
+  "headline": "Concise article title",
+  "image": ["https://adanovak.example/img/post-1x1.jpg", "https://adanovak.example/img/post-4x3.jpg", "https://adanovak.example/img/post-16x9.jpg"],
   "datePublished": "2026-03-10T09:00:00+01:00",
   "dateModified": "2026-04-02T14:30:00+02:00",
-  "author": [{ "@type": "Person", "@id": "https://example.com/chi-sono/#person", "name": "Nome Cognome", "url": "https://example.com/chi-sono/" }],
-  "publisher": { "@id": "https://example.com/#organization" }
+  "author": [{ "@type": "Person", "@id": "https://adanovak.example/about#person", "name": "Ada Novak", "url": "https://adanovak.example/about" }],
+  "publisher": { "@id": "https://adanovak.example/about#person" }
 }
 ```
+(For a personal brand the publisher is the person; for a company blog use `{"@id": "https://<host>/#organization"}`.)
 
 ### BreadcrumbList
-- **Disponibilità**: **solo desktop** dal 23/01/2025 (su mobile l'URL visibile mostra solo il dominio); tutte le regioni e lingue; markup ancora supportato, report e Test attivi [G] [G-blog 2025-01].
-- **Struttura**: `BreadcrumbList` con **almeno 2 `ListItem`**; più tracce ammesse (array di `BreadcrumbList`) [G].
-- **Obbligatorie**: `itemListElement`; per ogni `ListItem`: `position` (intero, 1 = inizio), `name`, `item` (URL o oggetto con `@id`) — `item` **non serve per l'ultimo elemento** (Google usa l'URL della pagina) [G].
-- **Linee guida**: percorso utente **tipico**, non copia della struttura dell'URL; non serve un elemento per la radice (dominio) né per la pagina stessa [G]. [D] Deve corrispondere a un breadcrumb visibile in pagina (regola del contenuto visibile).
+- **Availability**: **desktop only** since 23 January 2025 (on mobile the visible URL shows only the domain); all regions and languages; markup still supported, report and test still active [G](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb) [G](https://developers.google.com/search/blog/2025/01/simplifying-breadcrumbs).
+- **Structure**: `BreadcrumbList` with **at least 2 `ListItem`s**; several trails allowed (array of `BreadcrumbList`) [G](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb).
+- **Required**: `itemListElement`; for each `ListItem`: `position` (integer, 1 = start), `name`, `item` (URL or object with `@id`) — `item` is **not needed for the last element** (Google uses the page URL) [G](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb).
+- **Guidelines**: a **typical** user path, not a copy of the URL structure; no element needed for the root (domain) or the page itself [G](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb). *(inference)* It must match a breadcrumb visible on the page (visible-content rule).
 ```json
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Servizi", "item": "https://example.com/servizi/" },
-    { "@type": "ListItem", "position": 2, "name": "Nome servizio" }
+    { "@type": "ListItem", "position": 1, "name": "Services", "item": "https://northwind-physio.example/services/" },
+    { "@type": "ListItem", "position": 2, "name": "Sports physiotherapy" }
   ]
 }
 ```
 
 ### Review / AggregateRating
-- **Disponibilità**: nessuna limitazione indicata; stelle in risultati avanzati o schede informative [G].
-- **Tipi recensibili** (`itemReviewed`): `Book`, `Course`, `CreativeWorkSeason`, `CreativeWorkSeries`, `Episode`, `Event`, `Game`, `HowTo`, `LocalBusiness`, `MediaObject`, `Movie`, `MusicPlaylist`, `MusicRecording`, `Organization`, `Product`, `Recipe`, `SoftwareApplication` [G] (vedi contraddizioni: alcuni corrispondono a funzionalità ritirate).
-- **Review – obbligatorie**: `author` (nome valido, **< 100 caratteri**), `itemReviewed` (se non nidificata) + `itemReviewed.name` (o `name` del padre), `reviewRating`, `reviewRating.ratingValue`. **Consigliate**: `datePublished`, `reviewRating.bestRating` (default 5), `reviewRating.worstRating` (default 1) [G].
-- **AggregateRating – obbligatorie**: `itemReviewed` (se non nidificata) + nome, `ratingValue`, **`ratingCount` o `reviewCount`**. **Consigliate**: `bestRating`, `worstRating` [G].
-- **Vincoli** [G]: valore numero/frazione/percentuale (`4`, `6 / 10`, `60%`); scala default 1–5; **punto decimale** (`4.4`, non `4,4`); recensione su un **elemento specifico**, non su categorie/elenchi; con più recensioni singole includere anche l'aggregato; testo e valutazione **visibili** in pagina.
-- **Divieti** [G]: aggregare recensioni **da altri siti**; recensioni false o **incentivate non dichiarate**; per `LocalBusiness`/`Organization`: se l'entità **controlla le recensioni su se stessa** (sul proprio sito, nel markup o tramite **widget incorporati** di Google/Facebook) le sue pagine **non sono idonee** alle stelle; valutazioni devono venire direttamente dagli utenti, non da editor. Recensioni non di utenti reali → possibile azione manuale.
-- [D] Testimonianze di clienti sul sito di un professionista/azienda: **non** marcarle come `Review`/`AggregateRating` dell'attività stessa.
+- **Availability**: no limitation stated; stars in rich results or knowledge panels [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet).
+- **Reviewable types** (`itemReviewed`): `Book`, `Course`, `CreativeWorkSeason`, `CreativeWorkSeries`, `Episode`, `Event`, `Game`, `HowTo`, `LocalBusiness`, `MediaObject`, `Movie`, `MusicPlaylist`, `MusicRecording`, `Organization`, `Product`, `Recipe`, `SoftwareApplication` [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) (some correspond to retired features, e.g. `HowTo`: see [Retired or restricted rich results](#retired-or-restricted-rich-results)).
+- **Review – required**: `author` (valid name, **< 100 characters**), `itemReviewed` (if not nested) + `itemReviewed.name` (or the parent's `name`), `reviewRating`, `reviewRating.ratingValue`. **Recommended**: `datePublished`, `reviewRating.bestRating` (default 5), `reviewRating.worstRating` (default 1) [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet).
+- **AggregateRating – required**: `itemReviewed` (if not nested) + name, `ratingValue`, **`ratingCount` or `reviewCount`**. **Recommended**: `bestRating`, `worstRating` [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet).
+- **Constraints** [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet): value as number, fraction or percentage (`4`, `6 / 10`, `60%`); default scale 1–5; **decimal point** (`4.4`, not `4,4`); a review is about a **specific item**, not a category or list; with several individual reviews include the aggregate too; review text and rating **visible** on the page.
+- **Prohibited** [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet): aggregating reviews **from other sites**; fake reviews or **undisclosed incentivised** ones; for `LocalBusiness` / `Organization`: if the entity **controls the reviews about itself** (on its own site, in markup or through **embedded widgets** from Google/Facebook) its pages are **not eligible** for stars; ratings must come directly from users, not editors. Reviews not from real users → possible manual action.
+- *(inference)* Client testimonials on a professional's or company's site: do **not** mark them up as `Review` / `AggregateRating` of the business itself (SD-16).
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Review",
   "itemReviewed": {
-    "@type": "Restaurant",
-    "name": "Nome Attività Recensita",
-    "address": { "@type": "PostalAddress", "streetAddress": "Via Esempio 1", "addressLocality": "Città", "addressCountry": "IT" }
+    "@type": "Physiotherapy",
+    "name": "Northwind Physio",
+    "address": { "@type": "PostalAddress", "streetAddress": "Example Street 1", "addressLocality": "Oslo", "addressCountry": "NO" }
   },
-  "author": { "@type": "Person", "name": "Nome Cognome" },
+  "author": { "@type": "Person", "name": "Kari N." },
   "datePublished": "2026-05-20",
   "reviewRating": { "@type": "Rating", "ratingValue": 4, "bestRating": 5 }
 }
 ```
-(Valido per un sito che recensisce attività **di terzi**.)
+(Valid on a **third-party** review site or directory reviewing Northwind Physio; not valid on northwind-physio.example itself.)
 
 ### Event
-- **Disponibilità**: esperienza eventi in Australia (inglese), Brasile (portoghese), Canada (inglese), Germania (tedesco), India (inglese), America Latina (spagnolo), Spagna (spagnolo), Regno Unito (inglese), Stati Uniti (inglese). **Italia/italiano non elencati** [G].
-- **Linee guida** [G]: **una pagina con URL univoco per evento** (no calendari/elenchi); evento **in luogo fisico** (esperienze solo virtuali non supportate), prenotabile dal pubblico generale; esclusi eventi scolastici con minori; non marcare promozioni, orari di apertura, coupon, pacchetti viaggio.
-- **Obbligatorie**: `name` (titolo dell'evento, non del luogo, senza prezzi/promozioni), `startDate` (ISO 8601 con offset), `location` (`Place`) con `location.address` (`PostalAddress` completo) [G].
-- **Consigliate**: `description`, `endDate`, `eventStatus` (`EventScheduled`, `EventCancelled`, `EventPostponed`, `EventRescheduled`; mai togliere `startDate`/`location` cambiando stato), `image` (larghezza consigliata 1920 px, min 720 px; ≥ 50.000 px), `location.name`, `offers` (`availability` `InStock`/`SoldOut`/`PreOrder`, `price` minimo con commissioni, `0` se gratuito, `priceCurrency`, `validFrom`, `url`), `organizer` (`name`, `url`), `performer` (`name`), `previousStartDate` (solo con `EventRescheduled`) [G].
-- **Errori comuni**: `T00:00:00` o `T23:59:59+00:00` usati come "tutto il giorno" (Google li tratta come orari reali: per un giorno intero usare solo la data); date senza fuso; nome del luogo in `name` [G].
+- **Availability**: event experience in Australia (English), Brazil (Portuguese), Canada (English), Germany (German), India (English), Latin America (Spanish), Spain (Spanish), United Kingdom (English), United States (English). Other countries and languages are not listed [G](https://developers.google.com/search/docs/appearance/structured-data/event).
+- **Guidelines** [G](https://developers.google.com/search/docs/appearance/structured-data/event): **one page with a unique URL per event** (no calendars or lists); event **at a physical venue** (virtual-only experiences not supported), bookable by the general public; school events with minors excluded; do not mark up promotions, opening hours, coupons, travel packages.
+- **Required**: `name` (title of the event, not the venue, without prices or promotions), `startDate` (ISO 8601 with offset), `location` (`Place`) with `location.address` (complete `PostalAddress`) [G](https://developers.google.com/search/docs/appearance/structured-data/event).
+- **Recommended**: `description`, `endDate`, `eventStatus` (`EventScheduled`, `EventCancelled`, `EventPostponed`, `EventRescheduled`; never drop `startDate` / `location` when changing status), `image` (recommended width 1920 px, min 720 px; ≥ 50,000 px), `location.name`, `offers` (`availability` `InStock` / `SoldOut` / `PreOrder`, lowest `price` including fees, `0` if free, `priceCurrency`, `validFrom`, `url`), `organizer` (`name`, `url`), `performer` (`name`), `previousStartDate` (only with `EventRescheduled`) [G](https://developers.google.com/search/docs/appearance/structured-data/event).
+- **Common errors**: `T00:00:00` or `T23:59:59+00:00` used as "all day" (Google treats them as real times: for a whole day use the date only); dates without time zone; venue name in `name` [G](https://developers.google.com/search/docs/appearance/structured-data/event).
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Event",
-  "name": "Titolo dell'evento",
+  "name": "Running injury prevention workshop",
   "startDate": "2026-11-14T18:30:00+01:00",
   "endDate": "2026-11-14T21:00:00+01:00",
   "eventStatus": "https://schema.org/EventScheduled",
   "location": {
     "@type": "Place",
-    "name": "Nome della sede",
-    "address": { "@type": "PostalAddress", "streetAddress": "Via Esempio 1", "addressLocality": "Città", "postalCode": "00000", "addressCountry": "IT" }
+    "name": "Northwind Physio Oslo",
+    "address": { "@type": "PostalAddress", "streetAddress": "Example Street 1", "addressLocality": "Oslo", "postalCode": "0150", "addressCountry": "NO" }
   },
-  "offers": { "@type": "Offer", "price": 0, "priceCurrency": "EUR", "availability": "https://schema.org/InStock", "url": "https://example.com/eventi/titolo/" }
+  "offers": { "@type": "Offer", "price": 0, "priceCurrency": "NOK", "availability": "https://schema.org/InStock", "url": "https://northwind-physio.example/events/running-workshop" }
 }
 ```
+(Norway is not among the listed markets: the markup is valid but produces no event experience there — SD-07.)
 
 ### Course
-- **Stato**: "**Course info**" (informazioni sui corsi) **ritirato** dal giugno 2025, rimosso da report e Test dal 9/09/2025 [G-blog]. Resta documentato il risultato "**elenco di corsi**" (carosello), **solo in inglese** [G].
-- **Linee guida (elenco di corsi)** [G]: `Course` solo per una **serie/unità di apprendimento** con docenti e studenti (non un evento singolo né un video di 2 minuti); **almeno 3 corsi** marcati; **markup carosello `ItemList` obbligatorio** su pagina di riepilogo o pagina unica; `name` e `provider` validi (niente promozioni, prezzi, sconti nel nome).
-- **Obbligatorie**: `name`, `description` (visualizzazione max **60 caratteri**). `provider` (`Organization`) è "consigliata" in tabella ma "deve" essere valida secondo le linee guida → includerla sempre [G].
-- [D] Per siti in italiano: nessun rich result; il markup è facoltativo e non va promesso come leva di visibilità.
+- **Status**: "**Course info**" was phased out from June 2025 and its documentation was removed (and dropped from reports and the test) on 9 September 2025 [G](https://developers.google.com/search/blog/2025/06/simplifying-search-results) [G](https://developers.google.com/search/updates). The "**course list**" result (carousel) is still documented, **in English only**, in all regions where Search is available [G](https://developers.google.com/search/docs/appearance/structured-data/course).
+- **Guidelines (course list)** [G](https://developers.google.com/search/docs/appearance/structured-data/course): `Course` only for a **series or unit of learning** with instructors and students (not a single event or a 2-minute video); **at least 3 courses** marked up; **`ItemList` carousel markup required** on a summary page or an all-in-one page; valid `name` and `provider` (no promotions, prices or discounts in the name).
+- **Required**: `name`, `description` (displayed up to **60 characters**); `ItemList` with `itemListElement`, `ListItem.position`, `ListItem.url` (unique canonical URL). `provider` (`Organization`) is "recommended" in the table but "must" be valid according to the guidelines → always include it [G](https://developers.google.com/search/docs/appearance/structured-data/course).
+- *(inference)* For sites not in English: no rich result; the markup is optional and must not be promised as a visibility lever.
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Course",
-  "name": "Nome del percorso formativo",
-  "description": "Descrizione breve, entro 60 caratteri.",
-  "provider": { "@type": "Organization", "name": "Nome Ente", "sameAs": "https://example.com/" }
+  "name": "Metodo di studio per l'università",
+  "description": "Short description, within 60 characters.",
+  "provider": { "@type": "Organization", "name": "Studio Ferri Orientamento", "sameAs": "https://studioferri.example/" }
 }
 ```
+(Studio Ferri's site is in Italian: valid markup, no course list result.)
 
 ### VideoObject
-- **Disponibilità**: risultati principali, modalità Video, Google Immagini, Discover; momenti chiave con `Clip` (tutte le lingue) o `SeekToAction` (12 lingue, **italiano incluso**); badge DAL VIVO con `BroadcastEvent` [G].
-- **Dove**: sulla **pagina di visualizzazione** (dove il video si guarda) [G].
-- **Obbligatorie**: `name` (univoco per video), `thumbnailUrl`, `uploadDate` (ISO 8601 con fuso consigliato) [G].
-- **Consigliate**: `contentUrl` (file video, metodo più efficace), `embedUrl` (player), `description`, `duration` (ISO 8601, es. `PT2M30S`), `expires`, `hasPart` (`Clip`: `name`, `startOffset`, `url`, consigliato `endOffset`), `interactionStatistic`, `regionsAllowed`/`ineligibleRegion`, `publication` (`BroadcastEvent` con `isLiveBroadcast`, `startDate`, `endDate`), `creator`/`author` [G].
-- **Vincoli**: `Clip`/`SeekToAction` richiedono video ≥ **30 secondi** e deep link temporali (es. `?t=30`); due clip non possono iniziare nello stesso punto; disattivare i momenti chiave con `nosnippet` [G]. Dirette: API Indexing a inizio/fine [G].
+- **Availability**: main results, Video mode, Google Images, Discover; key moments with `Clip` (all languages) or `SeekToAction` (12 languages: English, Spanish, Portuguese, Italian, Chinese, French, Japanese, German, Turkish, Korean, Dutch, Russian); LIVE badge with `BroadcastEvent` [G](https://developers.google.com/search/docs/appearance/structured-data/video).
+- **Where**: on the **watch page** (where the video is played) [G](https://developers.google.com/search/docs/appearance/structured-data/video).
+- **Required**: `name` (unique per video), `thumbnailUrl`, `uploadDate` (ISO 8601, time zone recommended) [G](https://developers.google.com/search/docs/appearance/structured-data/video).
+- **Recommended**: `contentUrl` (video file, the most effective method), `embedUrl` (player), `description`, `duration` (ISO 8601, e.g. `PT2M30S`), `expires`, `hasPart` (`Clip`: `name`, `startOffset`, `url`, recommended `endOffset`), `interactionStatistic`, `regionsAllowed` / `ineligibleRegion`, `publication` (`BroadcastEvent` with `isLiveBroadcast`, `startDate`, `endDate`), `creator` / `author` [G](https://developers.google.com/search/docs/appearance/structured-data/video).
+- **Constraints**: `Clip` / `SeekToAction` require videos ≥ **30 seconds** and timestamped deep links (e.g. `?t=30`); two clips cannot start at the same point; disable key moments with `nosnippet` [G](https://developers.google.com/search/docs/appearance/structured-data/video). Live streams: Indexing API at start and end [G](https://developers.google.com/search/docs/appearance/structured-data/video).
 ```json
 {
   "@context": "https://schema.org",
   "@type": "VideoObject",
-  "name": "Titolo univoco del video",
-  "description": "Descrizione univoca del video.",
-  "thumbnailUrl": "https://example.com/video/miniatura-1280x720.jpg",
+  "name": "How to mount the Acme wall widget",
+  "description": "Unique description of this video.",
+  "thumbnailUrl": "https://acme-widgets.example/video/wall-widget-1280x720.jpg",
   "uploadDate": "2026-02-05T08:00:00+01:00",
   "duration": "PT4M12S",
-  "contentUrl": "https://example.com/video/file.mp4",
-  "embedUrl": "https://example.com/player?video=123"
+  "contentUrl": "https://acme-widgets.example/video/wall-widget.mp4",
+  "embedUrl": "https://acme-widgets.example/player?video=123"
 }
 ```
 
-### Product (breve)
-- **Due famiglie** [G]: **snippet prodotto** (pagine senza acquisto diretto: recensioni editoriali, comparatori) e **schede del commerciante** (pagine dove si compra). Solo pagine su **un singolo prodotto** (o sue varianti), mai pagine categoria; un URL distinto per valuta; `Product` nell'**HTML iniziale**.
-- **Snippet prodotto – obbligatorie**: `name` + **uno tra** `review`, `aggregateRating`, `offers` [G]. Pro e contro (`positiveNotes`/`negativeNotes`, ≥ 2 affermazioni) solo per recensioni editoriali; disponibili anche in **italiano** [G].
-- **Scheda del commerciante – obbligatorie**: `name`, `image` (≥ 50.000 px), `offers` (`Offer`, non `AggregateOffer`) con `price` **> 0** e `priceCurrency` ISO 4217 [G]. Consigliate principali: `description`, `brand.name`, `gtin*`/`mpn`/`sku`, `aggregateRating`, `review`, `offers.availability`, `itemCondition`, `priceValidUntil` (non nel passato), `shippingDetails`, `hasMerchantReturnPolicy` [G].
-- Varianti → `ProductGroup` (`productGroupID`, `variesBy`, `hasVariant`) [G]. Norme resi/spedizione anche a livello `Organization`; precedenza: feed/API Merchant Center → impostazioni Merchant Center/Search Console → markup prodotto → markup organizzazione [G]. Programmi fedeltà: non disponibili in Italia [G].
+### Product, Offer, ProductGroup and merchant listings
+`ecommerce.md` references this section and its checks (SD-22, SD-24, SD-26) instead of duplicating them.
+
+**Two families** [G](https://developers.google.com/search/docs/appearance/structured-data/product)
+- **Product snippets**: pages where people **cannot buy directly** (editorial reviews, comparison pages); more options for review information, such as pros and cons.
+- **Merchant listings**: pages where customers **buy from you**; more options for product detail (apparel sizing, shipping, return policy).
+- They overlap: the required merchant-listing properties also make the page eligible for product snippets. Each experience decides what to show. Providing **both markup and a Merchant Center feed** maximises eligibility; product snippets may use feed pricing when the page lacks it [G](https://developers.google.com/search/docs/appearance/structured-data/product).
+
+**Page rules** [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing)
+- Merchant listings: only pages where a shopper can buy the product; pages that only link to other sellers are not eligible.
+- Each page focuses on **one product or variants of the same product**; never category or list pages. Variants need distinct URLs (see ProductGroup below). One URL per currency [G](https://developers.google.com/search/docs/appearance/structured-data/product-snippet).
+- Put `Product` in the **initial HTML**: JS-generated markup can make Shopping crawls less frequent and less reliable.
+- Do not mark up prohibited or regulated goods (e.g. firearms, recreational drugs, tobacco and vaping products, gambling products).
+- `Car` is not automatically a `Product`: declare both types to attach ratings.
+
+**Product snippet – properties** [G](https://developers.google.com/search/docs/appearance/structured-data/product-snippet)
+- Required: `name` + **at least one of** `review`, `aggregateRating`, `offers`. Reviews must name a valid `Person` or `Team` as reviewer.
+- `Offer`: `price` (or `priceSpecification.price`) required; `priceCurrency`, `availability`, `priceValidUntil` recommended. Use `Offer`, not `AggregateOffer`, to qualify for the price-drop enhancement.
+- `AggregateOffer` (`lowPrice`, `priceCurrency` required; `highPrice`, `offerCount` recommended): only for a product sold by **several merchants**, never for variants.
+- **Pros and cons**: only on **editorial** product review pages (not merchant pages, not customer reviews); `positiveNotes` and/or `negativeNotes` on the nested `Review`, **at least two statements** in total, each a `ListItem` with `name` (optional `position`). Available in Dutch, English, French, German, Italian, Japanese, Polish, Portuguese, Spanish and Turkish, in all countries where Search is available.
+
+**Merchant listing – required** [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing)
+- `Product`: `name`, `image`, `offers`.
+- `Offer` (not `AggregateOffer`): a price (`price` or `priceSpecification.price`) **> 0** and a currency (`priceCurrency` or `priceSpecification.priceCurrency`) in ISO 4217. Product snippets do not have the > 0 rule.
+
+**Merchant listing – recommended** [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing)
+- `Product`: `aggregateRating`, `review`, `audience`, `brand.name` (at most one brand), `category`, `color`, `description`, `material`, `mpn`, `pattern`, `size`, `sku` (one value, no whitespace), global identifiers `gtin` / `gtin8` / `gtin12` / `gtin13` / `gtin14` / `isbn` (most specific GTIN, numeric form), `hasCertification` (up to 10), `hasAdultConsideration`, `inProductGroupWithID`, `isVariantOf`, `subjectOf` (a 3D model, one value).
+- `Offer`: `availability` (one of `BackOrder`, `Discontinued`, `InStock`, `InStoreOnly`, `LimitedAvailability`, `OnlineOnly`, `OutOfStock`, `PreOrder`, `PreSale`, `SoldOut`; one value only), `itemCondition` (`NewCondition`, `RefurbishedCondition`, `UsedCondition`; one value), `priceValidUntil` (a past date may stop the listing from showing), `validFrom` / `validThrough` (sale period, ISO 8601), `url` (one URL), `shippingDetails`, `hasMerchantReturnPolicy`.
+- **Images**: crawlable and indexable, matching the marked-up product, in a format supported by Google Images; several high-resolution images (≥ 50,000 px) in 16x9, 4x3 and 1x1 recommended.
+- *(inference)* **Availability in practice**: mark the real stock state and keep it identical to the visible page (SD-03). A product temporarily out of stock keeps its page and markup with `OutOfStock` (or `BackOrder` / `PreOrder` when orders are accepted); Google does not state how `OutOfStock` affects display. Permanently removed products are a crawling question (status codes, redirects: `crawling-indexing.md`).
+
+**Prices** [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing)
+- Active price in `price` or in `priceSpecification`; if both are present `offers.price` is used.
+- Strikethrough (was) price: a `UnitPriceSpecification` with `priceType` `https://schema.org/StrikethroughPrice` (`ListPrice` accepted during a transition period); never put `priceType` on the active price.
+- Member price: a price specification with `validForMemberTier`, without `priceType` (specifications with both are ignored); `membershipPointsEarned` (beta). Unit pricing: `referenceQuantity` (`QuantitativeValue` with `unitCode` and `value`).
+
+**Shipping** [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing) [G](https://developers.google.com/search/docs/appearance/structured-data/shipping-policy)
+- Offer level: `shippingDetails` (`OfferShippingDetails`), one per shipping option (e.g. standard, overnight). Required for eligibility: `shippingRate` (`currency` ISO 4217 matching the offer, plus `value` or `maxValue`; `0` = free shipping; one rate per `OfferShippingDetails`), `shippingDestination` (`DefinedRegion` with two-letter `addressCountry`; `addressRegion` supported for US, AU, JP; `postalCode` for AU, CA, US; not both in one region), `deliveryTime` (one per offer shipping details: `handlingTime` and/or `transitTime` as `QuantitativeValue` with non-negative whole `minValue` / `maxValue` days and `unitCode` `DAY` or `d`).
+- Organization level: `hasShippingService` (`ShippingService` with `ShippingConditions`) on the `Organization` / `OnlineStore`; Google prefers organization-level policies, and offer-level shipping supports only a subset of properties.
+
+**Return policy** [G](https://developers.google.com/search/docs/appearance/structured-data/return-policy) [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing)
+- `MerchantReturnPolicy`, preferably nested in `Organization` via `hasMerchantReturnPolicy`; if both organization-level and product-level policies exist, the **product-level one wins**.
+- Required: `applicableCountry` (up to 50 two-letter codes), `returnPolicyCategory` (`MerchantReturnFiniteReturnWindow`, `MerchantReturnNotPermitted`, `MerchantReturnUnlimitedWindow`), `merchantReturnDays` when the window is finite.
+- Fees: `returnFees` `FreeReturn`, `ReturnFeesCustomerResponsibility` or `ReturnShippingFees`; only `ReturnShippingFees` takes a non-zero `returnShippingFeesAmount`. Method: `returnMethod` `ReturnAtKiosk`, `ReturnByMail`, `ReturnInStore` (recommended for finite or unlimited windows).
+
+**Precedence of shipping and return information** (strongest first) [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing): (1) product-level feeds in Merchant Center → (2) Content API for Shopping settings → (3) Merchant Center or Search Console settings → (4) product-level markup → (5) organization-level markup. If markup is hard to keep current, configure shipping and returns in Merchant Center or Search Console.
+
+**Variants** [G](https://developers.google.com/search/docs/appearance/structured-data/product-variants): `ProductGroup` (`productGroupID`, `variesBy`, `hasVariant`) with variant `Product`s linked by `inProductGroupWithID` / `isVariantOf`. Supported by both product snippets and merchant listings.
+
+**Loyalty programmes** [G](https://developers.google.com/search/docs/appearance/structured-data/loyalty-program): `hasMemberProgram` (`MemberProgram`, `MemberProgramTier`) nested in `Organization`; shown only in Australia, Brazil, Canada, France, Germany, Mexico, the United Kingdom and the United States.
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "Nome prodotto",
-  "image": "https://example.com/img/prodotto-1200x1200.jpg",
-  "sku": "SKU-0001",
-  "offers": { "@type": "Offer", "price": 49.90, "priceCurrency": "EUR", "availability": "https://schema.org/InStock", "url": "https://example.com/prodotto/" }
+  "name": "Acme Wall Widget, oak",
+  "image": ["https://acme-widgets.example/img/wall-widget-oak-1x1.jpg", "https://acme-widgets.example/img/wall-widget-oak-16x9.jpg"],
+  "sku": "AW-0001-OAK",
+  "gtin13": "0000000000000",
+  "brand": { "@type": "Brand", "name": "Acme Widgets" },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://acme-widgets.example/products/wall-widget?color=oak",
+    "price": 49.90,
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": { "@type": "MonetaryAmount", "value": 0, "currency": "USD" },
+      "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "US" },
+      "deliveryTime": {
+        "@type": "ShippingDeliveryTime",
+        "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
+        "transitTime": { "@type": "QuantitativeValue", "minValue": 2, "maxValue": 5, "unitCode": "DAY" }
+      }
+    }
+  }
+}
+```
+Organization-level return policy (preferred place), on the home or policies page:
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "OnlineStore",
+  "@id": "https://acme-widgets.example/#organization",
+  "name": "Acme Widgets",
+  "url": "https://acme-widgets.example/",
+  "hasMerchantReturnPolicy": {
+    "@type": "MerchantReturnPolicy",
+    "applicableCountry": ["US"],
+    "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+    "merchantReturnDays": 30,
+    "returnMethod": "https://schema.org/ReturnByMail",
+    "returnFees": "https://schema.org/FreeReturn"
+  }
 }
 ```
 
-### JobPosting (breve)
-- **Disponibilità**: Italia inclusa (e gran parte di Europa, Asia, Americhe, MENA, Africa subsahariana) [G].
-- **Regole** [G]: solo sulla **pagina della singola offerta**, mai su elenchi; un `JobPosting` per offerta; **vietate le "richieste di lavoro"** (persona che si propone): non usarlo per dire "sono disponibile"; niente pagamenti richiesti ai candidati; offerte scadute → `validThrough` passato, 404/410 o rimozione del markup (+ API Indexing consigliata).
-- **Obbligatorie**: `datePosted`, `description` (HTML completo, diversa dal titolo), `hiringOrganization`, `jobLocation` (con `addressCountry`; non necessaria se 100% remoto con `applicantLocationRequirements`), `title` (solo il nome del ruolo) [G].
-- **Consigliate**: `applicantLocationRequirements`, `baseSalary` (`unitText` `HOUR`/`DAY`/`WEEK`/`MONTH`/`YEAR`), `directApply`, `employmentType` (`FULL_TIME`, `PART_TIME`, `CONTRACTOR`, `TEMPORARY`, `INTERN`, `VOLUNTEER`, `PER_DIEM`, `OTHER`), `identifier`, `jobLocationType` (`TELECOMMUTE` solo se 100% remoto), `validThrough` [G]. Stipendio nel markup → deve essere visibile in pagina [G].
+### JobPosting
+- **Availability**: the job search experience is available only in listed countries (much of Europe — e.g. Austria, Belgium, France, Germany, Italy, Netherlands, Spain, Switzerland, United Kingdom — plus Asia, Latin America, MENA, sub-Saharan Africa); check the current list [G](https://developers.google.com/search/docs/appearance/structured-data/job-posting).
+- **Rules** [G](https://developers.google.com/search/docs/appearance/structured-data/job-posting): only on the **single job page**, never on lists or search results; one `JobPosting` per job; most properties once per page; **"job requests" are prohibited** (a candidate offering their services): never use it to say "I am available"; no fees charged to applicants; no fake, misleading or impersonating postings; a way to apply, no login needed to read the description; complete description (no disguised ads). Expired jobs → `validThrough` in the past, 404/410, or removal of the markup, then notify via the Indexing API (recommended) and ideally update the sitemap.
+- **Required**: `datePosted`, `description` (complete HTML, different from the title), `hiringOrganization` ("confidential" allowed for anonymous hiring), `jobLocation` (with `addressCountry`; not needed if 100% remote with `applicantLocationRequirements`), `title` (only the job title: no codes, dates, salaries or company names) [G](https://developers.google.com/search/docs/appearance/structured-data/job-posting).
+- **Recommended**: `applicantLocationRequirements`, `baseSalary` (`unitText` `HOUR` / `DAY` / `WEEK` / `MONTH` / `YEAR`; employer-provided, not an estimate; `minValue` / `maxValue` for ranges), `directApply`, `employmentType` (`FULL_TIME`, `PART_TIME`, `CONTRACTOR`, `TEMPORARY`, `INTERN`, `VOLUNTEER`, `PER_DIEM`, `OTHER`), `identifier`, `jobLocationType` (`TELECOMMUTE` only if 100% remote, stated in the description, with at least one eligible country), `validThrough` (omit if no expiry) [G](https://developers.google.com/search/docs/appearance/structured-data/job-posting). Salary in the markup → must be visible on the page [G](https://developers.google.com/search/docs/appearance/structured-data/job-posting).
 ```json
 {
   "@context": "https://schema.org",
   "@type": "JobPosting",
-  "title": "Nome del ruolo",
-  "description": "<p>Responsabilità, requisiti, orario.</p>",
+  "title": "Physiotherapist",
+  "description": "<p>Responsibilities, requirements, working hours.</p>",
   "datePosted": "2026-09-01",
   "validThrough": "2026-10-31T23:59:00+01:00",
   "employmentType": "FULL_TIME",
-  "hiringOrganization": { "@type": "Organization", "name": "Nome Azienda", "sameAs": "https://example.com/" },
-  "jobLocation": { "@type": "Place", "address": { "@type": "PostalAddress", "addressLocality": "Città", "addressCountry": "IT" } }
+  "hiringOrganization": { "@type": "Organization", "name": "Northwind Physio", "sameAs": "https://northwind-physio.example/" },
+  "jobLocation": { "@type": "Place", "address": { "@type": "PostalAddress", "addressLocality": "Oslo", "addressCountry": "NO" } }
 }
 ```
+(Norway was not in Google's country list when checked on 2026-10-11: valid markup, no job experience there.)
 
-## Tipi ritirati o non disponibili in Italia/italiano
-Nessun ritiro influisce sul ranking; il markup ritirato è **innocuo ma inutile** per Google (non genera errori in Search Console) [G-blog 2024-10, 2025-06].
+### JavaScript and SPA notes
+- Google reads dynamically injected JSON-LD and processes the data present in the DOM at render time [G](https://developers.google.com/search/docs/appearance/structured-data/generate-structured-data-with-javascript). The documented options are GTM, custom JS and **server-side rendering** [G](https://developers.google.com/search/docs/appearance/structured-data/generate-structured-data-with-javascript).
+- *(inference)* Prefer SSR / prerendering / SSG that emit JSON-LD in the initial HTML, especially for `Product` (explicit Google guidance), `WebSite`, `Organization`, `LocalBusiness`, `ProfilePage`. Reasons: more reliable Shopping crawls [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing); non-Google bots are not documented to render JavaScript (bot table in `ai-search.md`; RJ-01).
+- Verification: Rich Results Test **in URL mode** and URL Inspection (rendered HTML); for types the test does not support, inspect the rendered HTML [G](https://developers.google.com/search/docs/appearance/structured-data/generate-structured-data-with-javascript).
+- *(inference)* Client-side router: **one JSON-LD block per route**, replaced or removed on every navigation; never leave the previous view's markup behind or duplicate it.
+- *(inference)* If the JSON-LD depends on a `fetch` (as in Google's example), the endpoint must be reachable by Googlebot (not blocked by robots.txt, fast).
+- [SEJ] Do not load JSON-LD through GTM behind the cookie banner: if the script fires only after consent, crawlers may not see it.
+- Googlebot fetches only the first **2 MB** of each HTML file and of each JS/CSS resource: huge inline serialised state can push the markup past the limit; put metadata and essential structured data early in the document [G](https://developers.google.com/search/blog/2026/03/crawler-blog-post) (RJ-15, RJ-17).
+- After a release: a drop in valid items without a rise in invalid ones means the markup is no longer embedded (rendering / SSR regression) [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing).
+- General rendering details: `knowledge/rendering-javascript.md`.
 
-| Tipo / funzionalità | Stato | Data | Fonte | Indicazione |
+## Retired or restricted rich results
+This table is the owner for retired and restricted features; `myths-deprecated.md` keeps one-line entries that point here. No retirement affects ranking; retired markup is **harmless but useless** for Google (it does not generate Search Console errors) [G](https://developers.google.com/search/blog/2024/10/sitelinks-search-box) [G](https://developers.google.com/search/blog/2025/06/simplifying-search-results).
+
+| Type / feature | Status | Date | Source | Guidance |
 |---|---|---|---|---|
-| Casella di ricerca sitelink (`WebSite` + `potentialAction`/`SearchAction`) | Rimossa ovunque | dal 21/11/2024 | [G-blog 2024-10] | Non proporla; si può togliere `SearchAction` ma **non** il nodo `WebSite` (nome del sito) |
-| Breadcrumb nei risultati mobile | Non mostrati (solo dominio) | dal 23/01/2025 | [G-blog 2025-01] | `BreadcrumbList` resta valido per desktop |
-| `FAQPage` (risultato FAQ) | Limitato a siti governativi/sanitari dal 2023; rich result non mostrato dal 7/05/2026, report/Test rimossi a giugno 2026, API Search Console fino ad agosto 2026 | 2023 → 2026 | [T] SEJ che riporta la doc Google; la galleria Google scaricata non elenca più FAQ | Non raccomandare per rich result; `QAPage` non è un sostituto |
-| `HowTo` | Ritirato | 2023 | [T] SEJ; assente dalla galleria Google | Non raccomandare |
-| Course info | Ritiro graduale; fuori da report/Test/filtri | giugno 2025; 9/09/2025 | [G-blog 2025-06] | L'"elenco di corsi" resta, solo inglese |
-| `ClaimReview` (fact check) | Eliminato dalla Ricerca; resta in Fact Check Explorer | giugno 2025 | [G-blog] + doc factcheck | Solo per Fact Check Explorer |
-| Estimated salary, Learning video, `SpecialAnnouncement`, Vehicle listing | Ritirati | giugno 2025; fuori dai report 9/09/2025 | [G-blog 2025-06] | Non proporre |
-| Book actions | Annunciato ritiro (giugno 2025); secondo SEJ l'avviso di deprecazione è stato tolto (nov 2025); doc ancora presente, accesso solo su modulo + feed | incerto | [G-blog] vs [T] | Stato da verificare nel changelog; comunque non applicabile a siti comuni |
-| Practice problem | Supporto rimosso | da gennaio 2026 | [T] SEJ (changelog Google) | Non proporre |
-| Altri tipi "poco usati" | Rimozione progressiva; supporto in Search Console/API tolto da gennaio 2026 | nov 2025 → | [G-blog 2025-11] | Controllare `/search/updates` prima di proporre tipi marginali |
-| `data-vocabulary.org` | Non idoneo | 2020 | [G] | Migrare a schema.org |
-| Event | Attivo ma **non in Italia/italiano** | — | [G] | Utile solo per mercati elencati |
-| Elenco di corsi | Attivo **solo in inglese** | — | [G] | Nessun effetto su pagine in italiano |
-| Domande e risposte didattiche (flashcard) | Inglese, portoghese, vietnamita; spagnolo solo Messico | — | [G] | Non per l'italiano |
-| Speakable (beta) | Solo USA, inglese | — | [G] | Non per l'italiano |
-| Programmi fedeltà (`MemberProgram`) | AU, BR, CA, FR, DE, MX, UK, US | — | [G] | Non in Italia |
-| Carosello ristoranti; case vacanze | Accesso limitato (modulo / Hotel Center) | — | [G] | Non proporre di default |
-| Caroselli beta (`ItemList` + LocalBusiness/Product/Event) | SEE (Italia inclusa), Turchia, Sudafrica; beta, per aggregatori, modulo di interesse | dal 2024 | [G] [G-blog 2024-02] | Solo pagine di riepilogo con ≥ 3 entità |
-| `Dataset` | Usato solo da Dataset Search | — | [G] [T] | Non è un rich result della Ricerca |
+| ⚠ Sitelinks search box (`WebSite` + `potentialAction` / `SearchAction`) | Removed from results worldwide; documentation removed on 29 November 2024 | since 21 November 2024 | [G](https://developers.google.com/search/blog/2024/10/sitelinks-search-box) [G](https://developers.google.com/search/updates) | Do not propose it; `SearchAction` can be removed, but **not** the `WebSite` node (site name, SD-10) |
+| Breadcrumbs in mobile results | Not shown on mobile (domain only); still shown on desktop | since 23 January 2025 | [G](https://developers.google.com/search/blog/2025/01/simplifying-breadcrumbs) | `BreadcrumbList` remains valid for desktop |
+| ⚠ `FAQPage` (FAQ rich result) | Limited to well-known government and health sites from August 2023; Google announced on 8 May 2026 that it would no longer appear from 7 May 2026, and removed the documentation on 15 June 2026. SEJ reported that the report and Rich Results Test support were removed in June 2026 and that Search Console API support ended in August 2026 *(re-verify)* | 2023 → 2026 | [G](https://developers.google.com/search/updates#removing-faq-rich-result) [G](https://developers.google.com/search/blog/2023/08/howto-faq-changes) [SEJ 2026-05] | Do not recommend for a rich result; `QAPage` is not a substitute |
+| ⚠ `HowTo` | Restricted to desktop in August 2023; deprecated on 14 September 2023 (no longer shown on desktop either); search appearance, report and Rich Results Test support dropped 30 days later, Search Console API support 180 days later; absent from the current gallery | 2023 | [G](https://developers.google.com/search/blog/2023/08/howto-faq-changes) [G](https://developers.google.com/search/updates#how-to-deprecation) | Do not recommend |
+| ⚠ Course info | Phase-out announced 12 June 2025; documentation removed and dropped from reports, test and filters on 9 September 2025 | 2025-06-12; 2025-09-09 | [G](https://developers.google.com/search/blog/2025/06/simplifying-search-results) [G](https://developers.google.com/search/updates) | The "course list" result remains, English only |
+| ⚠ `ClaimReview` (fact check) | Phase-out from Google Search announced 12 June 2025; the documentation stays online with a phase-out notice; still used by Fact Check Explorer | 2025-06-12 | [G](https://developers.google.com/search/blog/2025/06/simplifying-search-results) [G](https://developers.google.com/search/docs/appearance/structured-data/factcheck) | Only for Fact Check Explorer |
+| ⚠ Estimated salary, Learning video, `SpecialAnnouncement`, Vehicle listing | Retired: phase-out announced 12 June 2025 (`SpecialAnnouncement` already announced on 23 April 2025 for 31 July 2025); documentation removed and dropped from reports on 9 September 2025 | 2025-06-12; 2025-09-09 | [G](https://developers.google.com/search/blog/2025/06/simplifying-search-results) [G](https://developers.google.com/search/updates) | Do not propose |
+| Book actions | Listed in the 12 June 2025 phase-out; on 5 November 2025 Google removed the deprecation banner "as there's still a feature using the markup in Google Search". The documentation is online; the feature is limited to book providers with a wide catalogue, onboarded via an interest form and a partner feed | 2025-06-12 → 2025-11-05 | [G](https://developers.google.com/search/updates) [G](https://developers.google.com/search/docs/appearance/structured-data/book) | Not applicable to ordinary sites; do not propose by default |
+| ⚠ Practice problem | Deprecation announced 5 November 2025; documentation removed, no longer shown | 2026-01-06 | [G](https://developers.google.com/search/updates#removing-practice-problems) [SEJ 2025-11] | Do not propose |
+| Other "lesser-used" features | Progressive phase-out announced 5 November 2025; support in Search Console and its API removed from January 2026 | 2025-11 → | [G](https://developers.google.com/search/blog/2025/11/update-on-our-efforts) | Check `/search/updates` before proposing marginal types |
+| ⚠ `data-vocabulary.org` | No longer eligible for rich results | since 29 January 2021 (announced 2020) | [G](https://developers.google.com/search/updates) | Migrate to schema.org |
+| Event | Active but **only in listed markets** (AU, BR, CA, DE, IN, Latin America, ES, UK, US with the listed languages) | — | [G](https://developers.google.com/search/docs/appearance/structured-data/event) | Useful only for the listed markets |
+| Course list | Active **in English only** | — | [G](https://developers.google.com/search/docs/appearance/structured-data/course) | No effect on pages in other languages |
+| Education Q&A (flashcards) | English, Portuguese, Vietnamese; Spanish only in Mexico | — | [G](https://developers.google.com/search/docs/appearance/structured-data/education-qa) | Only for those languages |
+| Speakable (beta) | US only, English | — | [G](https://developers.google.com/search/docs/appearance/structured-data/speakable) | Only for US English news publishers |
+| Loyalty programmes (`MemberProgram`) | AU, BR, CA, FR, DE, MX, UK, US | — | [G](https://developers.google.com/search/docs/appearance/structured-data/loyalty-program) | Only in those countries |
+| Restaurant carousel; vacation rentals | Limited access (form / Hotel Center) | — | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) [G](https://developers.google.com/search/docs/appearance/structured-data/vacation-rental) | Do not propose by default |
+| Beta carousels (`ItemList` + `LocalBusiness` / `Product` / `Event`) | EEA, Türkiye, South Africa; beta, for aggregators, interest form | since 2024 | [G](https://developers.google.com/search/docs/appearance/structured-data/carousels-beta) | Only summary pages with ≥ 3 entities |
+| `Dataset` | Used only by Dataset Search (clarified 5 November 2025) | — | [G](https://developers.google.com/search/docs/appearance/structured-data/dataset) [G](https://developers.google.com/search/updates) | Not a Search rich result |
 
-## Controlli per l'audit
-Gravità: **Critico** (markup inefficace o rischio azione manuale su molte pagine) · **Alto** · **Medio** · **Basso** · **Info**.
+## Audit checks
+Severity follows `conventions.md`: **Critical** here means markup that is ineffective, or a manual-action risk, across many pages.
 
-| ID | Controllo | Come verificarlo | Gravità | Fonte |
+| ID | Check | How to verify | Severity | Source |
 |---|---|---|---|---|
-| SD-01 | Ogni blocco `application/ld+json` è JSON valido e analizzabile | Parser JSON sull'HTML renderizzato; report "Dati strutturati non analizzabili" | Critico | [G] |
-| SD-02 | `@context` `https://schema.org`; nessun `data-vocabulary.org` | Ricerca nel sorgente | Alto | [G] |
-| SD-03 | Ogni valore marcato è visibile nella pagina renderizzata (nomi, prezzi, orari, recensioni, date, stipendi) | Confronto JSON-LD ↔ testo DOM renderizzato | Critico | [G] |
-| SD-04 | Proprietà obbligatorie presenti per ogni tipo usato | Tabelle di questa scheda; Test dei risultati avanzati (URL) | Alto | [G] |
-| SD-05 | Tipo corretto e più specifico; tipo principale della pagina incluso | Revisione tipo vs contenuto (es. `Article` solo su articoli, sottotipo LocalBusiness) | Medio | [G] |
-| SD-06 | Tipi ritirati presenti (`FAQPage`, `HowTo`, `SearchAction` sitelink, `ClaimReview`, `SpecialAnnouncement`, Course info…) | Ricerca `@type`; confronto con tabella ritiri | Basso (innocuo; segnalare che non produce effetti) | [G-blog] [T] |
-| SD-07 | Tipo non disponibile nel mercato/lingua del sito (Event e Course in italiano, Education Q&A, loyalty, Speakable) | Lingua/paese del sito vs tabella | Info | [G] |
-| SD-08 | Pagine con markup non bloccate da robots.txt, `noindex`, login | Controllo URL; robots.txt; meta robots | Alto | [G] |
-| SD-09 | Immagini del markup scansionabili, pertinenti, ≥ 50.000 px; niente loghi in `Article`; `logo` ≥ 112x112 e leggibile su bianco | Fetch degli URL immagine e dimensioni | Medio | [G] |
-| SD-10 | `WebSite` in home con `name` + `url`; un solo nodo `WebSite`; nome coerente con `<title>`, `og:site_name`, `Organization.name` | Analisi della home; validatore schema.org | Alto | [G] |
-| SD-11 | Stesso markup `WebSite` su tutte le home duplicate (http/https, www/non-www) e redirect funzionanti | Fetch delle varianti | Basso | [G] |
-| SD-12 | `WebSite` non su sottodirectory o pagine interne come "home" alternativa | Mappa delle pagine con `WebSite` | Medio | [G] |
-| SD-13 | `Organization` su home o Chi siamo, sottotipo specifico, dati coerenti tra pagine | Confronto dei nodi Organization nel sito | Medio | [G] [D] |
-| SD-14 | `LocalBusiness`: `name` + `address` completo, un'entità per sede, `telephone` con prefisso, `geo` ≥ 5 decimali, `priceRange` < 100 caratteri, nessun `additionalType` | Validazione campi | Alto | [G] |
-| SD-15 | Orari `openingHoursSpecification` coerenti con pagina e Profilo dell'attività; formati giorni/ore validi | Confronto manuale/automatico | Medio | [G] [D] |
-| SD-16 | Auto-recensioni: `Review`/`AggregateRating` sulla propria `Organization`/`LocalBusiness` (markup o widget incorporati) | `itemReviewed`/nodo padre = entità proprietaria del sito | Alto | [G] |
-| SD-17 | Recensioni: non aggregate da altri siti, non incentivate non dichiarate; `ratingValue` con punto; scala coerente con `bestRating`/`worstRating`; `ratingCount` o `reviewCount`; `author.name` < 100 caratteri | Validazione campi + revisione fonte | Alto | [G] |
-| SD-18 | `ProfilePage`: `mainEntity` con `name`; pagina dedicata a una sola persona/organizzazione affiliata; `image` non segnaposto; `interactionStatistic` solo della piattaforma | Revisione pagina | Medio | [G] |
-| SD-19 | Autori `Article`: `@type` `Person`/`Organization` (mai `Thing`), un oggetto per autore, `name` senza ruoli/titoli, `url` o `sameAs` validi, tutti gli autori visibili presenti | Validazione campi | Medio | [G] |
-| SD-20 | Date ISO 8601 con fuso; `datePublished`/`dateModified` coerenti con la data visibile; niente date future; niente `T00:00:00` come "giorno intero" negli eventi | Parsing date + confronto testo | Medio | [G] |
-| SD-21 | `BreadcrumbList`: ≥ 2 `ListItem`, `position` da 1 senza salti, `item` su tutti tranne l'ultimo, coerente col breadcrumb visibile | Validazione struttura | Medio | [G] [D] |
-| SD-22 | `Event`, `JobPosting`, `Product` solo su pagine foglia di un singolo elemento (non elenchi/calendari/categorie) | Classificazione pagina vs tipo | Alto | [G] |
-| SD-23 | `JobPosting`: offerte scadute rimosse/`validThrough` passato; `addressCountry`; `TELECOMMUTE` solo 100% remoto; nessuna autocandidatura | Validazione + data corrente | Alto | [G] |
-| SD-24 | `Product`: `price` > 0 e `priceCurrency` ISO 4217 per schede commerciante; `priceValidUntil` non passato; `Product` nell'HTML iniziale | Validazione + HTML grezzo | Alto | [G] |
-| SD-25 | `VideoObject` su pagina di visualizzazione con `name`, `thumbnailUrl`, `uploadDate`; `contentUrl` o `embedUrl` | Validazione | Medio | [G] |
-| SD-26 | Enumerazioni con URL schema.org o forme brevi accettate (`availability`, `eventStatus`, `dayOfWeek`); codici ISO (paese alpha-2, valuta 4217) | Validazione valori | Medio | [G] |
-| SD-27 | `sameAs` verso profili ufficiali dell'entità, URL validi (non pagine di terzi a caso) | Fetch e revisione | Medio | [G] |
-| SD-28 | Nessuna entità duplicata o contraddittoria (due `Organization` con dati diversi, plug-in + markup manuale) | Raggruppare i nodi per tipo/`@id` | Medio | [D] |
-| SD-29 | `@id` stabili e riutilizzati; riferimenti `@id` risolvibili nella pagina o nel sito | Analisi del grafo | Basso | [G] [D] |
-| SD-30 | Markup generato via JS presente nel DOM renderizzato, aggiornato a ogni route, non condizionato al consenso cookie | Test dei risultati avanzati via URL; Controllo URL; confronto HTML grezzo/renderizzato | Alto | [G] [T] |
-| SD-31 | Search Console: stato dei risultati avanzati, dati non analizzabili, Azioni manuali; trend dopo i rilasci | Report Search Console | Alto | [G] |
-| SD-32 | Nessuna pagina creata solo per ospitare dati strutturati; nessun markup "per l'AI" promesso come leva | Revisione | Medio | [G] |
+| SD-01 | Every `application/ld+json` block is valid, parseable JSON | JSON parser on the rendered HTML; "Unparsable structured data" report | Critical | [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data) |
+| SD-02 | `@context` is `https://schema.org`; no `data-vocabulary.org` | Search the source | High | [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data) |
+| SD-03 | Every marked-up value is visible on the rendered page (names, prices, availability, hours, reviews, dates, salaries) | Compare JSON-LD ↔ rendered DOM text | Critical | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
+| SD-04 | Required properties present for every type used | Type sections of this file; Rich Results Test (URL input) | High | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
+| SD-05 | Correct and most specific type; the page's main type included | Review type vs content (e.g. `Article` only on articles, a specific LocalBusiness subtype) | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
+| SD-06 | Retired types present (`FAQPage`, `HowTo`, sitelinks `SearchAction`, `ClaimReview`, `SpecialAnnouncement`, Course info…) | Search `@type`; compare with [Retired or restricted rich results](#retired-or-restricted-rich-results). Harmless: report that it has no effect in Search | Low | [G](https://developers.google.com/search/blog/2025/06/simplifying-search-results) [G](https://developers.google.com/search/updates) [SEJ 2026-05] |
+| SD-07 | (informational) Type not available in the site's market or language (e.g. Event outside the listed countries, course list outside English, Education Q&A, loyalty programmes, Speakable) | Site language/country vs the matrix and the restricted table | Low | [G](https://developers.google.com/search/docs/appearance/structured-data/search-gallery) |
+| SD-08 | Pages with markup not blocked by robots.txt, `noindex` or login | URL Inspection; robots.txt; meta robots | High | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
+| SD-09 | Markup images crawlable, relevant, ≥ 50,000 px; no logos in `Article`; `logo` ≥ 112x112 and legible on white | Fetch the image URLs and measure them | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
+| SD-10 | `WebSite` on the home page only, with `name` + `url`; a single `WebSite` node; name consistent with `<title>`, `og:site_name`, `Organization.name`; identical `WebSite` markup on every home variant (http/https, www/apex) that still answers 200 | Analyse the home page; Schema Markup Validator; fetch each home variant: any that answers 200 instead of redirecting (CI-17) must carry the same `WebSite` node | High | [G](https://developers.google.com/search/docs/appearance/site-names) |
+| SD-11 | Alias of CI-17 — verify there, report once | Fetch the home variants (http/https, www/non-www): one host answers, the others redirect | High | [G](https://developers.google.com/search/docs/appearance/site-names) |
+| SD-12 | `WebSite` not placed on subdirectories or inner pages as an alternative "home" | Map the pages carrying `WebSite` | Medium | [G](https://developers.google.com/search/docs/appearance/site-names) |
+| SD-13 | `Organization` on the home or About page, specific subtype, data consistent across pages | Compare the Organization nodes across the site | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/organization) *(inference)* |
+| SD-14 | `LocalBusiness`: `name` + complete `address`, one entity per location, `telephone` with prefix, `geo` ≥ 5 decimals, `priceRange` < 100 characters, no `additionalType` | Field validation | High | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
+| SD-15 | `openingHoursSpecification` consistent with the page and the Business Profile; valid day/time formats | Manual or automatic comparison | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) *(inference)* |
+| SD-16 | No self-serving reviews: no `Review` / `AggregateRating` on the site's own `Organization` / `LocalBusiness` (in markup or via embedded Google/Facebook review widgets); testimonials are not marked up as reviews | `itemReviewed` / parent node = the entity that owns the site; search for review-widget scripts | High | [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
+| SD-17 | Reviews: not aggregated from other sites, no undisclosed incentives; `ratingValue` with a decimal point; scale consistent with `bestRating` / `worstRating`; `ratingCount` or `reviewCount`; `author.name` < 100 characters | Field validation + review of the source | High | [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
+| SD-18 | `ProfilePage`: `mainEntity` with `name`; page dedicated to a single affiliated person or organisation; `image` not a placeholder; `interactionStatistic` only from the hosting platform | Page review | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page) |
+| SD-19 | `Article` authors: `@type` `Person` / `Organization` (never `Thing`), one object per author, `name` without roles or titles, valid `url` or `sameAs`, every visible author present | Field validation | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/article) |
+| SD-20 | ISO 8601 dates with time zone; `datePublished` / `dateModified` consistent with the visible date; no future dates; no `T00:00:00` as "whole day" in events | Date parsing + comparison with the text | Medium | [G](https://developers.google.com/search/docs/appearance/publication-dates) |
+| SD-21 | `BreadcrumbList`: ≥ 2 `ListItem`s, `position` from 1 without gaps, `item` on all but the last, consistent with the visible breadcrumb | Structure validation | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb) *(inference)* |
+| SD-22 | `Event`, `JobPosting`, `Product` only on leaf pages for a single item (not lists, calendars, categories) | Classify page vs type | High | [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing) |
+| SD-23 | `JobPosting`: expired jobs removed / `validThrough` in the past; `addressCountry`; `TELECOMMUTE` only when 100% remote; no job requests (self-promotion) | Validation + current date | High | [G](https://developers.google.com/search/docs/appearance/structured-data/job-posting) |
+| SD-24 | `Product`: for merchant listings `price` > 0 and ISO 4217 `priceCurrency`, `Offer` not `AggregateOffer`; `priceValidUntil` not in the past; `availability` matches the visible stock state (incl. `OutOfStock`); shipping and return policy consistent with Merchant Center / Search Console settings; `Product` in the initial HTML | Validation + raw HTML (`curl`) + comparison with the visible price/stock and the policies page | High | [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing) |
+| SD-25 | `VideoObject` on the watch page with `name`, `thumbnailUrl`, `uploadDate`; `contentUrl` or `embedUrl` | Validation | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/video) |
+| SD-26 | Enumerations as schema.org URLs or accepted short forms (`availability`, `itemCondition`, `returnPolicyCategory`, `eventStatus`, `dayOfWeek`); ISO codes (country alpha-2, currency 4217) | Value validation | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/merchant-listing) |
+| SD-27 | `sameAs` points to the entity's official profiles, valid URLs (not random third-party pages) | Fetch and review | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/organization) |
+| SD-28 | No duplicate or contradictory entities (two `Organization`s with different data, plugin + manual markup) | Group the nodes by type / `@id` | Medium | *(inference)* |
+| SD-29 | Stable, reused `@id`s; `@id` references resolvable in the page or on the site | Graph analysis | Low | [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data) *(inference)* |
+| SD-30 | JS-generated markup present in the rendered DOM, updated on every route, not conditional on cookie consent | Rich Results Test by URL; URL Inspection; raw vs rendered HTML comparison | High | [G](https://developers.google.com/search/docs/appearance/structured-data/generate-structured-data-with-javascript) [SEJ] |
+| SD-31 | Search Console: rich result status, unparsable data, Manual actions; trends after releases | Search Console reports | High | [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data) |
+| SD-32 | No page created only to host structured data; no "markup for AI" promised as a lever | Review | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
 
-## Note per SPA/JavaScript
-- Google legge il JSON-LD inserito dinamicamente ed elabora i dati presenti nel DOM al rendering [G]. Le alternative documentate sono GTM, JS personalizzato e **rendering lato server** [G].
-- [D] Preferire SSR/prerendering/SSG che emettono il JSON-LD nell'HTML iniziale, soprattutto per `Product` (indicazione esplicita Google), `WebSite`, `Organization`, `LocalBusiness`, `ProfilePage`. Motivi: scansioni Shopping più affidabili [G]; molti crawler AI non eseguono JavaScript [T].
-- Verifica: Test dei risultati avanzati **in modalità URL** e Controllo URL (HTML renderizzato); per tipi non supportati dal Test controllare l'HTML renderizzato [G].
-- [D] Router client-side: **un blocco JSON-LD per route**, sostituito o rimosso a ogni navigazione; mai lasciare il markup della vista precedente né duplicarlo.
-- [D] Se il JSON-LD dipende da un `fetch` (come nell'esempio Google), l'endpoint deve essere raggiungibile da Googlebot (non bloccato da robots.txt, veloce).
-- [T] Non caricare il JSON-LD tramite GTM dietro il banner dei cookie: se lo script parte solo dopo il consenso, i crawler potrebbero non vederlo.
-- Limite di **2 MB** per HTML e per ogni risorsa JS/CSS per Googlebot: stati serializzati enormi inline possono spingere il markup oltre la soglia; mettere metadati e dati strutturati essenziali presto nel documento [G-blog 2026-03].
-- Dopo un rilascio: un calo degli elementi validi senza aumento degli invalidi indica markup non più incorporato (regressione di rendering/SSR) [G].
-- Dettagli generali sul rendering: `knowledge/rendering-javascript.md`.
+## Build rules
+Build rules create no IDs; each points to the checks it satisfies.
 
-## Cosa dicono le fonti terze
-- **Posizione Google sull'AI** [G]: per AI Overviews e AI Mode non ci sono requisiti aggiuntivi; **non servono** file, "markup AI" o schema.org speciali; i dati strutturati devono solo corrispondere al testo visibile. La guida Google di maggio 2026 sull'ottimizzazione per l'AI generativa ribadisce che AEO/GEO sono "ancora SEO" e che i dati strutturati non sono richiesti per le funzionalità AI (restano utili per i rich result) [G-blog 2026-05; dettagli via SEJ].
-- ⚠ **"Schema per AI/GEO"** [T]: molte fonti (spesso vendor con conflitto di interessi) sostengono che JSON-LD, FAQPage o HowTo aumentino le citazioni negli assistenti AI. Nessuna conferma Google; diversi autori SEJ le classificano come ipotesi o "snake oil". Circa 168.000 pagine affermerebbero che "FAQ schema è critico per GEO" (dato riportato da SEJ), mentre Google ha ritirato il rich result FAQ.
-- **Studio Ahrefs (maggio 2026)** [T]: su ~6 milioni di URL le pagine citate dall'AI hanno circa 3 volte più JSON-LD (**correlazione**). Nel test causale (1.885 pagine che hanno aggiunto JSON-LD tra ago 2025 e mar 2026, confrontate con ~4.000 controlli, finestra ±30 giorni) l'effetto è nullo o negativo: AI Overviews −4,6%, AI Mode +2,4%, ChatGPT +2,2% (questi ultimi non distinguibili dal caso). Limiti dichiarati: solo pagine già molto citate, solo schema presente nell'HTML (non iniettato via JS), tipi aggregati, Bing/Copilot/Perplexity/Claude non misurati.
-- Esperimento Williams-Cook [T]: un JSON-LD **non valido** veniva comunque letto come testo dagli LLM → per gli LLM il markup è soprattutto testo, non una struttura privilegiata.
-- Opinioni diffuse e plausibili, **non provate** [T]: `Person`/`Organization` con `sameAs` e `@id` coerenti aiutano la **disambiguazione dell'entità** (omonimi, personal brand); mantenere identici nome/NAP/orari tra sito, schema e Profilo dell'attività. È coerente con i principi Google (dati accurati e coerenti), ma nessun effetto su ranking o citazioni è dimostrato. Il rischio concreto citato è lo schema **non aggiornato** (es. vecchio telefono) [T].
-- Microsoft/Bing (riportato di seconda mano) afferma che lo schema aiuta Copilot [T]: non verificato nelle fonti lette.
-- John Mueller: i tipi di markup "vanno e vengono", pochi vale la pena mantenerli [T, citazione riportata da SEJ].
-- **Regola per le skill** [D]: proporre JSON-LD solo (1) per rich result documentati e disponibili nel mercato del sito, o (2) per descrivere entità (`WebSite`, `Organization`, `LocalBusiness`, `Person`/`ProfilePage`, `Article`). Mai promettere citazioni AI, ranking o visibilità "GEO" dal markup; mai raccomandare `FAQPage`/`HowTo` per risultati avanzati; `llms.txt` e markup "per AI" fuori ambito (vedi `knowledge/ai-search.md`).
+**What to propose at all**
+- Propose JSON-LD only (1) for documented rich results available in the site's market and language (matrix and restricted table), or (2) to describe entities (`WebSite`, `Organization`, `LocalBusiness`, `Person` / `ProfilePage`, `Article`). Never promise AI citations, ranking or "GEO" visibility from markup; never recommend `FAQPage` / `HowTo` for rich results; `llms.txt` and "AI markup" are out of scope (see `ai-search.md`) → SD-06, SD-07, SD-32.
+- If the CMS or a plugin already emits markup, configure it instead of adding a second hand-written block → SD-28.
+
+**Minimum JSON-LD per archetype**
+- **ecommerce**: home → one `WebSite` + `OnlineStore` (`@id` `/#organization`) with `hasMerchantReturnPolicy` / `hasShippingService` (or on the policies page); product pages → `Product` + `Offer` (or `ProductGroup` with variants) in the initial HTML, `BreadcrumbList`; ratings only from real customers → SD-10, SD-13, SD-22, SD-24, SD-26, SD-17, SD-21.
+- **editorial**: home → `WebSite` + `Organization` (publisher); articles → `Article` / `NewsArticle` / `BlogPosting` with `author` referencing each author's `@id`, labelled visible dates; author pages → `ProfilePage`; `BreadcrumbList`; paywalled pages → `isAccessibleForFree` markup → SD-19, SD-20, SD-18, SD-21.
+- **local-business**: home → `WebSite`; contact or location page → the most specific `LocalBusiness` subtype, one per location, with NAP and hours identical to the page and the Business Profile; no `aggregateRating` / `review` on itself → SD-14, SD-15, SD-16.
+- **personal-brand**: home → `WebSite`; About page → `ProfilePage` with `mainEntity` `Person` (`@id` `/about#person`), `sameAs` to the person's own profiles; every article reuses that `@id` as `author` (and as `publisher` when there is no company) → SD-10, SD-18, SD-27, SD-29.
+- **professional-services**: home → `WebSite` + `Organization` (or `ProfilePage` + `Person` when the practice is one person); `LocalBusiness` only with a real address shown on the page; client testimonials never marked up as `Review` → SD-13, SD-14, SD-16.
+- **saas-product**: home → `WebSite` + `Organization`; product page → `SoftwareApplication` only with real ratings or reviews visible on the page; otherwise describe the entity only → SD-04, SD-17.
+
+**`@id` conventions** *(inference)*
+- Absolute, stable, on the canonical host: `https://host/#website`, `https://host/#organization`, `https://host/about#person` (use the real About path), `https://host/locations/<city>#localbusiness` for each location.
+- Define each entity once (home or About page) and reference it elsewhere with `{"@id": "…"}`; never give the same entity two `@id`s or two different sets of data → SD-28, SD-29.
+
+**One `WebSite` node, home only**
+- Exactly one `WebSite` node, on the home page only, with `name`, `url` and optional `alternateName`; the other home variants redirect to the canonical host (CI-17) → SD-10, SD-11, SD-12.
+
+**Where to emit JSON-LD by rendering mode**
+- **SSR / SSG / prerendering**: emit JSON-LD in the server HTML (in `<head>` or early in `<body>`), per route; this is the default for every archetype and required for reliable `Product` handling → SD-24, SD-30.
+- **CSR (client-side rendering)**: Google renders JavaScript and reads JSON-LD present in the rendered DOM, but other bots (most AI crawlers and link-preview bots) are not documented to render JavaScript — see the bot table in `ai-search.md`. Verify with RJ-01 (initial HTML), RJ-14 (JSON-LD in the rendered DOM) and RJ-17 (essentials early, under 2 MB); one block per route, replaced on navigation, not behind cookie consent → SD-30.
+
+**Consistency with visible content**
+- Every value in the markup appears on the page (prices, stock, hours, ratings, dates, salaries); names match `<title>`, `og:site_name` and the Business Profile → SD-03, SD-10, SD-15, SD-20.
+
+**Testing before and after release**
+- Development: Rich Results Test by URL for supported types; Schema Markup Validator for syntax and for types the test does not cover (e.g. `WebSite` site name); parse every `application/ld+json` block in the build output → SD-01, SD-04.
+- After deploy: URL Inspection on a sample of templates; watch the rich result status reports and Manual actions after each release → SD-31.
+
+## Notes by site type
+- **ecommerce**: `Product` in the initial HTML; organization-level return and shipping policies are preferred, but Merchant Center / Search Console settings override markup; member prices and loyalty programmes only in the listed countries; beta carousels only for aggregator category pages in the EEA, Türkiye, South Africa. `ecommerce.md` references SD-22, SD-24 and SD-26 instead of repeating them.
+- **editorial**: one author object per person, linked to an author `ProfilePage`; labelled visible dates; paywall markup to distinguish a paywall from cloaking; breadcrumbs only show on desktop; reviews of third-party products or businesses can carry stars (no self-reviews).
+- **local-business**: the Google Business Profile remains the main source for the knowledge panel; one `LocalBusiness` per location; no public address → `Organization`; restaurant carousel and vacation rentals are limited-access programmes.
+- **personal-brand**: `ProfilePage` + `Person` on the About page gives no rich result but anchors the entity; never use `JobPosting` to say "available for hire" (job requests are prohibited).
+- **professional-services**: client testimonials are not `Review` markup; ⚠ avoid the deprecated `ProfessionalService` type, use a specific subtype. *Regulated professions and legal notices*: show what local law requires on the site (e.g. a VAT ID in the EU, a company registration number in the UK, a professional register or licence number in Germany or the US); `vatID`, `taxID` or `identifier` can mirror the visible value. Google describes `vatID` as a trust signal for users; it does not present it as a ranking factor.
+- **saas-product**: `SoftwareApplication` rich results require real ratings or reviews; course list results for training content exist only in English.
+
+## Third-party views
+- **Google's position on AI** [G](https://developers.google.com/search/docs/appearance/ai-features): AI Overviews and AI Mode have no additional requirements; **no** special files, "AI markup" or special schema.org are needed; structured data only has to match the visible text. Google's May 2026 guidance on optimising for generative AI repeats that AEO/GEO are "still SEO" and that structured data is not required for AI features (it remains useful for rich results) [SEJ 2026-05] *(re-verify: Google URL not recorded)*. AI-features opt-out controls and Google-Extended: see the "Controls" table in `ai-search.md`.
+- **Ahrefs study (May 2026)** [SEJ 2026-05]: across ~6 million URLs, pages cited by AI had about 3 times more JSON-LD (**correlation**). In the causal test (1,885 pages that added JSON-LD between August 2025 and March 2026, compared with ~4,000 controls, ±30-day window) the effect was null or negative: AI Overviews −4.6%, AI Mode +2.4%, ChatGPT +2.2% (the latter two indistinguishable from chance). Stated limits: only pages already heavily cited, only schema present in the HTML (not injected via JS), types aggregated, Bing/Copilot/Perplexity/Claude not measured.
+- Williams-Cook experiment [SEJ]: **invalid** JSON-LD was still read as text by LLMs → for LLMs, markup is mostly text, not a privileged structure.
+- Widespread, plausible but **unproven** opinions [SEJ]: `Person` / `Organization` with consistent `sameAs` and `@id` help **entity disambiguation** (namesakes, personal brands); keep name, NAP and hours identical across site, schema and Business Profile. This is consistent with Google's principles (accurate, consistent data), but no effect on ranking or citations has been shown. The concrete risk cited is **stale** schema (e.g. an old phone number) [SEJ].
+- Microsoft/Bing (reported second-hand) states that schema helps Copilot [SEJ]: not verified in the sources read *(re-verify)*.
+- John Mueller: markup types "come and go", few are worth maintaining [SEJ] (quote reported by SEJ).
+
+## Myths and outdated advice
+Full list of retired features: [Retired or restricted rich results](#retired-or-restricted-rich-results); general myths: `myths-deprecated.md`.
+- ⚠ **"Schema for AI / GEO"** [SEJ]: many sources (often vendors with a conflict of interest) claim that JSON-LD, `FAQPage` or `HowTo` increase citations in AI assistants. No Google confirmation; several SEJ authors classify these claims as hypotheses or "snake oil". About 168,000 pages reportedly claim that "FAQ schema is critical for GEO" (figure reported by SEJ), while Google retired the FAQ rich result in 2026.
+- ⚠ **Adding `FAQPage` or `HowTo` markup to win rich results**: both features are retired (HowTo in 2023, FAQ in 2026); the markup is harmless but has no effect in Search → SD-06.
+- ⚠ **Removing `WebSite` because the sitelinks search box was retired**: only `SearchAction` became useless; the `WebSite` node still feeds the site name → SD-10.
+- ⚠ **Marking up client testimonials or embedded Google/Facebook reviews as stars on your own business**: self-serving reviews are not eligible and can lead to a manual action → SD-16.
+- ⚠ **`data-vocabulary.org` markup**: no longer eligible since January 2021; migrate to schema.org → SD-02.
+- ⚠ **`ProfessionalService` as the type for a local professional**: deprecated in schema.org; use a specific subtype.
+- ⚠ **Valid markup guarantees a rich result**: Google never guarantees it [G](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data).
