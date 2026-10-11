@@ -2,6 +2,8 @@
 
 All notable changes to seo-kit are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
 ## 1.0.0 — 2026-10-11
 
 ### Breaking
@@ -41,12 +43,12 @@ All notable changes to seo-kit are documented here. The format follows [Keep a C
 - **CI** (GitHub Actions):
   - Unit tests on Ubuntu, Windows and macOS with Python 3.9–3.13.
   - A lint job: `extract_dom.js` syntax, manifest JSON, index freshness and knowledge lint.
-- **Evals** (`plugins/seo-kit/evals/`) for `claude plugin eval`, on fixture sites of fictional businesses.
+- **Evals** (`plugins/seo-kit/evals/`): 7 cases for `claude plugin eval` (EN, IT, DE), on fixture projects of fictional businesses.
 - **`knowledge/INDEX.md`:** one line per check (440 checks, 46 aliases). It is generated from the check tables.
 - **Tools:**
   - `tools/build_index.py` (with `--check`)
   - `tools/check_knowledge.py` (knowledge lint)
-  - `tools/trigger_test.py` (skill-triggering test with `--dry-run`)
+  - `tools/trigger_test.py` (skill-triggering test: `--plugin-dir`, per-run temp folder, process-tree kill on timeout, `--dry-run`)
 - **Docs:** `docs/knowledge-style-guide.md`, `docs/page-schema.md` and `docs/CONTRIBUTING.md`.
 - **Language rules:** `knowledge/conventions.md` defines the working language and the fictional examples used across knowledge, skills, tests and evals.
 - **Skills:** multilingual trigger phrases (EN, IT, ES, DE, FR) in every skill. Every skill that changes a project file appends a row to `SEO.md › 10. Change log`.

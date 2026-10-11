@@ -87,15 +87,27 @@ The skills also trigger on their own when a request matches. For example: "why i
 
 Nothing is written outside the project folder.
 
-## Network calls the scripts make
+## Network use
 
-- **Your site.** `seo_fetch.py` requests your pages, `robots.txt`, sitemaps, the host variants (http/https, www/apex) and one made-up URL to test the 404 status. It compares what a browser user agent receives with what a Googlebot-like, a Bingbot-like and AI-bot-like user agents (OAI-SearchBot, Claude-SearchBot, PerplexityBot by default) receive. Requests are spaced by a delay (1 second by default), and 429/503 responses honour `Retry-After`.
-- **Google autocomplete.** `suggest.py` calls Google's undocumented suggest endpoint `suggestqueries.google.com`, which is used for query research. It stops at the first rate-limit response.
-- **PageSpeed Insights API.** The audit calls `googleapis.com/pagespeedonline` for lab performance data when no browser MCP is available.
-- **GitHub public API.** `seo-entity-local` uses `api.github.com/users/<name>` to check a public profile when the identity includes a GitHub account.
-- **DNS.** The optional `dig`/`nslookup` lookups use your system resolver.
+**Calls the scripts make themselves:**
 
-Nothing else is contacted. There is no telemetry, analytics or phone-home. Claude may also fetch a Google documentation page with WebFetch when a rule is missing from the knowledge base.
+- **`seo_fetch.py` contacts the site being audited.** It requests:
+  - the pages, `robots.txt` and the sitemaps;
+  - the host variants (http/https, www/apex);
+  - one made-up URL, to test the 404 status.
+- **It compares user agents.** What a browser user agent receives is compared with what a Googlebot-like, a Bingbot-like and AI-bot-like user agents (OAI-SearchBot, Claude-SearchBot, PerplexityBot by default) receive. Requests are spaced by a delay (1 second by default), and 429/503 responses honour `Retry-After`.
+- **It runs DNS lookups.** The optional `dig`/`nslookup` lookups (nameservers, TXT records) use your system resolver.
+- **`suggest.py` calls Google autocomplete.** It uses Google's undocumented suggest endpoint `suggestqueries.google.com` for query research, and stops at the first rate-limit response.
+- **`analyze_gsc.py --check-urls` checks the pages in your export.** It requests every page URL listed in your Search Console export to report its current HTTP status, 1 second apart. Without `--check-urls` it makes no network calls.
+- **`check_build.py` makes no network calls.** It reads only the build output on disk.
+
+**Calls the skills may ask Claude to make with its own tools** (WebFetch, web search, a browser MCP). These go through Claude Code's usual permission prompts:
+
+- **PageSpeed Insights API** (`googleapis.com/pagespeedonline`) or the **CrUX API**, for performance data when no browser MCP is available.
+- **GitHub public API** (`api.github.com/users/<name>`), when the identity includes a GitHub account.
+- **Web search and WebFetch**: Google documentation pages when a rule is missing from the knowledge base, public profiles of the person or business, and current results for the main queries in `seo-discovery`, if a web search tool is available.
+
+There is no telemetry, and nothing is sent to the plugin author.
 
 ## Knowledge base
 
@@ -111,7 +123,7 @@ Each topic file has an audit-check table with stable IDs (`CI-01`, `SD-12`…), 
 
 ## Context size
 
-The skills read the knowledge base in tiers. Tier 0 is always read at the start: `archetypes.md`, `conventions.md`, `INDEX.md` and the one adapter for the detected stack. It is about **90 KB**, of which `INDEX.md` is about 61 KB. Topic files are read section by section, only for the area being worked on, using Grep and offset reads. A whole file is read only rarely.
+The skills read the knowledge base in tiers. Tier 0 is always read at the start: `archetypes.md`, `conventions.md`, `INDEX.md` and the one adapter for the detected stack. It is about **90 KB**, of which `INDEX.md` is about 62 KB. Topic files are read section by section, only for the area being worked on, using Grep and offset reads. A whole file is read only rarely.
 
 ## Development
 
@@ -126,11 +138,20 @@ claude --plugin-dir plugins/seo-kit        # run Claude Code with the working co
 | Unit tests (no network, standard library) | `python -m unittest discover -s tests -v` |
 | Knowledge lint | `python tools/check_knowledge.py` |
 | Rebuild the knowledge index | `python tools/build_index.py` (`--check` fails if `INDEX.md` is stale) |
-| Skill evals | `claude plugin eval plugins/seo-kit` |
-| Trigger test | `python tools/trigger_test.py --dry-run`, then `python tools/trigger_test.py --runs 2` |
+| Skill evals (7 cases) | `claude plugin eval plugins/seo-kit --scaffold --allow-tools Bash Write Edit "WebFetch(domain:127.0.0.1)"` |
+| Trigger test | `python tools/trigger_test.py --dry-run`, then `python tools/trigger_test.py --runs 2 --workers 4` |
 
-- **Evals.** The cases in `plugins/seo-kit/evals/cases/` run each skill on a small fixture site or export. Every case uses fictional businesses and `.example` domains. The graders check which skill and tools were used, which files were written, and what the report says. An LLM rubric judges the plain-language quality. Results go to `plugins/seo-kit/evals/results/`, which is gitignored. Evals and trigger tests run real Claude sessions and cost tokens.
-- **Trigger test.** It sends English and Italian requests, plus negative ones, to `claude -p` in a temporary folder and records which skill fires. Results go to `tools/trigger-runs/`, which is gitignored.
+- **Evals.** The 7 cases in `plugins/seo-kit/evals/cases/` cover the six skills, in English, Italian and German. Each case runs a request on a small fixture project or Search Console export.
+  - Every case uses fictional businesses and `.example` domains.
+  - Graders check the skill and tools used, the files written and what the report says; an LLM rubric judges plain-language quality.
+  - `--scaffold` copies each fixture into the run workspace. The shell commands run in Claude Code's OS sandbox (macOS, Linux, or WSL2 on Windows).
+  - Results go to `plugins/seo-kit/evals/results/`, which is gitignored.
+  - Every run is a real Claude Code session and costs tokens.
+  - Options, cost and how to add a case: [`plugins/seo-kit/evals/README.md`](plugins/seo-kit/evals/README.md).
+- **Trigger test.** For each query in `tools/trigger-queries.json` (English and Italian requests per skill, plus negatives), it starts `claude -p` in a new temporary folder with `--plugin-dir plugins/seo-kit`. It records which skill fires.
+  - The summary is printed as Markdown; the full results go to `tools/trigger-runs/`, which is gitignored.
+  - Real runs are billable, so start with `--dry-run`.
+  - `--only seo-content,none` limits the run to some skills; `none` means the negative queries.
 - **CI.** GitHub Actions runs the unit tests on Ubuntu, Windows and macOS with Python 3.9 to 3.13. A lint job checks `extract_dom.js` syntax, validates the manifests, checks that the index is up to date and runs the knowledge lint.
 - **Releases.** Raise `version` in `plugins/seo-kit/.claude-plugin/plugin.json` and add a [CHANGELOG.md](CHANGELOG.md) entry.
 
@@ -149,7 +170,7 @@ plugins/seo-kit/                  the plugin (what gets installed)
   lib/seokit/                     shared standard-library code used by the scripts
   evals/                          eval cases with fictional fixture sites
 docs/                             contributor guide, knowledge style guide, page schema of seo_fetch
-sources/                          research notes and the list of Google pages read
+sources/                          research notes, the list of Google pages read and the research fetch scripts (not shipped)
 tests/                            unit tests and byte-exact fixtures
 tools/                            index builder, knowledge lint, trigger test
 ```

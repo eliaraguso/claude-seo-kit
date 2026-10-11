@@ -7,7 +7,7 @@ SEO for new and live websites, on any stack and for any site type, grounded in G
 - `skills/`: six skills, each with a `SKILL.md` and, where needed, Python scripts (standard library only, Python 3.9+) and templates.
 - `knowledge/`: the shared knowledge base. It has topic files with about 440 checks, each with a stable ID, a severity and a source. It also has the site archetypes, the conventions, a list of myths and deprecated advice, the generated `INDEX.md` and 15 framework/CMS adapters.
 - `lib/seokit/`: shared code used by the scripts (HTTP, HTML parsing, robots.txt, sitemaps, DNS, Search Console exports).
-- `evals/`: eval cases for `claude plugin eval`, using fictional sites.
+- `evals/`: 7 eval cases for `claude plugin eval`, using fictional sites.
 
 ## The six skills
 
@@ -29,6 +29,8 @@ The skills also trigger on their own when a request matches.
 
 ## Network use
 
-The scripts contact only your site, Google's autocomplete endpoint (`suggest.py`) and, from the skills, the PageSpeed Insights API and the GitHub public API. They send no telemetry.
+- **Scripts:** they contact only the audited site (`seo_fetch.py`, and `analyze_gsc.py --check-urls` for the pages in your export) and Google's autocomplete endpoint (`suggest.py`).
+- **Skills:** they may ask Claude to use the PageSpeed Insights or CrUX API, the GitHub public API and web search/WebFetch.
+- There is no telemetry, and nothing is sent to the plugin author.
 
 Full documentation, requirements, upgrade notes and limits: https://github.com/eliaraguso/claude-seo-kit#readme
