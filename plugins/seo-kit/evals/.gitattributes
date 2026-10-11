@@ -1,0 +1,3 @@
+# Case files are byte-exact inputs: setup.sh must keep LF for bash, fixtures and graders
+# must not change between checkouts. No end-of-line conversion under cases/.
+cases/** -text

@@ -1,0 +1,4 @@
+body { font-family: system-ui, sans-serif; margin: 0 auto; max-width: 46rem; padding: 1rem; color: #1d2733; }
+nav a { margin-right: 1rem; }
+h1 svg { width: 1.2em; height: 1.2em; vertical-align: middle; }
+footer { margin-top: 3rem; font-size: .9rem; color: #555; }
