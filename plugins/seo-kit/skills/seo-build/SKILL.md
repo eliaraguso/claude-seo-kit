@@ -1,55 +1,100 @@
 ---
 name: seo-build
-description: Regole SEO mentre si costruisce o si modifica un sito, con qualsiasi framework (Angular, React/Next, Vue/Nuxt, Astro, WordPress, HTML statico) - impostazione delle basi di un progetto nuovo (rendering, route, title/meta/canonical per pagina, robots, sitemap, 404 reali, dati strutturati di base), controllo di ogni pagina o route aggiunta, verifica dei file generati dalla build e checklist di lancio o di migrazione. Usa questa skill quando l'utente crea un sito o un progetto web, aggiunge pagine/route/sezioni, cambia URL o routing, prepara un deploy o la messa online, migra dominio o framework, anche se non nomina la SEO.
+description: SEO rules while building or changing a website, on any stack (Angular, Next.js/React, Nuxt/Vue, Astro, SvelteKit, WordPress, Shopify, static HTML and more) and any site type (personal brand, professional services, local business, editorial, ecommerce, SaaS). Sets up the foundations of a new project (rendering, routes, per-page title/meta/canonical, robots, sitemap, true 404s, base structured data, hreflang), checks every page or route added, verifies the build output and runs the launch or migration checklist. Use it when someone creates a site, adds pages or routes, changes URLs or routing, prepares a deploy or go-live, or migrates domain or framework, even without saying SEO.
+when_to_use: |
+  EN: set up a new site SEO-ready; add a page or route; check the build before deploy; go-live checklist; migrate domain or framework; change URLs safely
+  IT: sito nuovo pronto per Google; aggiungere una pagina o route; controllare la build prima del deploy; checklist di messa online; migrare dominio o framework; cambiare gli URL
+  ES: web nueva lista para Google; añadir una página o ruta; revisar la build; checklist de lanzamiento; migrar dominio o framework; cambiar URLs
+  DE: neue Website SEO-fertig; neue Seite oder Route; Build vor dem Deploy prüfen; Go-live-Checkliste; Domain- oder Framework-Migration; URLs ändern
+  FR: site neuf prêt pour Google; ajouter une page ou une route; vérifier le build; checklist de mise en ligne; migrer domaine ou framework; changer les URL
+argument-hint: "[project path or build output folder] [--base https://host] [new | page <route> | launch | migration]"
 ---
 
-# SEO durante la costruzione
+# SEO while building
 
-Correggere la SEO dopo il lancio costa di più che impostarla bene mentre si scrive il codice: URL cambiati, pagine già indicizzate male, redirect da gestire. Questa skill porta le regole di Google dentro il lavoro di sviluppo, nei tre momenti in cui contano.
+Fixing SEO after launch costs more than setting it up right while the code is being written: changed URLs, pages already indexed badly, redirects to manage. This skill brings Google's rules into development work, at the three moments where they matter.
 
-## Base di conoscenza
-In `${CLAUDE_PLUGIN_ROOT}/knowledge/` (se la variabile non è espansa: la cartella `knowledge/` due livelli sopra questa skill):
-- `rendering-javascript.md` — leggi la sezione **"Adattatori per framework"** per lo stack del progetto;
-- `crawling-indexing.md`, `on-page-appearance.md`, `structured-data.md` — le sezioni "Regole per chi costruisce";
-- `archetypes.md` — priorità per tipo di sito;
-- `myths-deprecated.md` — per non introdurre pratiche superate (es. `meta keywords`, `priority` nelle sitemap, rendering dinamico).
+> **Working language.** Answer in the language of the user's message. Files written into the project (`SEO.md`, `seo-reports/*`) use the report language recorded in `SEO.md › 1. Site › Working language` (if `SEO.md` is missing, use the user's language and record it when creating `SEO.md`). Page copy (titles, descriptions, H1, body text, alt text) is always written in the site language(s) from `SEO.md › 1. Site › Languages and markets`. Check IDs, severities, JSON keys and script flags stay in English; report headings are translated.
 
-Se esiste `SEO.md` nella radice del progetto, leggilo: dice quali pagine servono e per quali ricerche.
+## Knowledge base
 
-## Momento 1 — Basi di un progetto nuovo (o adozione su un progetto esistente)
-Verifica e, con l'accordo dell'utente, imposta:
-1. **Rendering:** il contenuto principale deve essere nell'HTML che arriva dal server. Per i framework JS: SSR o prerender/SSG (es. Angular `@angular/ssr` con route `Prerender` dove possibile). Il CSR puro va bene solo per aree private.
-2. **URL e routing:** URL a percorso (History API, niente `#/`), minuscoli con trattini, stabili. Navigazione con `<a href>` veri.
-3. **Head per ogni route:** title unico, meta description, un solo canonical assoluto e autoreferenziale nell'HTML, `lang` su `<html>`. Centralizza in un servizio/componente SEO invece di ripeterlo a mano.
-4. **404 veri:** le route inesistenti devono rispondere con stato 404 lato server/hosting, non 200 con una pagina "non trovato".
-5. **File di sito:** `robots.txt` (che non blocchi CSS/JS) con riga `Sitemap:`; sitemap generata dalle route reali, con `lastmod` vero; favicon del progetto (non quella di default del framework).
-6. **Dominio canonico:** una sola versione (con o senza www, https) e redirect 301 dalle altre, configurati sull'hosting.
-7. **Dati strutturati di base:** `WebSite` in home; `Person`/`ProfilePage` o `Organization`/`LocalBusiness` secondo l'archetipo, con `@id` stabile (schede ed esempi in `structured-data.md`). L'immagine di una persona deve essere una foto reale: se non c'è, ometti la proprietà `image` invece di usare logo, grafica social o screenshot.
-8. **Misurazione:** eventi sulle conversioni (contatto, telefono, download, prenotazione). Vedi `measurement.md`.
-9. **Prestazioni:** immagini dimensionate e non lazy sopra la piega, font precaricati, bundle iniziale contenuto. Le soglie sono in `on-page-appearance.md`.
+In `${CLAUDE_PLUGIN_ROOT}/knowledge/` (if the variable is not expanded: the `knowledge/` folder two levels above this skill's folder). Read by tier, as defined in `conventions.md › Reading tiers`; never read a topic file in full except where Tier 3 says so.
 
-## Momento 2 — Ogni pagina o route nuova
-Prima di considerare finita una pagina, controlla:
-- risponde a **un intento** preciso (se c'è `SEO.md`, aggiungila alla tabella degli intenti) e non duplica un'altra pagina;
-- title, description e H1 specifici, scritti con le parole del pubblico, senza refusi;
-- è raggiungibile da un link interno `<a href>` e compare nella sitemap;
-- immagini di contenuto in `<img>` con `alt`, testi importanti in HTML (non solo in immagini o PDF);
-- dati strutturati pertinenti e coerenti con ciò che è visibile;
-- se sostituisce un URL esistente, redirect 301 dal vecchio.
+| Tier | What to read | When |
+|---|---|---|
+| 0 | `archetypes.md` (priorities per site type), `conventions.md`, `INDEX.md` (one line per check: `\| ID \| Severity \| Check \| Where \| Alias of \|`, generated by `tools/build_index.py`), `adapters/README.md` detection table + the matching `adapters/<stack>.md` | Always, at the start |
+| 1 | `## Build rules` of `crawling-indexing.md`, `rendering-javascript.md`, `on-page-appearance.md`, `structured-data.md`, `performance-cwv.md` | Moment 1; then the section that matches the change |
+| 1 | `## Build rules` of `international.md` | If `SEO.md` lists more than one language or market (`multilingual`) |
+| 1 | `## Build rules` of `ecommerce.md` | ecommerce archetype |
+| 1 | `## Build rules` of `measurement.md` and `bing-basics.md` | Moment 1 (measurement) and Moment 3 (launch) |
+| 2 | The `## Facts and rules (Google)` subsection named in the `Where` column of the INDEX line for a check ID quoted in a build rule | When a rule needs explaining or the stack makes it hard |
+| 3 | `myths-deprecated.md` in full | Before proposing practices (to avoid e.g. `meta keywords`, `priority` in sitemaps, dynamic rendering) |
 
-Per i testi della pagina usa la skill `seo-content`.
+To read a Tier 1 section: Grep `^## Build rules` in the file (with line numbers), then Read with `offset` at that line and a `limit` that stops at the next `## ` heading. Build rules point to check IDs; look an ID up in `INDEX.md`. If a rule is missing, fetch the Google URL in the Source column with WebFetch; there is no local copy of Google's pages.
 
-## Momento 3 — Prima del deploy e al lancio
-1. **Controlla la build** (siti prerenderizzati o statici):
+If `SEO.md` exists in the project root, read it: it says which pages are needed and for which searches, the archetype and the site languages. If it starts with `# Profilo SEO` it is a v1 file (Italian, 0.2.x): read it as is (its sections 8/8b/8c/9 correspond to v2 sections 8/9/10/11) and suggest migrating it with `seo-discovery`. If it is missing, suggest `seo-discovery` first; for a quick start, ask for archetype, site languages and the production URL.
+
+## Scripts
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-build/scripts/check_build.py" <out-dir> --base https://host [--fail-on high] [--json path] [--lang xx]
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/seo_fetch.py" https://staging-host --sitemap 20 --max-pages 20 [--json path]
+```
+
+On Windows use `py -3` (or `python`) if `python3` is not available. The scripts need Python 3.9+ and only the standard library.
+
+## Moment 1 — Foundations of a new project (or adoption on an existing one)
+First **detect the stack** with the detection table in `adapters/README.md` (repository signals first; the most specific wins) and read only the matching adapter: it says where each item below lives in that stack and lists its typical pitfalls with check IDs. If no row matches, say so and use `adapters/static-html.md` plus `rendering-javascript.md › Build rules`. Record stack, adapter, rendering and router in `SEO.md › 1. Site`.
+
+Verify and, with the user's agreement, set up:
+1. **Rendering:** the main content must be in the HTML that comes from the server. For JS frameworks: SSR or prerender/SSG (e.g. Angular `@angular/ssr` with `Prerender` routes where possible; other stacks: the adapter). Pure CSR is fine only for private areas. → `rendering-javascript.md › Build rules`.
+2. **URLs and routing:** path URLs (History API, no `#/`), lowercase with hyphens, stable. Navigation with real `<a href>` links.
+3. **Head for every route:** unique title, meta description, one absolute self-referencing canonical in the HTML, `lang` on `<html>`. Centralise it in a SEO service/component/layout instead of repeating it by hand. Title and description lengths: `on-page-appearance.md › Build rules` (OP-02, OP-03, OP-08).
+4. **True 404s:** non-existent routes must answer with status 404 from the server/hosting, not 200 with a "not found" page; the SPA fallback must not serve `index.html` for `/robots.txt`, `/sitemap.xml` or unknown URLs.
+5. **Site files:** `robots.txt` (not blocking CSS/JS) with a `Sitemap:` line; sitemap generated from the real routes, with a true `lastmod`; the project's own favicon (not the framework default).
+6. **Canonical host:** one version (with or without www, https) and 301 redirects from the others, configured on the hosting.
+7. **Base structured data:** `WebSite` on the home page; `Person`/`ProfilePage` or `Organization`/`LocalBusiness` according to the archetype, with a stable `@id` (minimum JSON-LD per archetype and examples in `structured-data.md › Build rules`). A person's image must be a real photo: if there is none, omit the `image` property instead of using a logo, social graphic or screenshot.
+8. **International setup** (only if `SEO.md › 1. Site › Languages and markets` lists more than one language or market): one URL structure for all locales, hreflang generated from one locale map, self-referencing canonical per locale, no automatic redirects by IP or browser language, a selector with real links. → `international.md › Build rules` (IN rows).
+9. **Ecommerce** (ecommerce archetype): product URLs, variants, facets, stock states and product data in the server HTML. → `ecommerce.md › Build rules` (EC rows).
+10. **Measurement:** events on conversions (contact, phone, download, booking); Search Console and Bing at launch. → `measurement.md › Build rules`.
+11. **Performance baseline:** hero image dimensioned and not lazy, fonts preloaded and few, a contained initial bundle, space reserved for banners and embeds; set the budget now and measure field data after launch. Thresholds and rules: `performance-cwv.md › Build rules` (PF rows).
+
+## Moment 2 — Every new page or route
+Before considering a page finished, check that:
+- it answers **one** precise intent (if there is a `SEO.md`, add it to the table in `SEO.md › 4. Audience and search intents`) and does not duplicate another page;
+- title, description and H1 are specific, written with the audience's words, without typos;
+- it is reachable from an internal `<a href>` link and appears in the sitemap;
+- content images are `<img>` with `alt`, important text is in HTML (not only in images or PDFs);
+- structured data is relevant and consistent with what is visible;
+- if it replaces an existing URL, there is a 301 redirect from the old one;
+- if the page targets another language or market, the hreflang cluster is updated on every page of the cluster (reciprocal links, self-reference, `x-default`; IN rows).
+
+For the page copy use the `seo-content` skill.
+
+## Moment 3 — Before deploy and at launch
+1. **Check the build** (prerendered or static sites):
    ```bash
-   python "${CLAUDE_PLUGIN_ROOT}/skills/seo-build/scripts/check_build.py" <cartella-output> --base https://dominio.it
+   python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-build/scripts/check_build.py" dist/browser --base https://acme-widgets.example --fail-on high --json build-check.json
    ```
-   Segnala title/description mancanti o duplicati, canonical assenti o multipli, H1, JSON-LD non valido, possibili errori di accento, pagine quasi vuote (prerender non avvenuto) e HTML oltre 2 MB. Le pagine `noindex` e i file di fallback del framework (es. `index.csr.html`) sono riportati solo come informazione. Riporta l'esito in una tabella per URL (title, canonical, H1, JSON-LD, stato), non solo come giudizio complessivo.
-2. **Controlla l'ambiente online** (anche di staging, se raggiungibile): `python "${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/seo_fetch.py" https://staging... --sitemap 20`. Attenzione: lo staging deve essere protetto o `noindex`, e quel `noindex` **non deve arrivare in produzione**.
-3. **Al lancio:** proprietà Search Console di tipo Dominio, invio della sitemap, Controllo URL della home; Bing Webmaster Tools (può importare da Search Console). Registra la data di lancio in `SEO.md`.
-4. **Migrazione da un sito precedente:** mappa vecchi URL → nuovi URL e redirect 301 uno a uno (niente redirect di massa alla home), mantieni i redirect almeno un anno, usa lo strumento Cambio di indirizzo di Search Console se cambia dominio. Dettagli in `crawling-indexing.md`.
+   `--base` is the production URL (required); `--fail-on low|medium|high|critical` (default `high`); `--json PATH` also writes the full result (`pages[].findings`, `site_findings`); `--lang xx` picks the optional typo pack (default: each page's `lang`). **Exit codes:** 0 = no finding at or above `--fail-on` · 1 = findings at or above `--fail-on` · 2 = usage error. It reports, per URL: missing or duplicate title/description, canonical problems (missing, multiple, not the page URL, pointing to the home page, localhost/staging host, `http://`, relative), H1 count, invalid JSON-LD, `lang`, viewport, noindex, near-empty pages (prerender did not happen), HTML over 2 MB, broken internal links, links to localhost/staging and `http://` assets, possible typos. `noindex` pages (finding `noindex`) and framework fallback or verification files (finding `shell-file`: e.g. `index.csr.html`, `200.html`, `_fallback.html`, `google*.html`, `BingSiteAuth.xml`) are reported as Low and not checked further; `404.html` is also a `shell-file`, but the hosting must still serve it with HTTP 404 (not 200): verify that on the live or staging site. Site level: robots.txt (and `Disallow: /`), sitemap files and the **sitemap vs pages diff** (`sitemap-missing-pages`: generated pages not in the sitemap; `sitemap-extra-urls`: sitemap URLs with no generated page; `sitemap-other-host`). Present the outcome as a table per URL (title, canonical, H1, JSON-LD, status), not only as an overall verdict.
+2. **Check the online environment** (staging too, if reachable): `python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/seo_fetch.py" https://staging.acme-widgets.example --sitemap 20 --max-pages 20`. Warning: staging must be protected (authentication) or `noindex`, and that `noindex` **must not reach production**.
+3. **At launch:** Search Console Domain property, submit the sitemap, URL Inspection on the home page and key templates; Bing Webmaster Tools (it can import from Search Console) and IndexNow wired into publishing (`bing-basics.md › Build rules` and its 15-minute setup procedure); remove every development `noindex`/`Disallow: /`/password. Record the launch date in `SEO.md › 1. Site › Status` ("live since YYYY-MM-DD").
+4. **Migration from a previous site:** map old URLs → new URLs and 301 redirects one to one (no mass redirects to the home page), keep the redirects for at least one year, use the Search Console Change of Address tool if the domain changes. Keep the mapping as a file in the project. Details: `crawling-indexing.md › Facts and rules (Google) › Site moves and hosting changes` (Tier 2).
 
-## Come lavorare
-- Applica le modifiche al codice solo con l'accordo dell'utente quando toccano architettura, hosting o URL; per le correzioni locali (un title, un alt, un link) procedi e riepiloga.
-- Dopo una modifica, ripeti il controllo pertinente (build o script) e riporta l'esito.
-- Se un requisito non si può soddisfare con l'hosting attuale (es. niente redirect lato server), dillo chiaramente e proponi l'alternativa meno dannosa, annotandola in `SEO.md` (sezione "Decisioni e vincoli").
+## How to work
+- Apply code changes only with the user's agreement when they touch architecture, hosting or URLs; for local fixes (a title, an alt text, a link) proceed and summarise.
+- After a change, repeat the relevant check (build or script) and report the result.
+- If a requirement cannot be met with the current hosting (e.g. no server-side redirects), say so clearly and propose the least harmful alternative, recording it in `SEO.md › 8. Decisions and constraints`.
+- **Change log:** before finishing, append one row to `SEO.md › 10. Change log` (date · change · pages/area · skill) for every file you created or modified in the project (v1 file: section "8c. Registro interventi").
+
+## Output format
+Reply in the user's language; any file written into the project uses the report language, with headings translated. Keep this order:
+1. **What I checked or set up** — moment (1/2/3), stack and adapter used.
+2. **Results** — for Moment 3, the per-URL table (URL · title · canonical · H1 · JSON-LD · status) plus site-level findings grouped by severity (Critical · High · Medium · Low, from `conventions.md`) and the script's exit code.
+3. **Changes made** — file path and what changed; **changes proposed** that need the user's agreement.
+4. **Still to do** — launch or migration checklist items left open, and who does them.
+
+## Things to keep in mind
+- **No ranking promises**: the setup removes obstacles; indexing after launch takes days to weeks, as Google states.
+- **Respect deliberate choices** recorded in `SEO.md › 8. Decisions and constraints` or in the project docs: if you advise against one, explain why and let the user decide.
+- **Do not introduce outdated practices** (`myths-deprecated.md`): no `meta keywords`, no `priority`/`changefreq` tuning, no dynamic rendering, no markup "for AI".

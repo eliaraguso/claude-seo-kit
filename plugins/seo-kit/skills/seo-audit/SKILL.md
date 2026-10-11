@@ -1,145 +1,190 @@
 ---
 name: seo-audit
-description: Audit SEO completo di un sito web, nuovo o già online, con qualsiasi framework (Angular, React/Next, Vue/Nuxt, Astro, WordPress, HTML statico). Controlla l'accesso dei bot e l'indicizzazione, il rendering JavaScript, title/meta/canonical, i testi visibili, i dati strutturati, le prestazioni, la qualità dei contenuti, l'identità (personal brand) e la SEO locale, la visibilità nella ricerca AI. Produce un piano d'azione in linguaggio semplice con correzioni concrete sul codice e testi già riscritti. Usa questa skill ogni volta che l'utente chiede perché il sito non si trova su Google, vuole un controllo SEO, vuole migliorare il posizionamento o la visibilità su ChatGPT/AI Overviews, sta per mettere online un sito o ha cambiato qualcosa che potrebbe toccare l'indicizzazione, anche se non usa la parola "audit".
+description: Full SEO audit of a website, new or already live, on any stack (Angular, Next.js/React, Nuxt/Vue, Astro, SvelteKit, WordPress, Shopify, static HTML and more) and any site type (personal brand, professional services, local business, editorial, ecommerce, SaaS). Checks bot access and indexing, JavaScript rendering, title/meta/canonical, visible copy, structured data, performance, content quality, entity and local SEO, international setup and AI search visibility. Produces a plain-language action plan with concrete code fixes and rewritten copy. Use it when someone asks why a site is not found on Google, wants an SEO check before or after launch, or changed something that may affect indexing.
+when_to_use: |
+  EN: why is my site not on Google; SEO audit; check my site's SEO; not cited by ChatGPT or AI Overviews; traffic dropped after a redesign; pages not indexed; SEO check before launch
+  IT: il sito non esce su Google; audit SEO; controllo SEO; non mi trovano nemmeno col nome; visite da Google crollate; pagine non indicizzate
+  ES: mi web no aparece en Google; auditoría SEO; revisar el SEO; no salgo en ChatGPT; caída de tráfico tras el rediseño; páginas no indexadas
+  DE: Website nicht bei Google; SEO-Audit; SEO prüfen; nicht in ChatGPT zitiert; Traffic nach Relaunch eingebrochen; Seiten nicht indexiert
+  FR: mon site n'apparaît pas sur Google; audit SEO; vérifier le SEO; pas cité par ChatGPT; trafic en chute après la refonte; pages non indexées
+argument-hint: "[site URL and/or project path] [--mode online|code|both]"
 ---
 
-# Audit SEO
+# SEO audit
 
-Questa skill verifica un sito contro le regole attuali della Ricerca Google (ottobre 2026) e produce un report che dice **cosa sistemare, in che ordine e come**. Funziona su un sito online, su un repository in sviluppo, o meglio su entrambi.
+This skill checks a site against the current rules of Google Search (October 2026) and produces a report that says **what to fix, in what order and how**. It works on a live site, on a repository under development, or best of all on both.
 
-Chi legge il report spesso non è un esperto SEO: il valore sta nel trovare i problemi veri *e* nel renderli chiari e pronti da applicare.
+The reader of the report is often not an SEO expert: the value lies in finding the real problems *and* making them clear and ready to apply.
 
-## Base di conoscenza
+> **Working language.** Answer in the language of the user's message. Files written into the project (`SEO.md`, `seo-reports/*`) use the report language recorded in `SEO.md › 1. Site › Working language` (if `SEO.md` is missing, use the user's language and record it when creating `SEO.md`). Page copy (titles, descriptions, H1, body text, alt text) is always written in the site language(s) from `SEO.md › 1. Site › Languages and markets`. Check IDs, severities, JSON keys and script flags stay in English; report headings are translated.
 
-Le regole e le tabelle dei controlli stanno in `${CLAUDE_PLUGIN_ROOT}/knowledge/` (se la variabile non è espansa: la cartella `knowledge/` due livelli sopra la cartella di questa skill). Ogni file ha una sezione **"Controlli per l'audit"** con ID stabili.
+## Knowledge base
 
-| File | Quando leggerlo |
-|---|---|
-| `archetypes.md` | sempre, all'inizio: stabilisce l'ordine delle priorità |
-| `crawling-indexing.md` | sempre (accesso bot, robots, sitemap, canonical, codici HTTP) |
-| `rendering-javascript.md` | sempre se il sito usa un framework JS; contiene gli adattatori per framework |
-| `on-page-appearance.md` | sempre (title, snippet, heading, immagini, favicon, nome sito, Core Web Vitals) |
-| `structured-data.md` | sempre |
-| `content-quality-spam.md` | sempre; è il filtro anti-penalizzazioni |
-| `entity-personal-brand.md` | archetipi personal-brand e professionista-servizi |
-| `local-seo.md` | archetipi attivita-locale e professionista-servizi con presenza locale |
-| `ai-search.md`, `measurement.md` | sezione finale del report |
-| `myths-deprecated.md` | prima di scrivere qualsiasi raccomandazione, per non consigliare cose superate |
+Rules and check tables live in `${CLAUDE_PLUGIN_ROOT}/knowledge/` (if the variable is not expanded: the `knowledge/` folder two levels above this skill's folder). Read by tier, as defined in `conventions.md › Reading tiers`; never read a topic file in full except where Tier 3 says so.
 
-Leggi i file per intero quando servono: le tabelle sono la checklist, il resto spiega il perché. Se una regola manca, i testi originali Google sono in `${CLAUDE_PLUGIN_ROOT}/sources/google-search-central/pages/` (se presenti in locale).
+| Tier | What to read | When |
+|---|---|---|
+| 0 | `archetypes.md` (archetype and **Priority matrix**), `conventions.md` (severity scale, check IDs, SEO.md v2), `INDEX.md` (one line per check: `\| ID \| Severity \| Check \| Where \| Alias of \|`, generated by `tools/build_index.py`, never edited by hand), `adapters/README.md` detection table + the matching `adapters/<stack>.md` | Always, at the start |
+| 1 | Only the `## Audit checks` section of each area file below, in the priority-matrix order of the site's archetype | For each area being audited |
+| 2 | The `## Facts and rules (Google)` subsection named in the `Where` column of the INDEX line | When a check fails or needs explaining |
+| 3 | `myths-deprecated.md` in full; a whole topic file only when Tiers 1-2 are not enough | `myths-deprecated.md` always, before writing recommendations |
 
-**Gerarchia delle fonti.** La documentazione Google è la fonte primaria. Le opinioni di terzi (marcate SEJ nella base di conoscenza) valgono come indizi: riportale come tali. Ciò che è marcato ⚠ o compare in `myths-deprecated.md` non va raccomandato.
+Files with `## Audit checks`, by priority-matrix area:
 
-## Procedura
+| Area (as in the Priority matrix) | File (ID prefix) | Read when |
+|---|---|---|
+| Bot access and indexing | `crawling-indexing.md` (CI) | Always |
+| JavaScript rendering | `rendering-javascript.md` (RJ) | Always (also for "static" sites: it checks the served HTML) |
+| Ecommerce specifics | `ecommerce.md` (EC) | ecommerce |
+| Structured data | `structured-data.md` (SD) | Always |
+| Site architecture and internal links | `site-architecture.md` (SA) | Always |
+| On-page and appearance in results | `on-page-appearance.md` (OP) | Always |
+| International | `international.md` (IN) | `multilingual` modifier, or more than one entry in `Languages and markets` |
+| Content, quality and spam | `content-quality-spam.md` (CQ); `editorial-news.md` (ED) | CQ always; ED for editorial or the `paywall` modifier, in the same slot |
+| Performance (Core Web Vitals) | `performance-cwv.md` (PF) | Always |
+| Entity and personal brand | `entity-personal-brand.md` (EN) | personal-brand, professional-services, local-business, editorial authors |
+| Local | `local-seo.md` (LO) | local-business, professional-services with a local presence |
+| AI search and measurement | `ai-search.md` (AI), `measurement.md` (ME), `bing-basics.md` (BI) | Always, last section of the report |
 
-### 1. Contesto
-1. Cerca `SEO.md` nella radice del progetto e leggilo: archetipo, URL, ricerche target, entità, accessi e audit precedenti cambiano cosa controllare.
-2. **Leggi la documentazione del progetto** (README, CLAUDE.md, file di stato, TODO, decisioni, report SEO precedenti, `docs/`). Serve a tre cose: non raccomandare ciò che è già fatto (es. sitemap già inviata), capire le scelte deliberate (es. "non nominare il datore di lavoro") e trovare i documenti che contraddicono la realtà. Se un documento interno porta a una scelta sbagliata, segnalalo: una sessione futura potrebbe "correggere" il sito nella direzione sbagliata.
-3. Se `SEO.md` non esiste, proponi `seo-discovery`. Se l'utente vuole procedere subito, ricava il minimo (URL, archetipo, obiettivo, 3-5 ricerche probabili) e dichiaralo come profilo provvisorio.
-4. Modalità: **online + codice** (ideale), **solo online**, **solo codice** (sito in costruzione: i controlli che richiedono il sito online vanno in "da verificare al lancio").
+To read a Tier 1 section: Grep `^## Audit checks` in the file (with line numbers), then Read with `offset` at that line and a `limit` that stops at the next `## ` heading. Secondary archetypes add their files; modifiers add the files listed in `archetypes.md › Modifiers`. If a rule is missing, fetch the Google URL in the Source column with WebFetch; there is no local copy of Google's pages.
 
-### 2. Stack e rendering
-Riconosci il framework (`angular.json`, `package.json`, `next.config.*`, `nuxt.config.*`, `astro.config.*`, `wp-content/`, solo `.html`) e leggi l'adattatore in `rendering-javascript.md`. Stabilisci come viene servito davvero ogni route: CSR, SSR a runtime, prerender/SSG (anche con `outputMode: "server"` le route possono essere prerenderizzate) e dove gira (hosting statico, server, edge). Se configurazione e comportamento reale non coincidono a prima vista, spiegalo nel report (sezione Contesto dell'appendice) e non solo nelle note di lavoro. Se l'HTML del server è un guscio vuoto, il resto conta poco.
+**Source hierarchy.** Google documentation is primary. Third-party views (tagged `[SEJ]`) are evidence, not rules: report them as such. Anything marked ⚠ or listed in `myths-deprecated.md` is never recommended.
 
-### 3. Raccolta dati sul sito online
+## Scripts
+
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/seo_fetch.py" https://dominio.it --sitemap 30 \
-  --terms "termine 1;termine 2;città" --json seo-fetch.json
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/seo_fetch.py" <url> [<url> ...] [flags]   # raw server HTML + site files
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-discovery/scripts/suggest.py" "<query>" [...] --lang xx  # Google autocomplete
+# ${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/extract_dom.js runs in a browser (evaluate_script), not with python
 ```
-Lo script restituisce per l'HTML grezzo: stato e redirect, dimensione, title, description, robots, canonical, hreflang, H1 e struttura delle intestazioni (con i salti di livello), JSON-LD, elenco completo dei link interni, documenti collegati (PDF, DOC), immagini senza alt, testo visibile, possibili errori di accento (`typo_suspects`), sospetto "guscio SPA". A livello di sito: robots.txt, sitemap, varianti http/www, risposta a un URL inesistente, **nameserver e record TXT** (Cloudflare in modalità solo DNS non si vede dagli header; un TXT `google-site-verification` indica una proprietà Search Console di tipo Dominio) e confronto tra user agent di browser, Googlebot e bot AI. Con `--terms` dice in quali pagine compaiono le parole del pubblico (vedi passo 5). Usa `--full-text` quando ti serve il testo completo delle pagine.
 
-**DOM renderizzato:** con strumenti browser (Chrome DevTools MCP, browser integrato) esegui `scripts/extract_dom.js` con `evaluate_script` sulle stesse pagine e confronta. Senza browser, indica il Controllo URL di Search Console.
+On Windows use `py -3` (or `python`) if `python3` is not available. The scripts need Python 3.9+ and only the standard library.
 
-**Prestazioni:** `lighthouse_audit` / `performance_start_trace` se disponibili, altrimenti PageSpeed Insights (`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=...&strategy=mobile`). Se la quota è esaurita, dillo e rimanda a https://pagespeed.web.dev/. Soglie in `on-page-appearance.md`; solo i dati reali (CrUX) sono quelli usati da Google.
+## Procedure
 
-**Verifica tu ciò che è pubblico** invece di lasciarlo "da verificare": profili GitHub (API pubblica), pagine pubbliche che dovrebbero linkare il sito (es. altri siti dello stesso proprietario), schede pubbliche, documenti PDF collegati. Resta "da verificare" solo ciò che richiede un accesso privato (Search Console, Business Profile, analytics) o che non puoi osservare in modo affidabile (la SERP reale di Google).
+### 1. Context
+1. Look for `SEO.md` in the project root and read it: archetype, URLs, target searches, entity, site languages, access and previous audits change what to check. If it starts with `# Profilo SEO` it is a v1 file (Italian, 0.2.x): read it as is (its sections 8/8b/8c/9 correspond to v2 sections 8/9/10/11; legacy archetype slugs map as in `conventions.md › Archetypes`) and suggest migrating it with `seo-discovery`; never migrate it yourself.
+2. **Read the project documentation** (README, CLAUDE.md, status files, TODOs, decision records, previous SEO reports, `docs/`). It serves three purposes: not recommending what is already done (e.g. sitemap already submitted), understanding deliberate choices (e.g. "do not name the employer"), and finding documents that contradict reality. If an internal document leads to a wrong choice, flag it: a future session could "fix" the site in the wrong direction.
+3. If `SEO.md` does not exist, suggest `seo-discovery`. If the user wants to proceed right away, derive the minimum (URL, archetype, goal, site language, 3-5 likely searches) and state it in the report as a provisional profile.
+4. Mode (`--mode both|online|code`, or inferred from what the user gives: URL, project path or both): **online + code** (`both`, ideal), **online only** (`online`), **code only** (`code`, site under construction: checks that need the live site go under "To verify at launch").
 
-### 4. Analisi del codice (se disponibile)
-Cerca le cause dei problemi visti online e quelli non ancora visibili (dettagli per framework in `rendering-javascript.md`):
-- configurazione SSR/prerender e routing; title, description e canonical per ogni route; route 404 con vero 404;
-- navigazione con `<a href>` (es. `routerLink` su `<a>`), non con `(click)` su `div`/`button`;
-- `robots.txt`, sitemap, favicon, header (es. `_headers`, `staticwebapp.config.json`, `vercel.json`) e redirect lato hosting;
-- JSON-LD valido, coerente con il contenuto **visibile** (prezzi, indirizzi, recensioni che non si vedono in pagina sono un problema);
-- testi chiave in HTML e non solo in immagini, PDF o componenti caricati al click;
-- script di terzi o router che manipolano la cronologia (dirottamento del tasto Indietro, spam dal 15/6/2026).
+### 2. Stack and rendering
+Detect the stack with the detection table in `adapters/README.md` (`SEO.md › 1. Site › Adapter` is a hint to confirm; repository signals first, then served HTML and headers; the most specific signal wins) and read **only** the matching adapter (Tier 0): it says where title/meta/canonical live, how the stack returns a true 404, what it generates for robots.txt and the sitemap, and its typical pitfalls with check IDs. If no row matches, say so in the report and fall back to `adapters/static-html.md` plus the RJ checks of `rendering-javascript.md`.
 
-### 5. Lettura dei contenuti, come li legge una persona
-Lo script trova la struttura, non la qualità. Leggi tu il testo delle pagine principali (home, chi sono, servizi/progetti, contatti, 2-3 articoli) e verifica:
-- **Errori visibili in title, H1, description e testi:** parti da `typo_suspects` dello script (errori di accento frequenti in italiano, per ogni pagina) e riportali **tutti**, uno per pagina; poi leggi tu title e H1 di ogni pagina per refusi che l'euristica non copre. Finiscono nei risultati di Google e costano fiducia.
-- **L'H1 e il title della home dicono chi/cosa/dove** in modo comprensibile a chi non conosce il sito? Uno slogan va bene accanto, non al posto del mestiere.
-- **Vocabolario del pubblico** (procedura, non a sensazione):
-  1. elenca i servizi/temi del sito e le ricerche di `SEO.md` (o quelle ipotizzate);
-  2. per ciascuno chiedi i suggerimenti di ricerca, con la città se c'è una presenza locale:
+Establish how each route is really served: CSR, runtime SSR, prerender/SSG (e.g. with Angular `outputMode: "server"` routes can still be prerendered) and where it runs (static hosting, server, edge). If configuration and real behaviour do not match at first sight, explain it in the report (Appendix › Stack and adapter notes), not only in your working notes. If the server HTML is an empty shell, the rest matters little.
+
+### 3. Data collection on the live site
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-audit/scripts/seo_fetch.py" https://northwind-physio.example --sitemap 30 --lang en \
+  --terms "physio oslo;back pain;sports injury clinic" --json seo-fetch.json
+```
+Flags: `--sitemap N` (also analyse up to N sitemap URLs) · `--max-pages N` (hard cap on pages) · `--lang xx` (site language: sent as Accept-Language by the browser UA and used to pick the typo pack) · `--terms "a;b"` (where the audience's words appear) · `--json PATH` · `--full-text` (keep the whole visible text, otherwise cut to 1,500 characters) · `--no-ua` or `--ua-set all|default|none` (user-agent comparison) · `--no-site` (skip robots.txt, sitemaps, host variants, 404 probe, DNS) · `--delay SECONDS` (default 1.0; raise it on fragile hosts) · `--timeout SECONDS`. Exit code 0 = done (findings are in the output), 2 = invalid URL or site unreachable.
+
+Output fields the audit uses:
+- **Per page** (`pages[]`): `status`, `chain`, `final_url`; `indexable` (`value` + `reasons`, robots.txt blocking included) and `robots_txt_allowed` (verdict per crawler token, search and AI bots); `canonical` (`resolved`, `self_referencing`, `in_body`, `count`); `hreflang` and `hreflang_issues`; `title`, `meta_description`, `h1`, `headings`, `heading_skips`; `jsonld`, `jsonld_errors`, `jsonld_types`; `internal_links`; `documents` (linked PDF/DOC); `images`, `images_without_alt`; `visible_text`, `main_text_chars`, `spa_shell_suspect`; `over_2mb`, `head_invalid_tags`, `cdn`; `term_coverage` (with `--terms`); `typo_suspects` (only when a language pack exists: `it`, `en`).
+- **Site** (`site`): `robots` (groups, declared sitemaps, `verdicts_root` per bot, status semantics), `sitemaps`, `host_variants` (`variants`, `all_reach_same_final_url`, `multi_hop`), `not_found_probe` (`verdict`: ok, soft_404, soft_404_redirect_to_home…), `dns` (nameservers and TXT records: Cloudflare in DNS-only mode is invisible in headers; a `google-site-verification` TXT points to a Search Console Domain property), `ua_comparison` (browser vs Googlebot vs AI bots, with `differences`). Crawler user agents are simulated: a difference is a hint, not proof.
+- **Top level**: `duplicates` (titles and descriptions shared across pages), `hreflang_return_issues`, `term_coverage` (term → pages).
+
+**Rendered DOM** (optional, needs a browser MCP such as Chrome DevTools MCP or the built-in browser): run `scripts/extract_dom.js` with `evaluate_script` (pass the whole arrow function as `function`) on the same pages and compare key by key with the raw HTML; browser-only keys are `clickable_non_links`, `css_background_images`, `hash_routing_links`, `hidden_text_containers`. Without a browser, point to URL Inspection in Search Console.
+
+**Performance:** `lighthouse_audit` / `performance_start_trace` if available (lab data); otherwise the PageSpeed Insights API (`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=...&strategy=mobile`); if the quota is exhausted, say so and point to https://pagespeed.web.dev/. Google plans to discontinue real-world (field) data in the PSI API: for field data use the CrUX API or the Search Console Core Web Vitals report. Thresholds and procedure: `performance-cwv.md` (PF rows, Tier 1). Only field data is what Google uses.
+
+**Verify what is public yourself** instead of leaving it "to verify": GitHub profiles (public API), public pages that should link to the site (e.g. other sites of the same owner), public listings, linked PDF documents. Only what needs private access (Search Console, Business Profile, analytics) or cannot be observed reliably (Google's real results page) stays "to verify".
+
+### 4. Code analysis (if available)
+Look for the causes of the problems seen online and of those not yet visible (where each thing lives in this stack: the adapter):
+- SSR/prerender configuration and routing; title, description and canonical for every route; unknown routes answered with a true 404;
+- navigation with `<a href>` (framework link components that output `<a>`), not `click` handlers on `div`/`button`;
+- `robots.txt`, sitemap, favicon, headers (e.g. `_headers`, `staticwebapp.config.json`, `vercel.json`) and redirects at hosting level;
+- JSON-LD valid and consistent with **visible** content (prices, addresses or reviews not visible on the page are a problem);
+- key text in HTML, not only in images, PDFs or components loaded on click;
+- third-party scripts or routers that manipulate history (back button hijacking, a spam-policy violation: RJ-29).
+
+### 5. Reading the content as a person
+The script finds structure, not quality. Read the text of the main pages yourself (home, about, services/projects, contact, 2-3 articles) and check:
+- **Visible errors in title, H1, description and text.** When a language pack exists for the site language (`it`, `en`), start from `typo_suspects` and report **all** of them, one per page. For other languages there is no automatic help: read title, H1 and description of every page yourself. In every case read title and H1 for typos the heuristic does not cover: they end up in Google's results and cost trust.
+- **Do the home page H1 and title say who/what/where** in a way a stranger understands? A slogan is fine next to the trade, not instead of it.
+- **The audience's vocabulary** (a procedure, not a feeling):
+  1. list the site's services/topics and the searches in `SEO.md` (or the assumed ones);
+  2. get search suggestions for each, with the city if there is a local presence, in the site language and market:
      ```bash
-     python "${CLAUDE_PLUGIN_ROOT}/skills/seo-discovery/scripts/suggest.py" "orientamento verona" "bilancio di competenze" "nome cognome"
+     python3 "${CLAUDE_PLUGIN_ROOT}/skills/seo-discovery/scripts/suggest.py" "physio oslo" "back pain exercises" "northwind physio" --lang en --hl en --gl no
      ```
-  3. passa a `--terms` le formulazioni suggerite pertinenti all'offerta e i sinonimi di settore;
-  4. metti nel report (appendice) una tabella con **ogni** suggerimento pertinente all'offerta: formulazione · query di partenza · presente/assente nei testi. Nel piano e nei testi pronti usa le formulazioni assenti più rilevanti, citando la fonte (es. "suggerito da Google per 'orientamento verona'"). Così nessun dato raccolto si perde.
-  I suggerimenti sono un indizio, non un volume. Un servizio offerto ma mai nominato con le parole del pubblico è un problema concreto.
-- **Link interni:** usa l'elenco `internal_links` di ogni pagina; non affermare che una pagina linka o non linka un'altra senza averlo controllato lì.
-- **Struttura delle intestazioni:** i salti (es. H1 → H3) non incidono sul ranking secondo Google, ma peggiorano chiarezza e accessibilità: segnalali come bassa priorità.
-- **Coerenza tra le fonti:** sito, documenti interni, CV/brochure, profili esterni e dati strutturati dicono le stesse cose (ruolo, servizi, modalità in presenza/online, città, anni)?
-- **Documenti pubblici collegati** (CV, brochure, listini in PDF): sono indicizzabili, quindi controlla dati personali esposti (data di nascita, telefono, indirizzo) e informazioni che il sito ha scelto di non pubblicare (es. nomi di clienti o datori di lavoro). La decisione resta all'utente: tu segnali il rischio.
+     (`--hl`/`--gl` default from `--lang`; set them for the real market. Exit code 3 = stopped by Google rate limiting: wait, do not loop.)
+  3. pass the relevant suggested phrasings and the trade's synonyms to `seo_fetch.py --terms`;
+  4. put in the report appendix a table with **every** suggestion relevant to the offer: phrasing · starting query · present/absent in the copy. In the plan and in the ready-to-use copy use the most relevant absent phrasings, citing the source (e.g. "suggested by Google for 'physio oslo'"). That way no collected data is lost.
+  Suggestions are a hint, not a volume. A service that is offered but never named with the audience's words is a concrete problem.
+- **Internal links:** use each page's `internal_links`; never state that a page links or does not link to another without checking there.
+- **Heading structure:** skips (e.g. H1 → H3) do not affect ranking according to Google, but hurt clarity and accessibility: report them as Low.
+- **Consistency across sources:** do the site, internal documents, CV/brochure, external profiles and structured data say the same things (role, services, in person/online, city, years)?
+- **Linked public documents** (CV, brochures, price lists in PDF): they are indexable, so check for exposed personal data (date of birth, phone, address) and information the site chose not to publish (e.g. client or employer names). The decision stays with the user: you flag the risk.
 
-### 6. Verifica dei controlli
-Percorri le tabelle "Controlli per l'audit" dei file pertinenti, nell'ordine dato da `archetypes.md`. Stato per ogni controllo: **OK**, **Problema** (con evidenza), **Da verificare** (con istruzioni), **N/A**. Non inventare evidenze. Per siti piccoli puoi raggruppare i controlli OK in una riga.
+### 6. Running the checks
+Walk the `## Audit checks` tables of the relevant files in the order of `archetypes.md › Priority matrix` for the primary archetype (Bot access and Rendering always first: if they fail, nothing else counts). Status for each check: **OK**, **Issue** (with evidence), **To verify** (with instructions), **N/A**. Severity is the one in the row (Critical/High/Medium/Low, see `conventions.md › Severity`). Rows marked `alias→` in INDEX are verified once, at the owning ID. Never invent evidence. For small sites you may group the OK checks in one line. Before writing recommendations, read `myths-deprecated.md` (Tier 3).
 
 ### 7. Report
-Scrivi `seo-reports/AAAA-MM-GG-audit.md` nella radice del progetto. La prima parte è per l'utente, la seconda per chi implementa:
+Write `seo-reports/YYYY-MM-DD-audit.md` in the project root, in the report language. The template below is in English; translate the headings into the report language and keep their order and meaning. The first part is for the user, the second for whoever implements:
 
 ```markdown
-# Audit SEO — <sito> — <data>
+# SEO audit — <site> — <date>
 
-## In sintesi
-3-6 righe in linguaggio semplice: com'è messo il sito, il problema più importante, cosa fare per primo,
-cosa aspettarsi realisticamente (tempi in mesi, nessuna garanzia).
+## Summary
+3-6 lines in plain language: how the site is doing, the most important problem, what to do first,
+what to expect realistically (time in months, no guarantees).
 
-## Piano d'azione
-### Questa settimana
-### Nelle prossime settimane
-### Nel tempo
-Ogni voce: cosa fare, perché in una frase, chi la fa (tu / sviluppatore / su un sito esterno), sforzo.
-Metti la legenda dello sforzo in testa al piano (⏱ minuti · ⏱⏱ ore · ⏱⏱⏱ giorni).
-Nessun codice: né ID dei controlli né riferimenti ai documenti interni del progetto (es. "A-18", "RF-23"); descrivi la cosa a parole. I riferimenti stanno in appendice.
+## Action plan
+Effort legend at the top (⏱ minutes · ⏱⏱ hours · ⏱⏱⏱ days).
+### This week
+### In the next weeks
+### Over time
+Each item: what to do, why in one sentence, who does it (you / developer / on an external site), effort.
+No codes: neither check IDs nor references to the project's internal documents (e.g. "CI-18", "REQ-12");
+describe the thing in words. References go in the appendix.
 
-## Testi pronti
-Testi da copiare così come sono: title e meta description riscritti per le pagine chiave
-(con numero di caratteri contato con uno strumento, non a occhio), H1 proposti, frasi da aggiungere alle pagine.
-Il codice va in appendice. Lunghezze: Google non fissa limiti, ma per evitare troncamenti punta a circa
-50-60 caratteri per il title e 120-160 per la description; se il progetto ha un suo controllo, rispetta quello.
+## Ready-to-use copy
+Text to paste as is, in the site language: rewritten title and meta description for the key pages
+(character count measured with a tool, not by eye), proposed H1s, sentences to add to pages.
+Code goes in the appendix. Lengths: see `on-page-appearance.md › Build rules` (OP-02, OP-03, OP-08);
+if the project has its own check, follow that.
 
-## Cose fuori dal sito
-Checklist di ciò che solo una persona può fare (Search Console, Business Profile, profili, recensioni, menzioni).
+## Off-site actions
+Checklist of what only a person can do (Search Console, Business Profile, profiles, reviews, mentions).
 
-## Da verificare
-Ciò che richiede un accesso che non hai, con le istruzioni passo passo.
+## To verify
+What needs access you do not have, with step-by-step instructions.
 
-## Ricerca AI e misurazione
-Stato, cosa monitorare, baseline da registrare oggi.
+## AI search and measurement
+Status, what to monitor, baseline to record today.
 
 ---
-## Appendice tecnica
-### Problemi per priorità
-| # | ID | Problema | Evidenza | Correzione | Gravità | Sforzo |
-### Codice e configurazione pronti
-Snippet JSON-LD, righe di configurazione (hosting, redirect, header), modifiche ai file con percorso.
-### Vocabolario del pubblico
-Tabella dei suggerimenti di ricerca pertinenti: formulazione · query di partenza · presente/assente.
-### Dettaglio dei controlli per area
-Tabelle per area (ordine di archetypes.md) con ID, stato ed evidenza.
-### Contesto e limiti
-URL, archetipo, stack/rendering, modalità, profilo provvisorio, strumenti non disponibili.
+## Technical appendix
+### Issues by priority
+| # | ID | Issue | Evidence | Fix | Severity | Effort |
+### Ready code and configuration
+JSON-LD snippets, configuration lines (hosting, redirects, headers), file changes with their path.
+### Audience vocabulary
+Relevant search suggestions: phrasing · starting query · present/absent.
+### Checks by area
+One table per area (Priority-matrix order): ID · status · evidence.
+### Stack and adapter notes
+Detected stack and signal, adapter read, rendering per route, config vs real behaviour, adapter pitfalls found.
+### Context and limits
+URL, archetype, mode, provisional profile (if any), tools not available.
 ```
 
-**Lunghezza.** La parte per l'utente (dalla sintesi a "Ricerca AI e misurazione") deve leggersi in pochi minuti: frasi brevi, niente ripetizioni dell'appendice, al massimo una decina di voci nel piano (le altre in appendice). L'appendice può essere lunga.
+**Length.** The user part (from Summary to "AI search and measurement") must read in a few minutes: short sentences, no repetition of the appendix, about ten items at most in the plan (the rest in the appendix). The appendix can be long.
 
-Gravità: **critica** = blocca l'indicizzazione o espone a penalizzazioni; **alta** = limita molto la visibilità; **media**; **bassa**. Niente punteggi numerici inventati. Aggiorna `SEO.md` ("Storico audit": data, link, conteggi per gravità) se esiste.
+**Severity.** Use the scale in `conventions.md › Severity` (Critical · High · Medium · Low); the report groups findings by it. No invented numeric scores.
 
-### 8. Correzioni
-Proponi di applicare le correzioni partendo dalle più importanti e chiedi conferma prima di modificare file: scelte come SSR, routing o URL toccano hosting e struttura. Dopo ogni correzione importante ripeti la verifica pertinente.
+### 8. Fixes
+Offer to apply the fixes, starting from the most important. **Ask for confirmation before changes that touch architecture, hosting or URLs** (SSR, routing, URL changes, redirects); local fixes (a title, an alt text, a link) can proceed, with a summary afterwards. After each important fix, repeat the relevant check and report the result. If the hosting cannot satisfy a requirement, say so, propose the least harmful alternative and record it in `SEO.md › 8. Decisions and constraints`.
 
-## Cose da tenere a mente
-- **Nessuna promessa di posizionamento.** Il report dice cosa rimuove ostacoli e cosa aumenta le probabilità.
-- **Fuori dal sito conta**: per siti piccoli, Business Profile, recensioni reali, profili coerenti e menzioni esterne spesso pesano più del codice.
-- **Bot AI**: distingui bot di addestramento e di ricerca; la scelta su cosa bloccare è dell'utente, i blocchi involontari (CDN/WAF) vanno sempre segnalati.
-- **Rispetta le scelte deliberate** trovate nella documentazione del progetto: se ne sconsigli una, spiega perché e lascia decidere.
+Before finishing:
+- append a row to `SEO.md › 11. Audit history` (date, link to the report, counts per severity), if `SEO.md` exists (v1 file: section "9. Storico audit");
+- **Change log:** append one row to `SEO.md › 10. Change log` (date · change · pages/area · skill) for every file you created or modified in the project, the report included (v1 file: section "8c. Registro interventi").
+
+## Things to keep in mind
+- **No ranking promises.** The report says what removes obstacles and what raises the odds; timelines only as Google states them (weeks to months).
+- **Off-site matters**: for small sites, Business Profile, genuine reviews, consistent profiles and external mentions often weigh more than the code.
+- **AI bots**: distinguish training, search and user-triggered bots (`ai-search.md › Controls: what blocks what` and `› AI crawlers and fetchers`, Tier 2); what to block is the user's choice, but unintended blocks (CDN/WAF, bot challenges) are always reported.
+- **Respect deliberate choices** found in the project documentation: if you advise against one, explain why and let the user decide.
