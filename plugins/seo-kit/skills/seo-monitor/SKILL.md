@@ -22,7 +22,7 @@ Files live in `${CLAUDE_PLUGIN_ROOT}/knowledge/` (if the variable is not expande
 | Tier | What to read | When |
 |---|---|---|
 | 0 | `conventions.md`, `archetypes.md` (the site's archetype: what counts as a conversion) | Always, at the start |
-| 0 | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = `file#section`, `Alias of`); Grep it for ME- IDs | Always; never edit it |
+| Lookup | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = the owning `file.md#audit-checks`, `Alias of`); Grep it for ME- IDs or a keyword, never read it in full | To look up a check ID; never edit it |
 | 0 | The detected `adapters/<stack>.md` | Only if a technical cause is suspected |
 | 1 | `measurement.md › ## Procedures` ("diagnosing a traffic drop", "exporting Search Console data", "measuring visibility in AI assistants") | Always |
 | 1 | `measurement.md › ## Audit checks` (ME- rows) | Checking the measurement setup |

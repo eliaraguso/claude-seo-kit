@@ -119,11 +119,11 @@ The rules live in `plugins/seo-kit/knowledge/`, one file per topic. The sources 
 
 All files were refreshed on **2026-10-11**; the date is at the top of each file.
 
-Each topic file has an audit-check table with stable IDs (`CI-01`, `SD-12`…), a severity and a source link. `INDEX.md` is generated from those tables by `tools/build_index.py`, never by hand. It lists every check in one line, so a skill can find the right check without reading whole files. Severities use one scale everywhere: **Critical**, **High**, **Medium**, **Low**. There are no numeric scores. The **⚠** marker has exactly one meaning: deprecated, unsupported by Google, or otherwise not to be recommended. A check that applies only under conditions carries a `Caveat:` instead. The binding rules are in [`knowledge/conventions.md`](plugins/seo-kit/knowledge/conventions.md).
+Each topic file has an audit-check table with stable IDs (`CI-01`, `SD-12`…), a severity and a source link. `INDEX.md` is generated from those tables by `tools/build_index.py`, never by hand. It lists every check in one line, so a skill can find the right check with a Grep instead of reading whole files. Severities use one scale everywhere: **Critical**, **High**, **Medium**, **Low**. There are no numeric scores. The **⚠** marker has exactly one meaning: deprecated, unsupported by Google, or otherwise not to be recommended. A check that applies only under conditions carries a `Caveat:` instead. The binding rules are in [`knowledge/conventions.md`](plugins/seo-kit/knowledge/conventions.md).
 
 ## Context size
 
-The skills read the knowledge base in tiers. Tier 0 is always read at the start: `archetypes.md`, `conventions.md`, `INDEX.md` and the one adapter for the detected stack. It is about **90 KB**, of which `INDEX.md` is about 62 KB. Topic files are read section by section, only for the area being worked on, using Grep and offset reads. A whole file is read only rarely.
+The skills read the knowledge base in tiers. Tier 0 is always read at the start: `archetypes.md`, `conventions.md` and the one adapter for the detected stack (chosen with the detection table in `adapters/README.md`). With the Angular adapter that is 28,340 bytes, about **28 KB**. `INDEX.md` (about 62 KB) is never read in full: the skills Grep it by check ID, keyword or severity. Topic files are read section by section, only for the area being worked on, using Grep and offset reads. A whole file is read only rarely.
 
 ## Development
 

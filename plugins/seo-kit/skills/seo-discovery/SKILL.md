@@ -23,7 +23,7 @@ Files live in `${CLAUDE_PLUGIN_ROOT}/knowledge/` (if the variable is not expande
 |---|---|---|
 | 0 | `conventions.md` (Working language, SEO.md v2, Archetypes with the legacy alias line, Fictional examples) | Always, at the start |
 | 0 | `archetypes.md` (How to choose, the archetype's section, Modifiers, Priority matrix) | Always, at the start |
-| 0 | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = `file#section`, `Alias of`); read the header, then Grep it for an ID or a word | Always, at the start; never edit it |
+| Lookup | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = the owning `file.md#audit-checks`, `Alias of`); Grep it by ID, keyword or severity, never read it in full | To look up a check ID or a topic; never edit it |
 | 0 | `adapters/README.md › Detection table`, then only the matching `adapters/<stack>.md` | When code or live HTML is available |
 | 1 | `entity-personal-brand.md › ## Build rules` | Identity, entity home, profiles (section 3) |
 | 1 | `local-seo.md › ## Build rules` | Area served, service pages vs city pages |
@@ -31,7 +31,7 @@ Files live in `${CLAUDE_PLUGIN_ROOT}/knowledge/` (if the variable is not expande
 | 1 | `on-page-appearance.md › ## Build rules` (title and description: OP-02, OP-03, OP-08) | Title, description and H1 proposals |
 | 1 | `international.md › ## Build rules` | More than one language or market |
 | 1 | `ai-search.md › ## Procedures` ("Procedure: AI visibility with fixed questions") | Monitoring setup |
-| 2 | `measurement.md › ### Branded queries filter and the brand / non-brand split`; any `## Facts and rules` subsection named in an INDEX line | Brand regex; when a rule needs explaining |
+| 2 | `measurement.md › ### Branded queries filter and the brand / non-brand split`; for any other rule, the `###` subsection of `## Facts and rules (Google)` on the rule's topic, found through the file's `## Contents` list or a Grep on the topic word; read only that subsection | Brand regex; when a rule needs explaining |
 | 3 | `myths-deprecated.md` in full | Before recommending a tactic you are not sure is current |
 
 If a rule is missing, fetch the Google URL in the Source column with WebFetch; there is no local copy of Google's pages.

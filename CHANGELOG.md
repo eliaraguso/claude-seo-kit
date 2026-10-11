@@ -44,7 +44,7 @@ All notable changes to seo-kit are documented here. The format follows [Keep a C
   - Unit tests on Ubuntu, Windows and macOS with Python 3.9–3.13.
   - A lint job: `extract_dom.js` syntax, manifest JSON, index freshness and knowledge lint.
 - **Evals** (`plugins/seo-kit/evals/`): 7 cases for `claude plugin eval` (EN, IT, DE), on fixture projects of fictional businesses.
-- **`knowledge/INDEX.md`:** one line per check (440 checks, 46 aliases). It is generated from the check tables.
+- **`knowledge/INDEX.md`:** one line per check (440 checks, 46 aliases). It is generated from the check tables. Skills look checks up in it with Grep and never read it in full, so Tier 0 (archetypes, conventions, one adapter) stays at about 28 KB.
 - **Tools:**
   - `tools/build_index.py` (with `--check`)
   - `tools/check_knowledge.py` (knowledge lint)
@@ -65,7 +65,7 @@ All notable changes to seo-kit are documented here. The format follows [Keep a C
   - **⚠** now means only "deprecated, unsupported or not to be recommended". Conditional checks carry a `Caveat:` instead.
   - Source tags are standardised: `[G]`, `[G OH]`, `[GBP]`, `[web.dev]`, `[SEJ YYYY-MM]`, `[Bing]`, `[IndexNow]`, `[Docs vX]`, *(inference)* and *(re-verify)*.
 - **Archetypes rebalanced**, plus four modifiers: `multilingual`, `marketplace-ugc`, `paywall` and `app-and-site`.
-- **Examples:** they use only fictional entities (Northwind Physio, Studio Ferri Orientamento, Acme Widgets, Ada Novak, Daily Fjord) and `.example` domains.
+- **Examples:** they use only fictional entities (Northwind Physio, Studio Ferri Orientamento, Acme Widgets, Ada Novak, Daily Fjord, Fjordly) and `.example` domains.
 - **Knowledge field names** are aligned with the `seo_fetch.py` 1.0 output.
 - **PageSpeed Insights:** the API's field data is being discontinued, so field data now comes from the CrUX API or the Search Console Core Web Vitals report.
 

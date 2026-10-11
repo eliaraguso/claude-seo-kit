@@ -22,7 +22,7 @@ Files live in `${CLAUDE_PLUGIN_ROOT}/knowledge/` (if the variable is not expande
 | Tier | What to read | When |
 |---|---|---|
 | 0 | `conventions.md`, `archetypes.md` (does the local part apply?) | Always, at the start |
-| 0 | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = `file#section`, `Alias of`); Grep it for EN-, LO-, SD- IDs | Always; never edit it |
+| Lookup | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = the owning `file.md#audit-checks`, `Alias of`); Grep it for EN-, LO-, SD- IDs or a keyword, never read it in full | To look up a check ID; never edit it |
 | 0 | The detected `adapters/<stack>.md` (detection table in `adapters/README.md`) | Where JSON-LD and the About page live in the code |
 | 1 | `entity-personal-brand.md › ## Audit checks`, `› ## Build rules`, `› ## Off-site checklist` | Always |
 | 1 | `local-seo.md › ## Audit checks`, `› ## Build rules`, `› ## Off-site checklist` (Business Profile rows tagged `[GBP]`) | Physical location or service area |

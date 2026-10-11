@@ -22,7 +22,7 @@ Files live in `${CLAUDE_PLUGIN_ROOT}/knowledge/` (if the variable is not expande
 | Tier | What to read | When |
 |---|---|---|
 | 0 | `conventions.md`, `archetypes.md` (the site's archetype section) | Always, at the start |
-| 0 | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = `file#section`, `Alias of`); read the header, then Grep it for an ID | Always; never edit it |
+| Lookup | `INDEX.md`: generated list of every check, one row per check (`ID`, `Severity`, `Check`, `Where` = the owning `file.md#audit-checks`, `Alias of`); Grep it by ID, keyword or severity, never read it in full | To look up a check ID; never edit it |
 | 0 | The detected `adapters/<stack>.md` (detection table in `adapters/README.md`) | To know where titles, meta and copy live in the code or CMS |
 | 1 | `content-quality-spam.md › ## Build rules` (helpful content, who/how/why, AI content, no pages in series) | Always |
 | 1 | `on-page-appearance.md › ## Build rules` (title, description, H1, images, dates: OP-02, OP-03, OP-06, OP-08, OP-39) | Step 5 |
