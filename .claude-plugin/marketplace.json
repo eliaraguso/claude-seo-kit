@@ -1,6 +1,6 @@
 {
   "name": "seo-kit-marketplace",
-  "description": "Framework-agnostic SEO plugin for Claude Code, grounded in Google Search Central documentation.",
+  "description": "Framework-agnostic SEO plugin for Claude Code, grounded in Google Search Central documentation. Answers in your language.",
   "owner": {
     "name": "Elia Raguso",
     "url": "https://github.com/eliaraguso"
@@ -9,7 +9,7 @@
     {
       "name": "seo-kit",
       "source": "./plugins/seo-kit",
-      "description": "SEO for new and existing sites, any stack: site profile, build-time rules, audit, content, entity and local SEO, monitoring. Grounded in Google Search Central documentation (October 2026). Answers in your language."
+      "description": "SEO for new and live sites, any stack: site profile, build rules, audit, content, entity and local SEO, monitoring. Grounded in Google Search Central docs (October 2026). Answers in your language."
     }
   ]
 }
