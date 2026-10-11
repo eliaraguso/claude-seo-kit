@@ -1,9 +1,17 @@
-# Testi integrali scaricati per la ricerca: restano solo in locale.
-# Gli articoli SEJ sono protetti da copyright e non vanno ridistribuiti.
+# Full texts downloaded for research stay local only (copyrighted / not redistributed).
 sources/sej/articles/
 sources/google-search-central/pages/
 sources/**/*.json
 
-# Workspace di test delle skill
+# Local test workspaces and tool runs
 *-workspace/
+tools/trigger-runs/
+.superpowers/
+
+# Python
 __pycache__/
+*.pyc
+.pytest_cache/
+
+# Plugin eval results
+plugins/seo-kit/evals/results/
