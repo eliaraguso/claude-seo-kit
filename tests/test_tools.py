@@ -300,7 +300,8 @@ class RuleTests(TreeCase):
         self.assertFires("K003")  # malformed
         self.write(self.k / "unlisted.md", topic("U", rows=row("CI-05")))
         code, lines = self.lint("--only", "K003")
-        self.assertTrue(any("unlisted.md" in l and "no prefix registered" in l or "prefix registered in conventions.md" in l for l in lines))
+        self.assertTrue(any("unlisted.md" in l and ("no prefix registered" in l or "prefix registered in conventions.md" in l)
+                                  for l in lines))
 
     # K004
     def test_k004(self):
