@@ -138,6 +138,7 @@ claude --plugin-dir plugins/seo-kit        # run Claude Code with the working co
 | Unit tests (no network, standard library) | `python -m unittest discover -s tests -v` |
 | Knowledge lint | `python tools/check_knowledge.py` |
 | Rebuild the knowledge index | `python tools/build_index.py` (`--check` fails if `INDEX.md` is stale) |
+| Validate the plugin manifest and skills | `claude plugin validate plugins/seo-kit` (local only: CI does not install Claude Code) |
 | Skill evals (7 cases) | `claude plugin eval plugins/seo-kit --scaffold --allow-tools Bash Write Edit "WebFetch(domain:127.0.0.1)"` |
 | Trigger test | `python tools/trigger_test.py --dry-run`, then `python tools/trigger_test.py --runs 2 --workers 4` |
 
@@ -152,7 +153,7 @@ claude --plugin-dir plugins/seo-kit        # run Claude Code with the working co
   - The summary is printed as Markdown; the full results go to `tools/trigger-runs/`, which is gitignored.
   - Real runs are billable, so start with `--dry-run`.
   - `--only seo-content,none` limits the run to some skills; `none` means the negative queries.
-- **CI.** GitHub Actions runs the unit tests on Ubuntu, Windows and macOS with Python 3.9 to 3.13. A lint job checks `extract_dom.js` syntax, validates the manifests, checks that the index is up to date and runs the knowledge lint.
+- **CI.** GitHub Actions runs the unit tests on Ubuntu, Windows and macOS with Python 3.9 to 3.13. A lint job checks `extract_dom.js` syntax, validates the manifests, checks that the index is up to date and runs the knowledge lint. It runs on pull requests and on pushes to `main`, `release/**` and `v*` tags.
 - **Releases.** Raise `version` in `plugins/seo-kit/.claude-plugin/plugin.json` and add a [CHANGELOG.md](CHANGELOG.md) entry.
 
 See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for how to propose knowledge changes and adapters.

@@ -2,6 +2,8 @@ name: CI
 
 on:
   push:
+    branches: [main, 'release/**']
+    tags: ['v*']
   pull_request:
 
 jobs:
@@ -38,6 +40,8 @@ jobs:
       - name: Knowledge index is up to date
         run: |
           if [ -f tools/build_index.py ]; then python tools/build_index.py --check; else echo "tools/build_index.py not present, skipped"; fi
+      # `claude plugin validate plugins/seo-kit` is not run here: it needs the Claude Code CLI installed
+      # in the runner; run it locally before tagging (README › Development, docs/CONTRIBUTING.md).
       - name: Knowledge lint
         run: |
           if [ -f tools/check_knowledge.py ]; then python tools/check_knowledge.py; else echo "tools/check_knowledge.py not present, skipped"; fi
