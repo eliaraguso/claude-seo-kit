@@ -103,6 +103,8 @@ If the text was produced with AI, the author must check and approve it: list for
 - **Change log step.** Before finishing, append one row to `SEO.md › 10. Change log` (date · change · pages/area · skill) for every file you created or modified in the project (e.g. `YYYY-MM-DD | Running-injuries page rewritten, new title and description | /running-injuries | seo-content`).
 
 ## Editorial plan
+`--plan` (or a request for a plan, or "what should I write about") selects this mode instead of writing one page.
+
 If the user asks "what should I write about": start from the intents without a page in `SEO.md › 4`, the questions customers really ask, autocomplete suggestions and, if available, Search Console queries with many impressions and few clicks (`seo-monitor`'s "Opportunities" table). Propose a few solid pieces (e.g. 1-2 a month) rather than many weak ones: content in series with little value is a risk, and consistency counts only if quality stays high. One brief per piece, in the working language, with title, description and H1 proposals in the site language.
 
 ## Output format

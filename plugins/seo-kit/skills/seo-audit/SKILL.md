@@ -2,11 +2,11 @@
 name: seo-audit
 description: Full SEO audit of a website, new or already live, on any stack (Angular, Next.js/React, Nuxt/Vue, Astro, SvelteKit, WordPress, Shopify, static HTML and more) and any site type (personal brand, professional services, local business, editorial, ecommerce, SaaS). Checks bot access and indexing, JavaScript rendering, title/meta/canonical, visible copy, structured data, performance, content quality, entity and local SEO, international setup and AI search visibility. Produces a plain-language action plan with concrete code fixes and rewritten copy. Use it when someone asks why a site is not found on Google, wants an SEO check before or after launch, or changed something that may affect indexing.
 when_to_use: |
-  EN: why is my site not on Google; SEO audit; check my site's SEO; not cited by ChatGPT or AI Overviews; traffic dropped after a redesign; pages not indexed; SEO check before launch
-  IT: il sito non esce su Google; audit SEO; controllo SEO; non mi trovano nemmeno col nome; visite da Google crollate; pagine non indicizzate
-  ES: mi web no aparece en Google; auditoría SEO; revisar el SEO; no salgo en ChatGPT; caída de tráfico tras el rediseño; páginas no indexadas
-  DE: Website nicht bei Google; SEO-Audit; SEO prüfen; nicht in ChatGPT zitiert; Traffic nach Relaunch eingebrochen; Seiten nicht indexiert
-  FR: mon site n'apparaît pas sur Google; audit SEO; vérifier le SEO; pas cité par ChatGPT; trafic en chute après la refonte; pages non indexées
+  English: why is my site not on Google; SEO audit; check my site's SEO; not cited by ChatGPT or AI Overviews; traffic dropped after a redesign; pages not indexed; SEO check before launch
+  Italian: il sito non esce su Google; audit SEO; controllo SEO; non mi trovano nemmeno col nome; visite da Google crollate; pagine non indicizzate
+  Spanish: mi web no aparece en Google; auditoría SEO; revisar el SEO; no salgo en ChatGPT; caída de tráfico tras el rediseño; páginas no indexadas
+  German: Website nicht bei Google; SEO-Audit; SEO prüfen; nicht in ChatGPT zitiert; Traffic nach Relaunch eingebrochen; Seiten nicht indexiert
+  French: mon site n'apparaît pas sur Google; audit SEO; vérifier le SEO; pas cité par ChatGPT; trafic en chute après la refonte; pages non indexées
 argument-hint: "[site URL and/or project path] [--mode online|code|both]"
 ---
 

@@ -2,11 +2,11 @@
 name: seo-build
 description: SEO rules while building or changing a website, on any stack (Angular, Next.js/React, Nuxt/Vue, Astro, SvelteKit, WordPress, Shopify, static HTML and more) and any site type (personal brand, professional services, local business, editorial, ecommerce, SaaS). Sets up the foundations of a new project (rendering, routes, per-page title/meta/canonical, robots, sitemap, true 404s, base structured data, hreflang), checks every page or route added, verifies the build output and runs the launch or migration checklist. Use it when someone creates a site, adds pages or routes, changes URLs or routing, prepares a deploy or go-live, or migrates domain or framework, even without saying SEO.
 when_to_use: |
-  EN: set up a new site SEO-ready; add a page or route; check the build before deploy; go-live checklist; migrate domain or framework; change URLs safely
-  IT: sito nuovo pronto per Google; aggiungere una pagina o route; controllare la build prima del deploy; checklist di messa online; migrare dominio o framework; cambiare gli URL
-  ES: web nueva lista para Google; añadir una página o ruta; revisar la build; checklist de lanzamiento; migrar dominio o framework; cambiar URLs
-  DE: neue Website SEO-fertig; neue Seite oder Route; Build vor dem Deploy prüfen; Go-live-Checkliste; Domain- oder Framework-Migration; URLs ändern
-  FR: site neuf prêt pour Google; ajouter une page ou une route; vérifier le build; checklist de mise en ligne; migrer domaine ou framework; changer les URL
+  English: set up a new site SEO-ready; add a page or route; check the build before deploy; go-live checklist; migrate domain or framework; change URLs safely
+  Italian: sito nuovo pronto per Google; aggiungere una pagina o route; controllare la build prima del deploy; checklist di messa online; migrare dominio o framework; cambiare gli URL
+  Spanish: web nueva lista para Google; añadir una página o ruta; revisar la build; checklist de lanzamiento; migrar dominio o framework; cambiar URLs
+  German: neue Website SEO-fertig; neue Seite oder Route; Build vor dem Deploy prüfen; Go-live-Checkliste; Domain- oder Framework-Migration; URLs ändern
+  French: site neuf prêt pour Google; ajouter une page ou une route; vérifier le build; checklist de mise en ligne; migrer domaine ou framework; changer les URL
 argument-hint: "[project path or build output folder] [--base https://host] [new | page <route> | launch | migration]"
 ---
 
