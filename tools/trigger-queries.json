@@ -35,7 +35,7 @@
   {"expected": "seo-discovery", "lang": "it", "query": "Sto progettando il sito per lo Studio Ferri: prima di scrivere codice aiutami a capire cosa cercano gli studenti e che pagine servono."},
   {"expected": "seo-discovery", "lang": "it", "query": "Prepara il profilo SEO di questo progetto, così poi facciamo un audit."},
   {"expected": "seo-discovery", "lang": "it", "query": "Per quali ricerche dovrebbe posizionarsi uno studio di orientamento a Bologna? Fammi una mappa ricerche e pagine."},
-  {"expected": "seo-discovery", "lang": "it", "query": "Crea il file SEO.md per questo sito."},
+  {"expected": "seo-discovery", "lang": "it", "query": "Prima di toccare il sito voglio mettere per iscritto chi deve trovarci su Google e con quali ricerche: preparalo tu."},
   {"expected": "seo-discovery", "lang": "it", "query": "Da dove parto con la SEO di un ecommerce che vende in Italia e in Germania? Il sito è ancora da progettare."},
 
   {"expected": "seo-content", "lang": "en", "query": "Write the service page about sports injury treatment for Northwind Physio."},

@@ -20,6 +20,11 @@ Usage:
 Queries file: a JSON list of {"query": str, "expected": "<skill>" or null, "lang": "en"}
 (null = the request should trigger no seo-kit skill).
 
+A run whose session fails (a `result` event with is_error or an error subtype, or a
+non-zero exit code when the tool did not stop the child itself: auth, rate limit,
+rejected flag...) is recorded with status "error", listed in the summary and kept out
+of the accuracy totals, so a broken environment does not look like "no skill invoked".
+
 Output: a Markdown summary on stdout and the full results as JSON in
 tools/trigger-runs/<timestamp>.json (git-ignored). Each real run is a billable Claude
 Code session; use --dry-run first.
@@ -120,6 +125,8 @@ class StreamState:
         self.skill = None
         self.tools = []
         self.done = False
+        self.ended_by_result = False
+        self.error = None  # set from a `result` event with is_error / an error subtype
         self.max_other_tools = max_other_tools
         self._current = None
         self._partial = ""
@@ -176,6 +183,13 @@ class StreamState:
                             break
         elif kind == "result":
             self.done = True
+            self.ended_by_result = True
+            subtype = str(ev.get("subtype") or "")
+            if ev.get("is_error") or subtype.startswith("error"):
+                detail = ev.get("result") or ev.get("error") or ""
+                if not isinstance(detail, str):
+                    detail = json.dumps(detail, ensure_ascii=False)
+                self.error = ("%s: %s" % (subtype or "error", detail)).strip(": ")[:300]
         return self.done
 
 
@@ -196,14 +210,16 @@ def run_query(claude, query, plugin_dir, timeout, model=None, max_budget_usd=Non
     cwd = tempfile.mkdtemp(prefix="seo-kit-trigger-")
     cmd = build_command(claude, query, plugin_dir, model, max_budget_usd, keep_user_settings)
     state = StreamState()
-    result = {"skill": None, "tools": state.tools, "timeout": False, "error": None,
-              "cwd_removed": False, "seconds": None}
+    result = {"status": "ok", "skill": None, "tools": state.tools, "timeout": False, "error": None,
+              "exit_code": None, "cwd_removed": False, "seconds": None}
     t0 = time.time()
     timed_out = threading.Event()
+    killed = False  # True when we stopped the child, so its exit code says nothing about the session
     proc = None
+    stderr_file = tempfile.TemporaryFile()
     try:
         proc = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                stderr=subprocess.DEVNULL, cwd=cwd, env=child_env(), **popen_kwargs())
+                                stderr=stderr_file, cwd=cwd, env=child_env(), **popen_kwargs())
 
         def on_timeout():
             timed_out.set()
@@ -216,9 +232,17 @@ def run_query(claude, query, plugin_dir, timeout, model=None, max_budget_usd=Non
             for raw in proc.stdout:
                 if state.feed(raw.decode("utf-8", "replace")):
                     break
+            if state.ended_by_result or not state.done:
+                # Final result or end of output: let the child exit by itself to read its exit code.
+                try:
+                    proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pass
         finally:
             timer.cancel()
-            kill_tree(proc)
+            if proc.poll() is None:
+                killed = True
+                kill_tree(proc)
             try:
                 proc.stdout.close()
             except OSError:
@@ -227,6 +251,8 @@ def run_query(claude, query, plugin_dir, timeout, model=None, max_budget_usd=Non
                 proc.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 pass
+        killed = killed or timed_out.is_set()
+        result["exit_code"] = proc.returncode
     except OSError as exc:
         result["error"] = "%s: %s" % (type(exc).__name__, exc)
     finally:
@@ -234,7 +260,29 @@ def run_query(claude, query, plugin_dir, timeout, model=None, max_budget_usd=Non
     result["skill"] = state.skill
     result["timeout"] = timed_out.is_set() and not state.skill
     result["seconds"] = round(time.time() - t0, 1)
+    if not state.skill and not result["error"]:
+        if state.error:
+            result["error"] = state.error
+        elif not killed and proc is not None and proc.returncode not in (0, None):
+            result["error"] = "exit code %s: %s" % (proc.returncode, stderr_tail(stderr_file) or "no output")
+    try:
+        stderr_file.close()
+    except OSError:
+        pass
+    if result["error"]:
+        result["status"] = "error"
+    elif result["timeout"]:
+        result["status"] = "timeout"
     return result
+
+
+def stderr_tail(fh, limit=300):
+    try:
+        fh.seek(0)
+        text = fh.read().decode("utf-8", "replace").strip()
+    except (OSError, ValueError):
+        return ""
+    return " ".join(text.split())[-limit:]
 
 
 # --------------------------------------------------------------------------- summary
@@ -243,12 +291,17 @@ def summarise(items, got):
     rows, confusion = [], Counter()
     for i, it in enumerate(items):
         exp = it.get("expected")
-        res = [short(r.get("skill")) for r in got[i]]
+        # Failed sessions (auth, rate limit, rejected flag...) say nothing about triggering:
+        # they are listed but kept out of the accuracy totals.
+        valid = [r for r in got[i] if r.get("status") != "error" and not r.get("error")]
+        res = [short(r.get("skill")) for r in valid]
         ok = sum(1 for s in res if s == exp)
         rows.append({"query": it["query"], "expected": exp, "lang": it.get("lang"), "got": res, "ok": ok,
-                     "runs": len(res), "timeouts": sum(1 for r in got[i] if r.get("timeout")),
-                     "errors": [r["error"] for r in got[i] if r.get("error")],
-                     "other_tools": [r.get("tools", []) for r in got[i]]})
+                     "runs": len(res), "timeouts": sum(1 for r in valid if r.get("timeout")),
+                     "errors": [r.get("error") or "error" for r in got[i]
+                                if r.get("status") == "error" or r.get("error")],
+                     "statuses": [r.get("status", "ok") for r in got[i]],
+                     "other_tools": [r.get("tools", []) for r in valid]})
         for s in res:
             confusion[(exp or "none", s or "none")] += 1
     return rows, confusion
@@ -261,7 +314,11 @@ def markdown(rows, confusion, seconds, meta):
            "- Plugin: `%s`" % meta["plugin_dir"],
            "- Queries: %d · runs per query: %d · model: %s · %.0fs"
            % (len(rows), meta["runs"], meta.get("model") or "default", seconds),
-           "- **Correct: %d/%d (%.0f%%)**" % (total_ok, total, 100.0 * total_ok / total), ""]
+           "- **Correct: %d/%d (%.0f%%)**" % (total_ok, sum(r["runs"] for r in rows),
+                                              100.0 * total_ok / total)]
+    errors = [(r, e) for r in rows for e in r["errors"]]
+    out.append("- Errors: %d run(s) failed and are excluded from the totals" % len(errors))
+    out.append("")
     by = defaultdict(lambda: [0, 0])
     by_lang = defaultdict(lambda: [0, 0])
     for r in rows:
@@ -287,6 +344,10 @@ def markdown(rows, confusion, seconds, meta):
             got = ", ".join(s or "none" for s in r["got"])
             extra = " (timeouts: %d)" % r["timeouts"] if r["timeouts"] else ""
             out.append("- expected **%s**, got %s%s: %s" % (r["expected"] or "none", got, extra, r["query"][:120]))
+    if errors:
+        out += ["", "## Errors (excluded from the totals)", ""]
+        for r, e in errors:
+            out.append("- %s: %s" % (r["query"][:80], e))
     return "\n".join(out) + "\n"
 
 
@@ -367,7 +428,7 @@ def main(argv=None):
             try:
                 got[i].append(fut.result())
             except Exception as exc:  # noqa: BLE001 - one broken run must not stop the batch
-                got[i].append({"skill": None, "tools": [], "timeout": False, "error": str(exc)})
+                got[i].append({"status": "error", "skill": None, "tools": [], "timeout": False, "error": str(exc)})
             print("\r%d/%d" % (n, len(jobs)), end="", file=sys.stderr, flush=True)
     print(file=sys.stderr)
     seconds = time.time() - t0

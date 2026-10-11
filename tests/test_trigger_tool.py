@@ -52,6 +52,12 @@ FAKE_CLAUDE = textwrap.dedent(r'''
         time.sleep(30)
     elif "hang" in query:
         time.sleep(60)
+    elif "badkey" in query:
+        emit({"type": "result", "subtype": "success", "is_error": True, "result": "Invalid API key"})
+        sys.exit(1)
+    elif "crash" in query:
+        sys.stderr.write("error: unknown option '--bogus'\n")
+        sys.exit(2)
     else:
         emit({"type": "result", "subtype": "success", "result": "Nothing to do with SEO."})
 ''')
@@ -126,6 +132,18 @@ class StreamParsing(unittest.TestCase):
         self.assertTrue(st.feed(json.dumps({"type": "result"})))
         self.assertIsNone(st.skill)
 
+    def test_error_result_is_recorded(self):
+        st = tt.StreamState()
+        self.assertTrue(st.feed(json.dumps({"type": "result", "subtype": "success", "is_error": True,
+                                            "result": "Invalid API key"})))
+        self.assertIn("Invalid API key", st.error)
+        st = tt.StreamState()
+        st.feed(json.dumps({"type": "result", "subtype": "error_max_turns"}))
+        self.assertTrue(st.error.startswith("error_max_turns"))
+        st = tt.StreamState()
+        st.feed(json.dumps({"type": "result", "subtype": "success", "is_error": False, "result": "ok"}))
+        self.assertIsNone(st.error)
+
     def test_short(self):
         self.assertEqual(tt.short("seo-kit:seo-audit"), "seo-audit")
         self.assertEqual(tt.short("seo-content"), "seo-content")
@@ -181,7 +199,7 @@ class Cli(unittest.TestCase):
                              capture_output=True, text=True)
         self.assertEqual(res.returncode, 2)
 
-    def test_runs_against_fake_claude(self):
+    def fake_env(self):
         bin_dir = self.tmp / "bin"
         bin_dir.mkdir()
         install_fake_claude(bin_dir)
@@ -190,6 +208,33 @@ class Cli(unittest.TestCase):
         env = dict(os.environ)
         env["PATH"] = str(bin_dir) + os.pathsep + env.get("PATH", "")
         env["FAKE_CLAUDE_LOG"] = str(log)
+        return env, log
+
+    def test_failed_sessions_are_errors_not_misses(self):
+        self.queries.write_text(json.dumps([
+            {"query": "please audit my site", "expected": "seo-audit", "lang": "en"},
+            {"query": "badkey session", "expected": None, "lang": "en"},
+            {"query": "crash on start", "expected": "seo-build", "lang": "en"},
+        ]), encoding="utf-8")
+        env, _ = self.fake_env()
+        res = self.run_tool("--runs", "1", "--timeout", "10", env=env)
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        # Only the audit run counts; the two failed sessions are excluded and listed.
+        self.assertIn("Correct: 1/1", res.stdout)
+        self.assertIn("Errors: 2 run(s) failed", res.stdout)
+        self.assertIn("Invalid API key", res.stdout)
+        self.assertIn("exit code 2", res.stdout)
+        self.assertIn("unknown option", res.stdout)
+        data = json.loads(next(self.out_dir.glob("*.json")).read_text(encoding="utf-8"))
+        by_query = {r["query"]: r for r in data["rows"]}
+        self.assertEqual(by_query["badkey session"]["statuses"], ["error"])
+        self.assertEqual(by_query["badkey session"]["runs"], 0)
+        self.assertEqual(by_query["badkey session"]["ok"], 0)
+        self.assertEqual(by_query["crash on start"]["statuses"], ["error"])
+        self.assertEqual(by_query["please audit my site"]["statuses"], ["ok"])
+
+    def test_runs_against_fake_claude(self):
+        env, log = self.fake_env()
         t0 = time.time()
         res = self.run_tool("--runs", "1", "--workers", "4", "--timeout", "4", env=env)
         elapsed = time.time() - t0

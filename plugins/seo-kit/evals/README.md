@@ -28,6 +28,7 @@ claude plugin eval plugins/seo-kit --scaffold \
 ```
 
 - `--scaffold` is required: each case's `setup.sh` copies its `fixture/` folder into the empty run workspace (and `monitor-gsc-de` zips `gsc-csv/` into `gsc-export-2026-09.zip`). Without it every case runs in an empty folder and fails.
+- **Security:** `--scaffold` runs each case's `setup.sh` as you, outside the agent's sandbox. Pass it only for a suite you or your organisation wrote; read the `setup.sh` files of a copy you received from someone else first.
 - `"WebFetch(domain:127.0.0.1)"` is meant to let sandboxed shell commands reach the local preview that `audit-northwind-static` starts with `python3 -m http.server 8765` (the sandbox limits network access to granted domains). If your sandbox still blocks loopback traffic, `seo_fetch.py` exits with code 2 (site unreachable) and the audit can only read `public/`, so the report graders may fail for reasons unrelated to the skill; check the run's NOTES and transcript before reading it as a regression.
 - One case, one run, no baseline (cheapest loop while editing a skill or a grader):
 
@@ -70,7 +71,13 @@ ANTHROPIC_MODEL=no-such-model claude plugin eval plugins/seo-kit --scaffold \
 - **Prompts** are written the way a user would ask, in the case's language, never with the skill's name, and end with "I'm not available for questions" so the run does not stall on an interview.
 - **Graders** pair a check on the steps (`tool_used: Skill` with `input_match` on the skill name, `tool_used: Bash` on the script) with checks on the result. `tool_used: Skill` is a plugin-fired indicator: in a run with the no-plugin baseline it is shown but not scored.
 - **Report content.** Report files are named `seo-reports/YYYY-MM-DD-<kind>.md`, so their path is not known in advance. Graders that read a report use `target: trace` with a pattern anchored on the Write call that creates it (`-audit\.md","content":"…`), so text Claude merely reads from the knowledge base (which mentions llms.txt, robots.txt, sameAs and so on) cannot satisfy them. Files with a fixed path (`SEO.md`, the edited page) are read with `target: { source: file, path: … }`.
+- **`llm` graders** read a fixed file when there is one (`content-saas-feature-page` judges the page itself). The audit and build rubrics use `focus: trace`, and a judge sees only the first 12 and the last 12 messages of a trace: in a very long run the report's Write call can fall outside that window, so a failing rubric next to passing regex graders deserves a look at the transcript.
 - **Baseline.** Runs compare the plugin with no plugin by default (`W/OUT` and `Δ` columns). There are no `baseline` graders yet: that grader type needs a reference transcript (`.jsonl`) recorded from a real run. To add one, run a case once with `--keep-temp`, save a good transcript as `cases/<case>/reference.jsonl`, and add a `graders/<name>.md` with `type: baseline`, `baseline_file: reference.jsonl` and the criteria in the body.
+
+## Troubleshooting
+
+- **Several report graders of one case fail together** (for example all the `flags-*` graders of the audit case) while `audit-file-written` passes: the anchored patterns expect the report to be created by one `Write` call whose input has `file_path` before `content`. A report built with several `Edit`s, written through a Bash heredoc, or serialised with the keys in the other order is not seen. Open the transcript; if the report is right, it is a grader limit, not a skill regression.
+- **A case scores 0 with `scaffold failed`**: `setup.sh` could not find `fixture/` next to itself, or (monitor case) no Python was on `PATH`.
 
 ## Add a case
 
