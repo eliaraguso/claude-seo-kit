@@ -1,233 +1,251 @@
-# SEO locale
+# Local SEO
 
-> Aggiornato al 2026-10-03. Fonte primaria: Google. Secondaria: SEJ (ott 2025–ott 2026).
-> Legenda fonti: **[G](url)** = documentazione Google Search Central (fatto). **[GBP\*]** = regola della Guida di Google Business Profile (support.google.com/business), **non presente nel corpus letto**: la skill la presenta come "da verificare sulla guida ufficiale". **Deduzione** = ragionamento da fatti Google, non affermato da Google. **[SEJ …]** = fonte terza (opinione, studio di vendor, caso singolo).
-> File collegati: `structured-data.md` (sintassi JSON-LD), `entity-personal-brand.md` (identità, autore), `content-quality-spam.md` (doorway, contenuti in serie), `ai-search.md` (misurazione AI), `crawling-indexing.md`.
+> Updated 2026-10-11. Scope: Business Profile, `LocalBusiness` markup, reviews, location pages, local presence in AI features and assistants. Primary source: Google Search Central and Google Business Profile Help; third-party views marked [SEJ].
+> Source legend: `[G](url)` = Google Search Central documentation. `[G OH YYYY-MM](url)` = Google Search Office Hours. `[GBP](url)` = Google Business Profile Help or the Maps contributed-content policy, checked 2026-10-11; `[GBP]` without a link = not found there, marked *(re-verify)*. *(inference)* = reasoning from Google facts, not stated by Google. `[SEJ …]` = third-party source (opinion, vendor study, single case).
+> Related files: `structured-data.md` (JSON-LD syntax, self-reviews SD-16), `entity-personal-brand.md` (identity, author, legal notices), `content-quality-spam.md` (doorways, scaled content), `ai-search.md` (AI controls, AI measurement, bots), `crawling-indexing.md`, `bing-basics.md` (Bing Places and Bing Webmaster Tools).
 
-## Indice
-- [Fatti e regole (Google)](#fatti-e-regole-google)
-- [Controlli per l'audit](#controlli-per-laudit)
-- [Checklist off-site](#checklist-off-site-azioni-manuali-che-la-skill-può-solo-guidare)
-- [Regole per contenuti e struttura del sito](#regole-per-contenuti-e-struttura-del-sito)
-- [Cosa dicono le fonti terze](#cosa-dicono-le-fonti-terze)
-- [Miti e consigli obsoleti](#miti-e-consigli-obsoleti)
+## Contents
+- [Facts and rules (Google)](#facts-and-rules-google)
+- [Audit checks](#audit-checks)
+- [Build rules](#build-rules)
+- [Off-site checklist](#off-site-checklist)
+- [Notes by site type](#notes-by-site-type)
+- [Third-party views](#third-party-views)
+- [Myths and outdated advice](#myths-and-outdated-advice)
 
-## Fatti e regole (Google)
+## Facts and rules (Google)
 
-### 1. Business Profile e schede locali
-- La presenza nella mappa e nei risultati locali passa dal **Profilo dell'attività su Google** (Google Business Profile, GBP): se l'attività non compare per una query locale, il primo controllo è che sia stata aggiunta e rivendicata. [G](https://developers.google.com/search/help/site-appearance-faq)
-- Dopo la rivendicazione (business.google.com) il proprietario gestisce **indirizzo, contatti, tipo di attività e foto**, che alimentano scheda informativa e Maps. Google consiglia anche di **verificare il sito in Search Console** per stabilirlo come presenza ufficiale. [G](https://developers.google.com/search/docs/appearance/establish-business-details)
-- La scheda informativa può essere corretta con il link **Feedback** se è passata almeno una settimana dall'ultima scansione della pagina con markup; un rappresentante verificato vede più opzioni. Il sistema impiega **circa una settimana** ad aggiornare i dettagli. [G](https://developers.google.com/search/docs/appearance/establish-business-details)
-- Rivendicare il GBP serve anche a ricevere avvisi diretti (restrizioni Maps, rimozioni legali, restrizioni di massa sulle recensioni); verificare Search Console dà avvisi su azioni manuali e sicurezza. [G](https://developers.google.com/search/help/small-business-notifications)
-- Le funzionalità AI (AI Overview, AI Mode) possono mostrare informazioni su attività locali: Google indica di tenere aggiornato il **Profilo dell'attività** (e Merchant Center per i prodotti). [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) · [G](https://developers.google.com/search/docs/appearance/ai-features)
-- Le immagini del GBP sono un canale per mostrare prodotti e servizi nei prodotti Google. [G](https://developers.google.com/search/help/site-appearance-faq)
-- Collegare **tutti i profili** (GBP, social, schede) al sito ufficiale: caso Office Hours di un'attività di servizi non trovata perché il "sito" non era referenziato dalle altre schede. [G](https://developers.google.com/search/help/office-hours/2023/december)
-- Attività chiusa definitivamente: **segnarla come chiusa** nel GBP e rimuovere/redirigere il vecchio sito. [G](https://developers.google.com/search/help/office-hours/2023/december)
+### 1. Business Profile and local listings
+- Presence on the map and in local results goes through the **Google Business Profile** (GBP): if the business does not appear for a local query, the first check is whether the profile has been added and claimed. [G](https://developers.google.com/search/help/site-appearance-faq)
+- After claiming (business.google.com) the owner manages **address, contact details, business type and photos**, which feed the knowledge panel and Maps. Google also recommends **verifying the site in Search Console** to establish it as the official presence. [G](https://developers.google.com/search/docs/appearance/establish-business-details)
+- The knowledge panel can be corrected with the **Feedback** link if at least a week has passed since the page with markup was last crawled; a verified representative sees more options. The system takes **about a week** to update the details. [G](https://developers.google.com/search/docs/appearance/establish-business-details)
+- Claiming the GBP also brings direct notices (Maps restrictions, legal removals, bulk review restrictions); verifying Search Console brings notices about manual actions and security. [G](https://developers.google.com/search/help/small-business-notifications)
+- AI features (AI Overviews, AI Mode) can show information about local businesses: Google says to keep the **Business Profile** up to date (and Merchant Center for products). [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) · [G](https://developers.google.com/search/docs/appearance/ai-features)
+- GBP images are a channel for showing products and services across Google products. [G](https://developers.google.com/search/help/site-appearance-faq)
+- Link **all profiles** (GBP, social, listings) to the official site: Office Hours case of a service business that was not found because its "site" was not referenced by its other listings. [G OH 2023-12](https://developers.google.com/search/help/office-hours/2023/december)
+- Business closed for good: **mark it as closed** in the GBP and remove or redirect the old site. [G OH 2023-12](https://developers.google.com/search/help/office-hours/2023/december)
+- Other map listings: **Bing Places for Business** (free, can import from GBP; Bing details live in `bing-basics.md`) and **Apple Business Connect** (Apple Maps) are separate listings to keep consistent with the GBP (→ LO-02). [SEJ 2025-10, news Microsoft] · [SEJ 2026-07/08]
 
-**Regole del Business Profile [GBP\*]** (non nel corpus: verificare sulla guida ufficiale prima di presentarle come obbligo)
-- Idoneità: l'attività deve avere **contatto di persona** con i clienti negli orari dichiarati (in sede o presso il cliente). Un'attività **solo online** non è idonea.
-- **Attività con area servita** (va dai clienti, non li riceve): nascondere l'indirizzo e impostare l'area servita. Indirizzi non presidiati (caselle postali, uffici virtuali) non ammessi.
-- **Nome**: quello reale usato nel mondo fisico (insegna, documenti, brand), senza parole chiave o città aggiunte.
-- **Categoria principale**: la più specifica che descrive l'attività nel suo complesso; poche categorie secondarie pertinenti.
-- **Recensioni**: vietati incentivi, richieste selettive solo ai clienti soddisfatti, recensioni di proprietari/dipendenti, contenuti falsi.
-- **Chiusure**: esiste lo stato "temporaneamente chiuso" e gli **orari speciali** (festività, ferie); non eliminare la scheda.
+**Business Profile rules**
+- **Eligibility**: "To qualify for a Business Profile, a business must make in-person contact with customers during its stated hours" (at its premises or at the customer's). Brands, organisations, artists and other **online-only** businesses are listed as ineligible, as are properties for rent or sale, lead-generation agents and P.O.-box addresses. [GBP](https://support.google.com/business/answer/13763036)
+- **Service-area business** (visits or delivers to customers, does not serve them at its address): remove or hide the address and set the service area; a hybrid business shows the address and also sets a service area. Up to 20 service areas (cities, postal codes, regions), no radius. Unstaffed addresses (P.O. boxes, remote mailboxes, virtual offices) are not allowed. [GBP](https://support.google.com/business/answer/3038177) · [GBP](https://support.google.com/business/answer/9157481)
+- **Name**: the real-world name used on signage, stationery and branding, with no added keywords or locations. [GBP](https://support.google.com/business/answer/3038177)
+- **Primary category**: the most specific category that describes the core business as a whole ("this business IS a", not "HAS a"); use as few categories as possible (up to 9 additional); never categories used only as keywords. [GBP](https://support.google.com/business/answer/3038177) · [GBP](https://support.google.com/business/answer/3039617)
+- **Reviews**: no incentives (payment, discounts, free goods or services), no selective soliciting of satisfied customers only, no content based on a conflict of interest (including current or former employment, i.e. owners and staff), no fake engagement; merchants may not ask for a set number of reviews or for specific content, nor pressure customers to review on the premises. Asking for genuine reviews is allowed. [GBP](https://support.google.com/business/answer/2622994) · [GBP](https://support.google.com/contributionpolicy/answer/7400114)
+- **Closures**: **special hours** for holidays and closures of up to 6 days in a row; "**Temporarily closed**" for 7 days or more, the off-season or an unknown period; temporarily closed businesses can rank after open ones for broad queries. [GBP](https://support.google.com/business/answer/6303076) · [GBP](https://support.google.com/business/answer/15300196) Do not delete the profile to signal a closure. [GBP] *(re-verify)*
 
-### 2. Dati strutturati `LocalBusiness` [G](https://developers.google.com/search/docs/appearance/structured-data/local-business)
-- Abilitano dettagli nella scheda informativa (orari, reparti, contatti). Prenotazioni/ordini dai risultati: **API Maps Booking**, non il markup. Il carosello ristoranti è ad accesso limitato. Nessun limite di paese indicato per la scheda base.
-- Si può mettere su qualsiasi pagina, ma è più utile sulla pagina con le informazioni dell'attività. **Una entità per ogni sede**; usare il **sottotipo più specifico**; più tipi in **array** su `@type` (**`additionalType` non supportato**).
-- `LocalBusiness` è sottotipo di `Organization`: valgono anche i campi Organization (`logo`, `sameAs`, `email`, `vatID`, `contactPoint`…). [G](https://developers.google.com/search/docs/appearance/structured-data/organization)
-- **Obbligatorie**: `name`, `address` (`PostalAddress`, il più completo possibile; `addressCountry` ISO 3166-1 alpha-2, es. `IT`).
-- **Consigliate**: `telephone` (con prefisso internazionale, es. `+39`), `url` (URL della **sede specifica**, funzionante), `geo` (latitudine/longitudine con **almeno 5 decimali**), `openingHoursSpecification`, `priceRange` (**meno di 100 caratteri**, altrimenti non mostrato), `department`, `menu`/`servesCuisine` (solo ristorazione); `aggregateRating`/`review` **solo per siti che raccolgono recensioni su altre attività**.
-- **Orari**: `dayOfWeek` in inglese (anche forma breve `Monday`); senza `validFrom`/`validThrough` valgono tutto l'anno; dopo mezzanotte in un solo blocco; 24 h = `00:00`–`23:59`; chiuso tutto il giorno = `00:00`–`00:00`; **chiusure stagionali/festive** = `validFrom` + `validThrough` con `00:00`–`00:00`. Gli enum vanno in inglese anche su siti in altra lingua. [G](https://developers.google.com/search/help/office-hours/2023/august)
-- Servizi con prezzo su preventivo: usare `LocalBusiness` (che ammette fascia di prezzo), **non `Product`**. [G](https://developers.google.com/search/help/office-hours/2023/january)
-- Violazioni → possibile azione manuale; con azione manuale i dati strutturati vengono **ignorati** (la pagina resta in Ricerca). Google non garantisce la visualizzazione. [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies)
-- Dati strutturati **non necessari** per comparire nelle funzionalità AI; nessun markup speciale "per l'AI". [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
+### 2. `LocalBusiness` structured data [G](https://developers.google.com/search/docs/appearance/structured-data/local-business)
+- It enables details in the knowledge panel (hours, departments, contacts). Bookings and orders from results go through the **Maps Booking API**, not markup. The restaurant carousel has limited access. No country restriction is stated for the basic panel.
+- It can go on any page, but is most useful on the page with the business information. **One entity per location**; use the **most specific subtype**; several types go in an **array** on `@type` (**`additionalType` is not supported**).
+- `LocalBusiness` is a subtype of `Organization`: Organization fields also apply (`logo`, `sameAs`, `email`, `vatID`, `contactPoint`…). [G](https://developers.google.com/search/docs/appearance/structured-data/organization)
+- **Required**: `name`, `address` (`PostalAddress`, as complete as possible; `addressCountry` ISO 3166-1 alpha-2, e.g. `NO`, `IT`).
+- **Recommended**: `telephone` (with the international prefix, e.g. `+47`), `url` (URL of the **specific location**, working), `geo` (latitude/longitude with **at least 5 decimals**), `openingHoursSpecification`, `priceRange` (**under 100 characters**, otherwise not shown), `department`, `menu`/`servesCuisine` (food service only); `aggregateRating`/`review` **only for sites that collect reviews about other businesses**.
+- **Hours**: `dayOfWeek` in English (short form `Monday` is accepted); without `validFrom`/`validThrough` they apply all year; past midnight in a single block; 24 h = `00:00`–`23:59`; closed all day = `00:00`–`00:00`; **seasonal or holiday closures** = `validFrom` + `validThrough` with `00:00`–`00:00`. Enum values stay in English on sites in any language. [G OH 2023-08](https://developers.google.com/search/help/office-hours/2023/august)
+- Services priced on quotation: use `LocalBusiness` (which accepts a price range), **not `Product`**. [G OH 2023-01](https://developers.google.com/search/help/office-hours/2023/january)
+- Violations → possible manual action; under a manual action the structured data is **ignored** (the page stays in Search). Google does not guarantee display. [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies)
+- Structured data is **not needed** to appear in AI features; there is no special markup "for AI". [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
 
-### 3. Recensioni
-- **Self-serving**: se l'entità recensita controlla le recensioni su se stessa, le sue pagine con `LocalBusiness` o qualsiasi `Organization` **non sono idonee alle stelle** — vale sia per markup diretto sia per **widget incorporati** (recensioni Google, Facebook). [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet)
-- Valutazioni di attività locali: devono venire **direttamente dagli utenti**, non da editor umani che le creano o curano. [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet)
-- **Non aggregare** recensioni da altri siti; **niente recensioni false o incentivate non dichiarate** (incentivo = denaro, sconti, voucher, prodotti gratis), né nel markup né nella pagina; recensioni non da utenti reali possono portare ad **azione manuale**. [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) · [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies)
-- Ogni recensione/valutazione deve riferirsi a **un elemento specifico** (un solo bersaglio), essere **visibile in pagina**; se si marcano più recensioni, marcarle tutte. [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet)
-- Il **sistema delle recensioni** (attivo anche in italiano) valuta contenuti di recensione scritti dal sito (guide, confronti), **non** le recensioni dei clienti in pagina. [G](https://developers.google.com/search/docs/appearance/reviews-system)
-- Scambiare prodotti/servizi con recensioni che contengono link = **link spam**. [G](https://developers.google.com/search/docs/essentials/spam-policies)
+### 3. Reviews
+- **Self-serving**: if the reviewed entity controls the reviews about itself, its pages with `LocalBusiness` or any `Organization` are **not eligible for stars**, both with direct markup and with **embedded widgets** (Google, Facebook reviews). Owner check: SD-16. [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet)
+- Ratings of local businesses must come **directly from users**, not from human editors who create or curate them. [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet)
+- **Do not aggregate** reviews from other sites; **no fake reviews or undisclosed incentivised reviews** (incentive = money, discounts, vouchers, free products), neither in markup nor on the page; reviews not from real users can lead to a **manual action**. [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) · [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies)
+- Each review or rating must refer to **one specific item** (a single target) and be **visible on the page**; if several reviews are marked up, mark up all of them. [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet)
+- The **reviews system** (it applies in many languages; the source page lists them) evaluates review content written by the site (guides, comparisons), **not** customer reviews shown on the page. [G](https://developers.google.com/search/docs/appearance/reviews-system)
+- Exchanging products or services for reviews that contain links = **link spam**. [G](https://developers.google.com/search/docs/essentials/spam-policies)
 
-### 4. Pagine località, doorway e keyword stuffing [G](https://developers.google.com/search/docs/essentials/spam-policies)
-- **Doorway**: più pagine o domini mirati a regioni/città che portano a un'unica destinazione; pagine quasi uguali che somigliano a risultati di ricerca più che a una gerarchia consultabile.
-- **Keyword stuffing**: blocchi di testo che elencano città e regioni per cui ci si vuole posizionare; elenchi di numeri di telefono senza valore.
-- **Abuso di contenuti su larga scala**: molte pagine generate (con AI o a mano) per manipolare il ranking, incluse pagine per ogni variante di query. [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
-- Il **sistema di deduplicazione** mostra solo il risultato più pertinente tra pagine molto simili; la **diversità dei siti** limita in genere a due risultati per sito. [G](https://developers.google.com/search/docs/appearance/ranking-systems-guide)
+### 4. Location pages, doorways and keyword stuffing [G](https://developers.google.com/search/docs/essentials/spam-policies)
+- **Doorways**: several pages or domains targeting regions or cities that funnel to a single destination; near-identical pages that look more like search results than a browsable hierarchy.
+- **Keyword stuffing**: blocks of text listing the cities and regions the site wants to rank for; lists of phone numbers with no added value.
+- **Scaled content abuse**: many pages generated (with AI or by hand) to manipulate ranking, including a page for every query variant. [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
+- The **deduplication system** shows only the most relevant result among very similar pages; **site diversity** generally limits a site to two results. [G](https://developers.google.com/search/docs/appearance/ranking-systems-guide)
 
-### 5. Segnali e aspetto
-- Query locali → risultati locali: la pertinenza dipende anche dalla **posizione dell'utente**; la mappa non compare per tutte le query e non va "inseguita". [G](https://developers.google.com/search/docs/fundamentals/how-search-works) · [G](https://developers.google.com/search/help/office-hours/2023/march)
-- Il `<title>` può includere **nome dell'attività e sede fisica**; per un'attività locale Mueller suggerisce città/località nei title. [G](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) · [G](https://developers.google.com/search/help/office-hours/2023/march)
-- Esempio Google di buona meta description: **cosa offre + orari + dove si trova**. [G](https://developers.google.com/search/docs/appearance/snippet)
-- Query con posizione alta ma CTR basso perché l'utente trova già orari/indirizzo/telefono in SERP: comportamento atteso se l'obiettivo è il contatto. [G](https://developers.google.com/search/docs/monitor-debug/bubble-chart-analysis)
-- **ccTLD** (es. `.it`): segnale di paese a basso impatto; la lingua conta di più. [G](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) · [G](https://developers.google.com/search/help/office-hours/2024/july)
-- Il crawler vede i contenuti dalla propria posizione, in genere USA: non far dipendere orari/prezzi/contatti dalla geolocalizzazione IP. [G](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
-- **Elenco dei luoghi più apprezzati**: mostra elenchi editoriali di terzi in cui l'attività è menzionata; **solo attività con sede fisica**; gli elenchi devono essere curati, indipendenti, non sponsorizzati. [G](https://developers.google.com/search/docs/appearance/top-places-list)
+### 5. Signals and appearance
+- Local queries → local results: relevance also depends on the **user's location**; the map does not appear for every query and should not be "chased". [G](https://developers.google.com/search/docs/fundamentals/how-search-works) · [G OH 2023-03](https://developers.google.com/search/help/office-hours/2023/march)
+- The `<title>` can include the **business name and physical location**; for a local business Mueller suggested the city or area in titles. [G](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) · [G OH 2023-03](https://developers.google.com/search/help/office-hours/2023/march)
+- Google's example of a good meta description: **what it offers + opening hours + where it is**. [G](https://developers.google.com/search/docs/appearance/snippet)
+- Queries with a high position but low CTR because users already find hours, address or phone in the results page: expected behaviour when the goal is contact. [G](https://developers.google.com/search/docs/monitor-debug/bubble-chart-analysis)
+- **ccTLD** (e.g. `.no`, `.it`): a low-impact country signal; language matters more. [G](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) · [G OH 2024-07](https://developers.google.com/search/help/office-hours/2024/july)
+- The crawler sees content from its own location, usually the USA: do not make hours, prices or contacts depend on IP geolocation. [G](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
+- **Top places list**: shows third-party editorial lists in which the business is mentioned; **only businesses with a physical location**; lists must be curated, independent and not sponsored. [G](https://developers.google.com/search/docs/appearance/top-places-list)
 
-### 6. Funzioni disponibili solo in certi paesi
-| Funzione | Dove | Note | Fonte |
+### 6. Features vary by country
+Some local features exist only in some countries, and the list changes. Before recommending one, check availability:
+1. Open the Google page for the feature (Source column) and read its availability section; the overview of region-specific features is the aggregator-features page. [G](https://developers.google.com/search/docs/appearance/aggregator-features)
+2. In Search Console › Performance, filter by **Country** and look at **Search appearance** to see whether the feature actually shows for the site's market.
+3. For features reported only by third parties (no Google page), say so and give the country and date of the report.
+
+| Feature | Where | Notes | Source |
 |---|---|---|---|
-| Unità di aggregatori + unità di fornitori (anche query su attività locali dal 18/09/2026) | Solo SEE (Italia inclusa) | Il fornitore diretto non deve inviare dati oltre a quelli scansionati; l'unità fornitori compare solo con quella aggregatori; le directory devono essere approvate come servizi di ricerca verticale | [G](https://developers.google.com/search/docs/appearance/supplier-unit) · [G](https://developers.google.com/search/docs/appearance/aggregator-unit) |
-| Caroselli di dati strutturati per attività locali | SEE, Sudafrica, Turchia | Per siti che elencano più entità (aggregatori), non per la singola attività | [G](https://developers.google.com/search/docs/appearance/aggregator-features) |
-| "Siti di luoghi" (carosello + chip) | Solo Turchia | Nessun markup; modulo di interesse | [G](https://developers.google.com/search/docs/appearance/places-sites) |
-| Abuso reputazione del sito: azione manuale | Effetto solo fuori SEE dal 30/08/2026 | Nel SEE la sezione può essere classificata separatamente | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
-| Ask Maps, chiamate AI ai negozi, booking agentico servizi locali | USA (Ask Maps anche India) | Solo da fonti SEJ; non in Italia a ottobre 2026 | [SEJ 2026-03/05/06] |
-| Strumenti GBP nell'app Gemini | Globale **tranne SEE e UK** | Analisi, bozze risposte recensioni | [SEJ 2026-06] |
-| Annunci Apple Maps (divieti per alcune categorie) | USA/Canada | Solo pubblicità | [SEJ 2026-07] |
+| Aggregator units + supplier units (local business queries included since 18 September 2026) | EEA only | The direct supplier does not need to submit data beyond what is crawled (feeds optional); the supplier unit appears only with the aggregator unit; directories must be approved as vertical search services | [G](https://developers.google.com/search/docs/appearance/supplier-unit) · [G](https://developers.google.com/search/docs/appearance/aggregator-unit) |
+| Structured data carousels for local businesses | EEA, Türkiye (South Africa has structured data carousels; check the type list for local businesses) | For sites that list several entities (aggregators), not for the single business | [G](https://developers.google.com/search/docs/appearance/aggregator-features) |
+| "Places sites" (carousel + chips) | Türkiye only | No markup; interest form | [G](https://developers.google.com/search/docs/appearance/places-sites) |
+| Site reputation abuse: manual action | Applies only outside the EEA since late August 2026 *(re-verify exact date)* | In the EEA the section may be classified separately from the main domain, without manual action | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
+| Ask Maps, AI calls to businesses, agentic booking of local services | USA (Ask Maps also India) | Third-party sources only; not available in the EEA as of October 2026 | [SEJ 2026-03/05/06] |
+| GBP tools in the Gemini app | Global **except EEA and UK** | Insights, draft replies to reviews | [SEJ 2026-06] |
+| Apple Maps ads (some categories banned) | USA/Canada | Advertising only | [SEJ 2026-07] |
 
-### 7. AI e ricerca locale (posizione Google)
-- AI Overview e AI Mode usano i sistemi principali di ranking; non esistono requisiti aggiuntivi: pagina **indicizzata e idonea allo snippet**, scansione consentita in robots.txt **e da CDN/hosting**, contenuti importanti **in testo**, dati strutturati coerenti col visibile, GBP aggiornato. [G](https://developers.google.com/search/docs/appearance/ai-features)
-- Controlli disponibili: `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`; esclusione del sito dalle funzionalità di AI generativa tramite impostazione in Search Console (rollout progressivo); Google-Extended **non** riguarda la Ricerca. [G](https://developers.google.com/search/docs/appearance/ai-features) · [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
-- Misura: report sul rendimento dell'AI generativa in Search Console (**solo impressioni**, per pagina/paese/dispositivo; globale dal 31/08/2026). [G](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports)
-- Manipolare le risposte AI (menzioni o recensioni inautentiche) rientra nelle norme sullo spam; cercare menzioni inautentiche è "poco utile". [G](https://developers.google.com/search/docs/essentials/spam-policies) · [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
-- **ChatGPT, Perplexity, Copilot, Apple**: nessuna documentazione Google; solo fonti terze (vedi sotto). Bing Places e Apple Business Connect sono schede separate, gratuite (fonti terze).
+### 7. AI and local search (Google's position)
+- AI Overviews and AI Mode use the core ranking systems; there are no additional requirements: page **indexed and eligible for a snippet**, crawling allowed in robots.txt **and by the CDN/hosting**, important content **in text**, structured data consistent with the visible content, GBP up to date. [G](https://developers.google.com/search/docs/appearance/ai-features)
+- Controls over how content appears in AI features (snippet directives, the Search Console opt-out setting, the fact that Google-Extended does not affect Search) are listed once in the `ai-search.md` Controls table. [G](https://developers.google.com/search/docs/appearance/ai-features) · [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
+- Measurement: generative AI performance report in Search Console (**impressions only**, by page/country/device; global since 31 August 2026). [G](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports)
+- Manipulating AI answers (inauthentic mentions or reviews) falls under the spam policies; chasing inauthentic mentions is "not useful". [G](https://developers.google.com/search/docs/essentials/spam-policies) · [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
+- **ChatGPT, Perplexity, Copilot, Apple**: no Google documentation; third-party sources only (see below). Bing Places and Apple Business Connect are separate, free listings (third-party sources).
 
-### 8. Directory locali (posizione Google)
-- **Non** iscriversi a directory per migliorare la SEO; usarle eventualmente per traffico diretto. "La ricerca locale è diversa." [G](https://developers.google.com/search/help/office-hours/2022/november)
-- Directory e social bookmarking di **bassa qualità** per i link = link spam; per la SEO off-page "non sprecare tempo". [G](https://developers.google.com/search/docs/essentials/spam-policies) · [G](https://developers.google.com/search/help/office-hours/2023/may)
-- **Deduzione**: la coerenza dei dati sulle schede (GBP, Bing, Apple, directory di settore) serve agli utenti, al GBP e ai sistemi che leggono il web; non è una tattica di link.
+### 8. Local directories (Google's position)
+- Do **not** sign up to directories to improve SEO; use them, if at all, for direct traffic. "Local search is different." [G OH 2022-11](https://developers.google.com/search/help/office-hours/2022/november)
+- **Low-quality** directories and social bookmarking for links = link spam; for off-page SEO "don't waste your time". [G](https://developers.google.com/search/docs/essentials/spam-policies) · [G OH 2023-05](https://developers.google.com/search/help/office-hours/2023/may)
+- *(inference)* Consistent data across listings (GBP, Bing, Apple, industry directories) serves users, the GBP and systems that read the web; it is not a link tactic.
 
-## Controlli per l'audit
+## Audit checks
 
-Gravità: **Critica** = rischio azione manuale o informazione sbagliata ai clienti · **Alta** = perdita di visibilità locale probabile · **Media** = miglioramento importante · **Bassa** = rifinitura. "Auto" = verificabile dal codice/HTML; "Manuale" = serve l'utente o uno strumento esterno.
+Severity follows the scale in `conventions.md`. For local sites, Critical also covers wrong information given to customers. "Auto" = verifiable from code or HTML; "Manual" = needs the user or an external tool.
 
-| ID | Controllo | Come verificarlo | Gravità | Fonte |
+| ID | Check | How to verify | Severity | Source |
 |---|---|---|---|---|
-| LO-01 | NAP (nome, indirizzo o area, telefono) in **testo HTML** visibile, identico su home, contatti, footer e JSON-LD | Auto: estrarre testo da HTML iniziale e renderizzato; confrontare stringhe normalizzate | Alta | [G](https://developers.google.com/search/docs/appearance/ai-features) · deduzione |
-| LO-02 | NAP del sito = GBP = Bing Places = Apple Business Connect = directory di settore | Manuale: l'utente incolla i dati delle schede; la skill confronta campo per campo | Alta | [SEJ 2026-08, Uberall/AthenaHQ] · [GBP\*] |
-| LO-03 | Orari/contatti/servizi non solo in immagine, PDF o widget JS | Auto: cercare orari e telefono nel DOM; segnalare `<img>` di volantini, iframe, widget | Alta | [G](https://developers.google.com/search/docs/fundamentals/get-started-developers) |
-| LO-04 | Telefono come link `tel:` con prefisso `+39`/internazionale | Auto: regex su `href="tel:"` | Bassa | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
-| LO-05 | `LocalBusiness` presente sulla pagina info/contatti se c'è una **sede che riceve clienti** | Auto: parse JSON-LD; Manuale: chiedere se la sede riceve clienti | Media | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
-| LO-06 | Sottotipo più specifico; più tipi in array `@type`; nessun `additionalType` | Auto | Media | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
-| LO-07 | Obbligatorie `name` + `address` completo (`streetAddress`, `addressLocality`, `addressRegion`, `postalCode`, `addressCountry` ISO-2) | Auto | Alta | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
-| LO-08 | `telephone` con prefisso paese; `geo` ≥ 5 decimali; `priceRange` < 100 caratteri; `url` della sede = 200 | Auto | Bassa | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
-| LO-09 | `openingHoursSpecification` coerente con gli orari visibili; `dayOfWeek` in inglese; formato orario valido | Auto: confronto JSON-LD ↔ testo pagina | Media | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
-| LO-10 | Nessun `aggregateRating`/`review` sulla **propria** `LocalBusiness`/`Organization` (anche via widget Google/Facebook) | Auto: JSON-LD + ricerca di script di widget recensioni | Alta | [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
-| LO-11 | Testimonianze reali; incentivi dichiarati; nessuna recensione inventata o "curata"; nessuna aggregata da altri siti | Manuale: chiedere l'origine; Auto: cercare markup con autori ripetuti/generici | Critica | [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
-| LO-12 | Ogni rating ha **un solo** `itemReviewed` ed è visibile in pagina | Auto | Alta | [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
-| LO-13 | Pagine città/zona **quasi identiche** (doorway) | Auto: similarità del testo principale tra pagine con pattern `/{servizio}-{città}`; segnalare se cambia solo il toponimo | Critica | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
-| LO-14 | Blocchi di elenchi di città/quartieri o numeri ripetuti | Auto: liste di toponimi > ~10 senza frase di contesto (soglia euristica) | Alta | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
-| LO-15 | Una pagina per ogni **servizio** reale con contenuto distinto, CTA e prossimo passo | Auto: mappa pagine/servizi; Manuale: elenco servizi reali | Media | [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content) · [SEJ 2025-12, Riddall] |
-| LO-16 | `<title>` di home/contatti/pagine servizio con attività + luogo (o "online"); niente "Home"/"Contatti" nudi | Auto | Media | [G](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) |
-| LO-17 | Meta description di home/contatti con cosa offre + orari/modalità + dove | Auto | Bassa | [G](https://developers.google.com/search/docs/appearance/snippet) |
-| LO-18 | Area servita / modalità online descritte in frasi (non liste di città) | Auto + giudizio | Media | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
-| LO-19 | Chiusure temporanee/ferie: avviso visibile + `validFrom`/`validThrough` + orari speciali GBP; sito **non** spento né in `noindex` | Auto (testo/JSON-LD), Manuale (GBP) | Media | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) · [GBP\*] · deduzione |
-| LO-20 | Vecchie pagine con NAP obsoleto (`-old`, `v2`, duplicati post-redesign) ancora indicizzabili | Auto: crawl + ricerca vecchi numeri/indirizzi; Manuale: `site:` | Media | [SEJ 2026-09, Shaw/Jeffery] |
-| LO-21 | Googlebot non bloccato da robots.txt/CDN/WAF; decisione **esplicita** sui bot di ricerca AI (es. impostazioni Cloudflare) | Auto: robots.txt; Manuale: pannello CDN, Controllo URL | Alta | [G](https://developers.google.com/search/docs/appearance/ai-features) · [SEJ 2026-09] |
-| LO-22 | Modulo contatto/prenotazione accessibile: `<label>`, pulsanti con nome, nessun CAPTCHA o overlay che blocchi il flusso | Auto: albero di accessibilità | Media | [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) |
-| LO-23 | Contenuti chiave nell'**HTML iniziale** (SPA: SSR/prerender) per crawler che non eseguono JS | Auto: confronto HTML grezzo vs renderizzato | Media (Alta per visibilità su assistenti terzi) | [SEJ 2026-09, CallRail] · ⚠ Google esegue JS |
-| LO-24 | Numeri di call tracking lato browser non sostituiscono il numero canonico visto dai crawler | Auto: diff numero in HTML grezzo vs DOM | Media | [SEJ 2026-09, CallRail] · deduzione |
-| LO-25 | Se **nessuna sede aperta al pubblico**: niente `LocalBusiness` con indirizzo che nel GBP è nascosto; usare `Organization`/`Person` | Manuale + Auto | Media | Deduzione da [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) + [GBP\*] |
-| LO-26 | `FAQPage` presente solo per gli utenti: nessuna attesa di risultati avanzati | Auto | Bassa | [SEJ 2026-05] (rich result FAQ rimossi) |
-| LO-27 | JSON-LD valido e analizzabile; nessun errore nel Test dei risultati avanzati | Auto: parse; Manuale: Rich Results Test | Media | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
-| LO-28 | Link dal sito al GBP (es. "Lasciaci una recensione") e campo sito del GBP verso home/pagina sede canonica (https, senza parametri incoerenti) | Auto (link uscenti); Manuale (GBP) | Media | [G](https://developers.google.com/search/help/office-hours/2023/december) |
-| LO-29 | Search Console verificata (proprietà Dominio) e GBP rivendicato | Manuale | Alta | [G](https://developers.google.com/search/help/small-business-notifications) |
-| LO-30 | Conversioni misurate: clic su `tel:`/email/prenotazione come eventi; collegamento GBP → GA4 | Auto (eventi nel codice); Manuale (GA4) | Media | [SEJ 2026-06, news Google] |
-| LO-31 | Prezzi/fasce e modalità (in presenza/online, durata) dichiarati in testo | Auto + giudizio | Media | [SEJ 2026-07, Heitzman] · [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) (`priceRange`) |
-| LO-32 | Credenziali e iscrizioni professionali verificabili sulla pagina del professionista (temi vicini a lavoro/denaro) | Manuale | Alta | [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content) |
+| LO-01 | NAP (name, address or area, phone) in visible **HTML text**, identical on home, contact page, footer and JSON-LD | Auto: extract text from initial and rendered HTML; compare normalised strings | High | [G](https://developers.google.com/search/docs/appearance/ai-features) · *(inference)* |
+| LO-02 | Site NAP = GBP = Bing Places = Apple Business Connect = industry directories | Manual: the user pastes the listing data; the skill compares field by field | High | [SEJ 2026-08, Uberall/AthenaHQ] · [GBP](https://support.google.com/business/answer/3038177) |
+| LO-03 | Hours, contacts and services not only in an image, PDF or JS widget | Auto: look for hours and phone in the DOM; flag flyer `<img>`, iframes, widgets | High | [G](https://developers.google.com/search/docs/fundamentals/get-started-developers) |
+| LO-04 | Phone as a `tel:` link with the international prefix (e.g. `+47`) | Auto: regex on `href="tel:"` | Low | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
+| LO-05 | `LocalBusiness` present on the info/contact page when there is a **location that receives customers** | Auto: parse JSON-LD; Manual: ask whether the location receives customers | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
+| LO-06 | Most specific subtype; several types as an `@type` array; no `additionalType` | Auto | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
+| LO-07 | Required `name` + complete `address` (`streetAddress`, `addressLocality`, `addressRegion`, `postalCode`, `addressCountry` ISO-2) | Auto | High | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
+| LO-08 | `telephone` with country prefix; `geo` ≥ 5 decimals; `priceRange` < 100 characters; location `url` returns 200 | Auto | Low | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
+| LO-09 | `openingHoursSpecification` consistent with the visible hours; `dayOfWeek` in English; valid time format | Auto: compare JSON-LD ↔ page text | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) |
+| LO-10 | Alias of SD-16 — verify there, report once | Auto: JSON-LD + search for review-widget scripts (Google/Facebook) on the site's own `LocalBusiness`/`Organization` | High | [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
+| LO-11 | Real testimonials; incentives disclosed; no invented or "curated" reviews; none aggregated from other sites | Manual: ask where they come from; Auto: look for markup with repeated or generic authors | Critical | [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
+| LO-12 | Each rating has **a single** `itemReviewed` and is visible on the page | Auto | High | [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) |
+| LO-13 | **Near-identical** city/area pages (doorways) | Auto: similarity of the main text across pages with a `/{service}-{city}` pattern; flag when only the place name changes | Critical | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
+| LO-14 | Blocks listing cities/neighbourhoods or repeated phone numbers | Auto: lists of more than ~10 place names without a contextual sentence (heuristic threshold) | High | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
+| LO-15 | One page per real **service**, with distinct content, CTA and next step | Auto: map pages to services; Manual: list of the real services | Medium | [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content) · [SEJ 2025-12, Riddall] |
+| LO-16 | `<title>` of home, contact and service pages with business + place (or "online"); no bare "Home"/"Contact" | Auto | Medium | [G](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) |
+| LO-17 | Meta description of home and contact page with what it offers + hours/format + where | Auto | Low | [G](https://developers.google.com/search/docs/appearance/snippet) |
+| LO-18 | Service area / online format described in sentences (not lists of cities) | Auto + judgement | Medium | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
+| LO-19 | Temporary closures and holidays: visible notice + `validFrom`/`validThrough` + GBP special hours; site **not** switched off nor set to `noindex` | Auto (text/JSON-LD), Manual (GBP) | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) · [GBP](https://support.google.com/business/answer/6303076) · *(inference)* |
+| LO-20 | Old pages with outdated NAP (`-old`, `v2`, duplicates after a redesign) still indexable | Auto: crawl + search for old numbers/addresses; Manual: `site:` | Medium | [SEJ 2026-09, Shaw/Jeffery] |
+| LO-21 | Googlebot not blocked by robots.txt/CDN/WAF; an **explicit** decision on AI search bots (e.g. Cloudflare settings) | Auto: robots.txt; Manual: CDN panel, URL Inspection | High | [G](https://developers.google.com/search/docs/appearance/ai-features) · [SEJ 2026-09] |
+| LO-22 | Accessible contact/booking form: `<label>`, named buttons, no CAPTCHA or overlay blocking the flow | Auto: accessibility tree | Medium | [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) |
+| LO-23 | Key content in the **initial HTML** (SPA: SSR/prerender) for crawlers that do not run JS | Auto: compare raw vs rendered HTML. Caveat: Google renders JavaScript, so this is about third-party assistants and bots that do not (list in the `ai-search.md` bot table); raise to High when visibility in those assistants is a stated goal | Medium | [SEJ 2026-09, CallRail] |
+| LO-24 | Browser-side call-tracking numbers do not replace the canonical number seen by crawlers | Auto: diff the number in raw HTML vs DOM | Medium | [SEJ 2026-09, CallRail] · *(inference)* |
+| LO-25 | If **no location is open to the public**: no `LocalBusiness` with an address that the GBP hides; use `Organization`/`Person` | Manual + Auto | Medium | *(inference)* from [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) + [GBP](https://support.google.com/business/answer/3038177) |
+| LO-26 | `FAQPage` kept only for users: no expectation of rich results | Auto. FAQ rich results were removed (reported by SEJ 2026-05; re-verify); status in the `structured-data.md` "Retired or restricted rich results" table | Low | [SEJ 2026-05] |
+| LO-27 | Valid, parsable JSON-LD; no errors in the Rich Results Test | Auto: parse; Manual: Rich Results Test | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
+| LO-28 | Link from the site to the GBP (e.g. "Leave us a review") and GBP website field pointing to the home or canonical location page (https, no inconsistent parameters) | Auto (outgoing links); Manual (GBP) | Medium | [G OH 2023-12](https://developers.google.com/search/help/office-hours/2023/december) |
+| LO-29 | Search Console verified (Domain property) and GBP claimed | Manual | High | [G](https://developers.google.com/search/help/small-business-notifications) |
+| LO-30 | Conversions measured: clicks on `tel:`/email/booking as events; GBP → GA4 link | Auto (events in code); Manual (GA4) | Medium | [SEJ 2026-06, news Google] |
+| LO-31 | Prices or ranges and format (in person/online, duration) stated in text | Auto + judgement | Medium | [SEJ 2026-07, Heitzman] · [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) (`priceRange`) |
+| LO-32 | Credentials and professional registrations verifiable on the practitioner's page (topics close to work, money or health) | Manual | High | [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content) |
 
-## Checklist off-site (azioni manuali che la skill può solo guidare)
-La skill prepara testi, campi e verifiche; l'utente esegue.
+## Build rules
+1. **Service pages before city pages.** One page per real service (what, for whom, how it works, duration, price or range, in person/online, next step) → LO-15, LO-31. Location pages are legitimate only when there is a **real location** or genuinely local content (cases, partners, regulations, logistics); otherwise they are doorways → LO-13 [G](https://developers.google.com/search/docs/essentials/spam-policies).
+2. **Anti-doorway test** *(inference)*: if the page stays true after swapping the city name, it must not exist as a separate page → LO-13. Example: Northwind Physio has one clinic in Oslo; pages such as `/physiotherapy-bergen` or `/physiotherapy-trondheim` that only change the city name are doorways, even if each one is "unique" after a rewrite. Doorways risk a manual action that affects the whole site, not just the extra pages.
+3. **Service area in prose** → LO-18, LO-14: "Clinic in Oslo; home visits across Oslo municipality" (Northwind Physio) or "Sessions at our Bologna office; online sessions anywhere in Italy" (Studio Ferri Orientamento), not lists of towns.
+4. **Local + online practitioner** (*(inference)* from [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) + [GBP](https://support.google.com/business/answer/3038177)) → LO-05, LO-25:
+   - physical location that receives customers → GBP with address + `LocalBusiness` (most specific subtype) on the contact page;
+   - visits customers → GBP with service area; no address on the site that the GBP hides;
+   - online only → no GBP (not eligible); `Organization` or `Person`/`ProfilePage` (see `entity-personal-brand.md`); one "Online sessions" page, not one per city;
+   - same offer in person and online → one service page with two formats, not two near-identical pages.
+5. **Complete contact page in HTML** → LO-01, LO-03, LO-04: name, address or area, `tel:` phone, email, hours, booking method, optional map (the iframe does not replace the text).
+6. **Temporary closures** (*(inference)* + [G](https://developers.google.com/search/docs/appearance/structured-data/local-business)) → LO-19: visible notice at the top, hours updated in JSON-LD (`validFrom`/`validThrough`), GBP with special hours or "Temporarily closed"; do not add `noindex`, do not switch the site off, do not redirect.
+7. **Reviews on the site** → LO-10, LO-11, LO-12: show them as text with name, date and source; **no stars in the markup** of your own business; no reviews edited or selected in a misleading way [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet).
+8. **Verifiable facts in text** → LO-31, LO-32: prices or ranges with their variables, timings, formats, credentials; this is the information assistants look for and that Google suggests having in text form [G](https://developers.google.com/search/docs/appearance/ai-features).
+9. **Topics close to YMYL** (jobs and careers, money, health) → LO-32: no guaranteed outcomes, an author with real credentials, cited sources, dated updates [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content).
+10. **Informational content** (blog, guides) linked to the service pages, based on real customer questions, not one page per query variant [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide).
+11. **Minimal, maintained structured data** → LO-08, LO-27: a correct, up-to-date `LocalBusiness` beats rich but stale markup (risk: an old phone number in the schema) [SEJ 2026-09, Shaw/Jeffery].
+12. **Tax and legal identifiers**: whether VAT or registration numbers must appear on the site depends on the country and profession; see `entity-personal-brand.md` "Regulated professions and legal notices". In markup, `vatID` is an Organization field Google lists as a trust signal [G](https://developers.google.com/search/docs/appearance/structured-data/organization).
+
+## Off-site checklist
+Manual actions the skill can only guide: the skill prepares texts, fields and checks; the user carries them out.
 
 **Google Business Profile**
-- [ ] Verificare l'**idoneità** [GBP\*]: incontri di persona (studio o presso il cliente)? Se il servizio è **solo online**, il GBP non è idoneo: puntare su sito, entità e menzioni.
-- [ ] Rivendicare/verificare la scheda; un solo profilo per sede reale; nessuna scheda duplicata.
-- [ ] **Nome** reale senza keyword o città aggiunte [GBP\*].
-- [ ] **Categoria principale** più specifica + poche secondarie pertinenti; verificare che i **servizi** elencati coincidano con le pagine servizio del sito [SEJ 2025-12, Riddall].
-- [ ] **Sede vs area servita**: se si ricevono clienti → indirizzo visibile; se si va dai clienti → indirizzo nascosto + area servita [GBP\*]. Mai indirizzi di uffici virtuali.
-- [ ] **Orari** reali + orari speciali per festività/ferie impostati in anticipo; stato "temporaneamente chiuso" per chiusure lunghe [GBP\*]; per SEJ "aperto al momento della ricerca" è tra i fattori più citati del local pack [SEJ 2026-03, Heitzman, sondaggio Whitespark].
-- [ ] **Descrizione** con il linguaggio dei clienti (non elenco di keyword).
-- [ ] **Foto** autentiche (studio, persona, contesto), non stock; aggiornarle periodicamente [SEJ 2026-03, opinione].
-- [ ] **Post** per novità/eventi; da settembre 2026 il GBP mostra le **visualizzazioni per post** (ultimi 18 mesi) [SEJ 2026-09, news Google].
-- [ ] **Link di prenotazione/appuntamento** e link al sito con parametri UTM coerenti (canonical al URL senza UTM [G](https://developers.google.com/search/help/office-hours/2024/august)).
-- [ ] Collegare **GBP → Google Analytics** (7 metriche, conservazione 6 mesi) [SEJ 2026-06, news Google].
-- [ ] Controllare il **profilo pubblico**, non solo la dashboard (bug luglio 2026 con dashboard recensioni vuote) [SEJ 2026-07].
+- [ ] Check **eligibility** [GBP](https://support.google.com/business/answer/13763036): in-person meetings (office or at the customer's)? If the service is **online only**, the business is not eligible for a GBP: focus on the site, the entity and mentions.
+- [ ] Claim/verify the profile; one profile per real location; no duplicate listings [GBP](https://support.google.com/business/answer/3038177).
+- [ ] Real **name** with no added keywords or city [GBP](https://support.google.com/business/answer/3038177).
+- [ ] Most specific **primary category** + few relevant secondary ones [GBP](https://support.google.com/business/answer/3039617); check that the **services** listed match the site's service pages [SEJ 2025-12, Riddall].
+- [ ] **Location vs service area**: if customers come to you → visible address; if you go to customers → hidden address + service area [GBP](https://support.google.com/business/answer/9157481). Never virtual-office addresses [GBP](https://support.google.com/business/answer/3038177).
+- [ ] Real **hours** + special hours for holidays set in advance; "Temporarily closed" for closures of 7 days or more [GBP](https://support.google.com/business/answer/15300196); for SEJ, "open at the time of the search" is among the most cited local pack factors [SEJ 2026-03, Heitzman, Whitespark survey].
+- [ ] **Description** in the customers' language (not a keyword list; no links allowed [GBP](https://support.google.com/business/answer/3038177)).
+- [ ] Authentic **photos** (premises, people, context), not stock; refresh them periodically [SEJ 2026-03, opinion].
+- [ ] **Posts** for news and events; since September 2026 the GBP shows **views per post** (last 18 months) [SEJ 2026-09, news Google].
+- [ ] **Booking/appointment link** and website link with consistent UTM parameters (canonical to the URL without UTM [G OH 2024-08](https://developers.google.com/search/help/office-hours/2024/august)).
+- [ ] Link **GBP → Google Analytics** (7 metrics, 6-month retention) [SEJ 2026-06, news Google].
+- [ ] Check the **public profile**, not only the dashboard (bug in July 2026 with empty review dashboards) [SEJ 2026-07].
 
-**Recensioni**
-- [ ] Chiedere recensioni a **tutti** i clienti (niente filtro sui soddisfatti), con link/QR semplice; nessun incentivo non dichiarato; per SEJ/Moz da aprile 2026 le norme Maps vietano di chiedere dettagli prestabiliti (es. nome del collaboratore) o un numero fisso di recensioni [SEJ 2026-09, relatori Moz — verificare].
-- [ ] Ricordare che si può recensire con **nickname** (utile in ambiti personali come carriera, salute, legale) [SEJ 2025-12, news Google].
-- [ ] Rispondere a tutte, anche negative, pensando al lettore successivo.
-- [ ] Analizzare i **temi** delle recensioni proprie e di 2–3 concorrenti per scrivere H1, FAQ, descrizione GBP [SEJ 2026-06, opinione].
+**Reviews**
+- [ ] Ask **all** customers for reviews (no filtering for satisfied ones), with a simple link or QR code; no undisclosed incentives; Maps policy forbids asking for a set number of reviews or for specific content (e.g. the name of a staff member) [GBP](https://support.google.com/contributionpolicy/answer/7400114) · [SEJ 2026-09, Moz speakers].
+- [ ] Remind customers that they can review under a **nickname**, useful where clients value privacy (e.g. physiotherapy at Northwind Physio, career guidance at Studio Ferri Orientamento, legal matters) [SEJ 2025-12, news Google].
+- [ ] Reply to all of them, negative ones included, with the next reader in mind.
+- [ ] Analyse the **themes** of your own reviews and of 2–3 competitors' to write H1s, FAQs and the GBP description [SEJ 2026-06, opinion].
 
-**Altre schede (coerenza NAP)**
-- [ ] **Bing Places** (gratuito, import da GBP) [SEJ 2025-10, news Microsoft].
-- [ ] **Apple Business Connect** / scheda Apple Maps [SEJ 2026-07/08].
-- [ ] Directory **di settore** e associazioni professionali credibili (per utenti e reputazione, non per link) [G](https://developers.google.com/search/help/office-hours/2022/november).
-- [ ] Censire schede vecchie/duplicate (vecchi indirizzi, numeri) e chiederne correzione o chiusura.
+**Other listings (NAP consistency)**
+- [ ] **Bing Places** (free, imports from GBP) [SEJ 2025-10, news Microsoft]; details in `bing-basics.md`.
+- [ ] **Apple Business Connect** / Apple Maps listing [SEJ 2026-07/08].
+- [ ] Credible **industry** directories and professional associations (for users and reputation, not for links) [G OH 2022-11](https://developers.google.com/search/help/office-hours/2022/november).
+- [ ] Inventory old or duplicate listings (old addresses, numbers) and ask for correction or closure.
 
-**Reputazione e menzioni locali**
-- [ ] Menzioni da stampa locale, associazioni, enti, partner, eventi (talk, workshop) [SEJ 2026-08, Uberall/AthenaHQ; SEJ 2026-07, Montti].
-- [ ] Mai liste "migliori di [città]" a pagamento o auto-pubblicate.
+**Reputation and local mentions**
+- [ ] Mentions from local press, associations, public bodies, partners, events (talks, workshops) [SEJ 2026-08, Uberall/AthenaHQ; SEJ 2026-07, Montti].
+- [ ] Never paid or self-published "best of [city]" lists.
 
-**AI e assistenti (monitoraggio, non ottimizzazione)**
-- [ ] Lista fissa di 10–20 domande (orari, servizi, prezzi, "chi consiglieresti per … a [città]") su AI Overview/AI Mode, ChatGPT, Gemini, Perplexity, Copilot; ripetere più volte, registrare data/luogo/dispositivo; correggere le **fonti** sbagliate (vecchie directory, thread) [SEJ 2026-07, Searchable].
-- [ ] Bing Webmaster Tools (report AI Performance) come fonte gratuita di citazioni Copilot [SEJ 2026-03].
+**AI and assistants (monitoring, not optimisation)**
+- [ ] A fixed list of 10–20 questions (hours, services, prices, "who would you recommend for … in [city]") on AI Overviews/AI Mode, ChatGPT, Gemini, Perplexity, Copilot; repeat several times, record date, place and device; correct the wrong **sources** (old directories, threads) [SEJ 2026-07, Searchable].
+- [ ] Bing Webmaster Tools (AI Performance report) as a free source of Copilot citations [SEJ 2026-03].
 
-## Regole per contenuti e struttura del sito
-1. **Pagine servizio prima delle pagine città.** Una pagina per ogni servizio reale (cosa, per chi, come si svolge, durata, prezzo o fascia, in presenza/online, prossimo passo). Le pagine località sono legittime solo se esiste una **sede reale** o un contenuto davvero locale (casi, partner, normative, logistica); altrimenti è doorway [G](https://developers.google.com/search/docs/essentials/spam-policies).
-2. **Test anti-doorway** (deduzione): se sostituendo il nome della città la pagina resta vera, non deve esistere come pagina separata.
-3. **Area servita in prosa**: "ricevo a [città]; consulenze online in tutta Italia" — non elenchi di comuni.
-4. **Professionista locale + online** (deduzione da [G] + [GBP\*]):
-   - sede fisica che riceve clienti → GBP con indirizzo + `LocalBusiness` (sottotipo più specifico) sulla pagina contatti;
-   - va dai clienti → GBP con area servita; nel sito nessun indirizzo che nel GBP è nascosto;
-   - solo online → niente GBP; `Organization` o `Person`/`ProfilePage` (vedi `entity-personal-brand.md`); pagina "Consulenza online" unica, non una per città;
-   - stessa offerta in presenza e online → una pagina servizio con due modalità, non due pagine quasi uguali.
-5. **Pagina contatti completa in HTML**: nome, indirizzo o area, telefono `tel:`, email, orari, modalità di prenotazione, mappa opzionale (l'iframe non sostituisce il testo).
-6. **Chiusure temporanee** (deduzione + [G]): avviso visibile in alto, orari aggiornati nel JSON-LD (`validFrom`/`validThrough`), GBP con orari speciali o "temporaneamente chiuso"; non mettere `noindex`, non spegnere il sito, non redirigere.
-7. **Recensioni sul sito**: mostrarle come testo con nome/data e fonte; **niente stelle nel markup** della propria attività; nessuna recensione modificata o selezionata in modo ingannevole [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet).
-8. **Fatti verificabili in testo**: prezzi o fasce con le variabili, tempi, modalità, credenziali; sono le informazioni che gli assistenti cercano e che Google suggerisce di avere in forma testuale [G](https://developers.google.com/search/docs/appearance/ai-features).
-9. **Temi vicini a YMYL** (lavoro, carriera, denaro, salute): niente garanzie di risultato, autore con credenziali reali, fonti citate, aggiornamenti datati [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content).
-10. **Contenuti informativi** (blog, guide) collegati alle pagine servizio, basati su domande reali dei clienti, non una pagina per ogni variante di query [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide).
-11. **Dati strutturati minimi e mantenuti**: meglio un `LocalBusiness` corretto e aggiornato che un markup ricco ma obsoleto (rischio: telefono vecchio nello schema) [SEJ 2026-09, Shaw/Jeffery].
-12. **Italia (nota fuori corpus, verificare con consulente)**: per attività con partita IVA la sua indicazione sul sito è un obbligo di legge; Google la considera un indicatore di fiducia (`vatID`) [G](https://developers.google.com/search/docs/appearance/structured-data/organization).
+## Notes by site type
+- **ecommerce**: a shop with physical stores gets one `LocalBusiness` (most specific subtype, e.g. `Store`) per store page and one GBP per store; products go through Merchant Center, not the GBP. → LO-05, LO-07
+- **local-business**: the full file applies; start with eligibility, NAP consistency and the contact page (LO-01, LO-02, LO-29), then reviews and location pages (LO-11, LO-13). Example: Northwind Physio (Oslo).
+- **personal-brand**: usually online only → no GBP and no `LocalBusiness`; identity via `Person`/`ProfilePage` in `entity-personal-brand.md`. → LO-25
+- **professional-services**: decide between location, service area and online only (Build rule 4); credentials and YMYL care apply (LO-32). Example: Studio Ferri Orientamento (Bologna, in person and online).
 
-## Cosa dicono le fonti terze
-Formato: [SEJ AAAA-MM, autore, tipo evidenza e campione]. ⚠ = va oltre o contro Google.
+## Third-party views
+Format: [SEJ YYYY-MM, author, evidence type and sample]. ⚠ = goes beyond or against Google; not to be recommended.
 
-**Business Profile e ranking locale**
-- [SEJ 2026-03, Heitzman, opinione + sondaggio Whitespark 2026 e BrightLocal su 50 attività] Categoria principale = fattore n. 1 del local pack, poi prossimità e **parole chiave nel nome**; "aperto ora" tra i primi 5; recensioni +peso (16%→20%). ⚠ Le keyword nel nome violano le linee guida GBP [GBP\*]: non raccomandarle. Cadenze (post settimanali, foto bisettimanali, risposta entro 48 h) = opinione.
-- [SEJ 2025-11, Riddall, checklist d'esperienza] Audit locale in 11 punti (GBP completo, recensioni con risposta, NAP, link locali, contenuti per fase, AI Mode). ⚠ Raccomanda schema `Review` e `FAQPage`: il primo è vietato sulla propria attività, il secondo non dà più risultati avanzati.
-- [SEJ 2025-12, Riddall, opinione + dati terzi] GBP come "fonte verificata" per AI Mode; servizi GBP coerenti col sito; CTA above the fold; KPI = chiamate, indicazioni, prenotazioni.
-- [SEJ 2026-06, Southern, news] Ask Maps (USA/India): risposte multi-condizione basate su dati completi del profilo; Google ha chiuso l'API Q&A (nov 2025); stato del Q&A pubblico incerto.
-- [SEJ 2025-10, news Microsoft] Bing Places rinnovato, gratuito, import da GBP.
+**Business Profile and local ranking**
+- [SEJ 2026-03, Heitzman, opinion + Whitespark 2026 survey and BrightLocal on 50 businesses] Primary category = local pack factor no. 1, then proximity and **keywords in the name**; "open now" in the top 5; reviews gained weight (16%→20%). ⚠ Keywords in the name violate the GBP guidelines [GBP](https://support.google.com/business/answer/3038177): do not recommend them. Cadences (weekly posts, photos every two weeks, replies within 48 h) = opinion.
+- [SEJ 2025-11, Riddall, experience checklist] 11-point local audit (complete GBP, reviews with replies, NAP, local links, content by stage, AI Mode). ⚠ Recommends `Review` and `FAQPage` schema: the first is not allowed on your own business, the second no longer yields rich results.
+- [SEJ 2025-12, Riddall, opinion + third-party data] GBP as a "verified source" for AI Mode; GBP services consistent with the site; CTA above the fold; KPIs = calls, directions, bookings.
+- [SEJ 2026-06, Southern, news] Ask Maps (USA/India): multi-condition answers based on complete profile data; Google shut down the Q&A API (November 2025); status of public Q&A unclear.
+- [SEJ 2025-10, news Microsoft] Bing Places relaunched, free, imports from GBP.
 
-**Recensioni**
-- [SEJ 2026-06, Southern, studio peer-reviewed su 251 PMI USA, dati auto-dichiarati] Le stelle da sole non predicono i risultati; li predice la **gestione attiva** della reputazione.
-- [SEJ 2026-06, vendor SOCi, 350.000 sedi] ChatGPT raccomanda l'1,2% delle sedi (Gemini 11%, Perplexity 7,4%) contro 35,9% di presenza nel 3-pack; rating medio delle sedi raccomandate ~4,3. Correlazione, dati di vendor.
-- [SEJ 2026-07, news Google] Le linee guida snippet recensione esplicitano recensioni false/incentivate non dichiarate → azione manuale.
-- [SEJ 2026-06, Wiideman, caso n=1] ⚠ Proposta di recensioni con frasi suggerite ("semantic triples"): recensioni pilotate, contrarie alle norme; non usare.
+**Reviews**
+- [SEJ 2026-06, Southern, peer-reviewed study of 251 US SMBs, self-reported data] Stars alone do not predict results; **active** reputation management does.
+- [SEJ 2026-06, vendor SOCi, 350,000 locations] ChatGPT recommended 1.2% of locations (Gemini 11%, Perplexity 7.4%) against 35.9% presence in the 3-pack; average rating of recommended locations ~4.3. Correlation, vendor data.
+- [SEJ 2026-07, news Google] The review snippet guidelines now state explicitly that fake or undisclosed incentivised reviews → manual action.
+- [SEJ 2026-06, Wiideman, case n=1] ⚠ Proposal to give customers suggested phrases for reviews ("semantic triples"): steered reviews, against the policies (Maps forbids soliciting specific content [GBP](https://support.google.com/contributionpolicy/answer/7400114)); do not use.
 
-**Coerenza dei dati e directory**
-- [SEJ 2026-07, vendor Searchable, 165 aziende di Londra, 13.365 domande] 93% con almeno un fatto sbagliato/mancante negli assistenti AI; piccole imprese più colpite.
-- [SEJ 2026-08, vendor Uberall/AthenaHQ, 7 modelli] Coerenza NAP/orari/categorie tra GBP, Apple, Bing, directory; conferme esterne con criteri editoriali, non liste a pagamento.
-- ⚠ Contro Google: diversi autori trattano le "citazioni" in directory come fattore di ranking; Google dice che le directory non servono alla SEO. Sintesi per la skill: coerenza sì, iscrizione massiva per link no.
-- [SEJ 2026-01, van Berkel/Schema App, caso singolo di vendor, nessun controllo] ⚠ `areaServed`/`sameAs` verso Wikidata nelle pagine sede con "causazione completa" del +25% click: affermazione non sostenibile; `areaServed` non è tra le proprietà documentate da Google per `LocalBusiness` (lecito in schema.org, effetto non documentato).
+**Data consistency and directories**
+- [SEJ 2026-07, vendor Searchable, 165 London companies, 13,365 questions] 93% had at least one wrong or missing fact in AI assistants; small businesses were hit hardest.
+- [SEJ 2026-08, vendor Uberall/AthenaHQ, 7 models] Consistency of NAP, hours and categories across GBP, Apple, Bing and directories; external confirmations with editorial criteria, not paid lists.
+- ⚠ Against Google: several authors treat directory "citations" as a ranking factor; Google says directories do not help SEO. Summary for the skill: consistency yes, mass listing for links no.
+- [SEJ 2026-01, van Berkel/Schema App, single vendor case, no control] ⚠ `areaServed`/`sameAs` to Wikidata on location pages with "complete causation" of +25% clicks: claim not sustainable; `areaServed` is not among the properties Google documents for `LocalBusiness` (valid in schema.org, effect undocumented).
 
-**AI e ricerca locale**
-- [SEJ 2026-07/08, Whitespark citato, 540 query in 3 città USA] AI Overview nel 15% delle query locali dirette, 92% informative, 97% ibride; un altro articolo riporta 68% per query "tipo di attività": numeri dipendenti dal tipo di query, citare con cautela.
-- [SEJ 2026-09, CallRail, webinar sponsorizzato] Click da citazioni AI ~1–2% delle chiamate; i bot AI non eseguono JS → NAP nell'HTML iniziale; scambio numeri lato browser invisibile ai bot.
-- [SEJ 2026-09, Shaw/Jeffery, webinar senza dati] Cloudflare blocca spesso i crawler AI di default; widget recensioni JS invisibili; schema "dannoso" solo se non mantenuto. Pannello diviso sull'utilità dello schema.
-- [SEJ 2026-09, news] Dal 18/09/2026 unità aggregatori/fornitori SEE anche per query locali: monitorare, nessuna azione specifica.
-- [SEJ 2026-05, Southern su I/O] USA: Google può telefonare alle attività per conto dell'utente; orari, prezzi e disponibilità chiari diventano requisito pratico.
-- [SEJ 2026-08, Kris Jones, opinione] Audit: chiedere a un assistente di consigliare un fornitore della propria categoria; correggere fonti obsolete (caso thread Reddit con prezzi vecchi).
+**AI and local search**
+- [SEJ 2026-07/08, Whitespark cited, 540 queries in 3 US cities] AI Overviews on 15% of direct local queries, 92% of informational ones, 97% of hybrid ones; another article reported 68% for "business type" queries: figures depend on the query type, quote with care.
+- [SEJ 2026-09, CallRail, sponsored webinar] Clicks from AI citations ~1–2% of calls; AI bots do not run JS → NAP in the initial HTML; browser-side number swapping invisible to bots.
+- [SEJ 2026-09, Shaw/Jeffery, webinar without data] Cloudflare often blocks AI crawlers by default; JS review widgets invisible; schema "harmful" only when not maintained. Panel divided on the usefulness of schema.
+- [SEJ 2026-09, news] Since 18 September 2026 EEA aggregator/supplier units also show for local queries: monitor, no specific action.
+- [SEJ 2026-05, Southern on I/O] USA: Google can call businesses on the user's behalf; clear hours, prices and availability become a practical requirement.
+- [SEJ 2026-08, Kris Jones, opinion] Audit: ask an assistant to recommend a provider in your own category; correct outdated sources (case of a Reddit thread with old prices).
 
-**Pagine località**
-- [SEJ 2026-07, Heitzman, esperienza di agenzia su 15+ mercati] Pagine sede non fotocopia con NAP/orari, FAQ locali, casi reali; guide ai costi con fasce. ⚠ "3 foto di monumenti per provare la località" e "finestra di 12–18 mesi": nessuna base.
-- [SEJ 2026-02, Forrester, modello concettuale] Pagine locali con prova di presenza reale e confini di servizio; rimuovere doorway a livello di template.
+**Location pages**
+- [SEJ 2026-07, Heitzman, agency experience across 15+ markets] Location pages that are not copies, with NAP/hours, local FAQs, real cases; cost guides with ranges. ⚠ "3 photos of landmarks to prove the location" and "a 12–18 month window": no basis.
+- [SEJ 2026-02, Forrester, conceptual model] Local pages with proof of real presence and service boundaries; remove doorways at template level.
 
-## Miti e consigli obsoleti
-- **"Iscriversi a tante directory migliora il ranking"** → no per Google; directory di bassa qualità per link = spam [G](https://developers.google.com/search/help/office-hours/2022/november).
-- **"Una pagina per ogni città aumenta la copertura"** → doorway [G](https://developers.google.com/search/docs/essentials/spam-policies).
-- **"Elenco di città in footer"** → keyword stuffing [G](https://developers.google.com/search/docs/essentials/spam-policies).
-- **"Stelle in SERP con il widget delle recensioni Google sul sito"** → non idonee (self-serving) [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet).
-- **"`FAQPage` per ottenere spazio in SERP"** → risultati avanzati FAQ rimossi nel 2026 [SEJ 2026-05].
-- **"Lo schema `LocalBusiness` fa comparire nel local pack / nelle AI"** → il local pack dipende dal GBP; nessun markup speciale per l'AI [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide).
-- **"`llms.txt` o versioni Markdown aiutano gli assistenti locali"** → ignorati dalla Ricerca Google [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide).
-- **"Keyword nel dominio (es. orientamento-milano.it)"** → effetto quasi nullo; i sistemi non premiano i domini a corrispondenza esatta [G](https://developers.google.com/search/docs/appearance/ranking-systems-guide).
-- **"Geotag/EXIF nelle foto"** → Google non usa gli EXIF delle immagini nella Ricerca [G](https://developers.google.com/search/help/office-hours/2023/january); per il GBP non documentato (deduzione).
-- **"Durante le ferie metto il sito in manutenzione/noindex"** → si perde visibilità; usare orari speciali e avvisi (deduzione + [G]).
-- **"Comprare liste 'migliori di [città]'"** → l'elenco dei luoghi più apprezzati richiede liste non sponsorizzate [G](https://developers.google.com/search/docs/appearance/top-places-list); menzioni inautentiche = spam.
-- **"Prezzi variabili con `Product` per servizi"** → usare `LocalBusiness` con `priceRange` [G](https://developers.google.com/search/help/office-hours/2023/january).
-- **Consigli USA trasferiti all'Italia**: Ask Maps, chiamate AI, booking agentico, annunci Apple Maps, strumenti GBP in Gemini non sono disponibili in Italia/SEE a ottobre 2026.
+**To re-verify**
+- FAQ rich results removal (LO-26, Myths): reported by SEJ 2026-05; status owned by `structured-data.md`. *(re-verify)*
+- Effective date of the EEA change to site reputation abuse (§6): the policy page gives no date. *(re-verify)*
+- "Do not delete the profile to signal a closure" (§1): not stated on the GBP closure pages. *(re-verify)*
+
+## Myths and outdated advice
+- **"Signing up to lots of directories improves ranking"** → no, according to Google; low-quality directories for links = spam [G OH 2022-11](https://developers.google.com/search/help/office-hours/2022/november).
+- **"A page for every city increases coverage"** → doorways [G](https://developers.google.com/search/docs/essentials/spam-policies).
+- **"A list of cities in the footer"** → keyword stuffing [G](https://developers.google.com/search/docs/essentials/spam-policies).
+- **"Stars in the results with the Google reviews widget on the site"** → not eligible (self-serving) [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet).
+- **"`FAQPage` to win space in the results"** → FAQ rich results were removed in 2026 (reported by SEJ 2026-05; re-verify); see the `structured-data.md` "Retired or restricted rich results" table [SEJ 2026-05].
+- **"`LocalBusiness` schema gets you into the local pack / into AI answers"** → the local pack depends on the GBP; there is no special markup for AI [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide).
+- **"`llms.txt` or Markdown versions help local assistants"** → ignored by Google Search [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide).
+- **"Keywords in the domain (e.g. physio-oslo.example)"** → near-zero effect; the systems do not reward exact-match domains [G](https://developers.google.com/search/docs/appearance/ranking-systems-guide).
+- **"Geotags/EXIF in photos"** → Google does not use image EXIF data in Search [G OH 2023-01](https://developers.google.com/search/help/office-hours/2023/january); undocumented for the GBP *(inference)*.
+- **"During holidays I put the site in maintenance mode / noindex"** → visibility is lost; use special hours and notices (*(inference)* + [G](https://developers.google.com/search/docs/appearance/structured-data/local-business)).
+- **"Buying 'best of [city]' lists"** → the top places list requires non-sponsored lists [G](https://developers.google.com/search/docs/appearance/top-places-list); inauthentic mentions = spam.
+- **"Variable prices with `Product` for services"** → use `LocalBusiness` with `priceRange` [G OH 2023-01](https://developers.google.com/search/help/office-hours/2023/january).
+- **US advice applied to other markets**: Ask Maps, AI calls, agentic booking, Apple Maps ads and GBP tools in Gemini are limited to some countries (see §6); as of October 2026 none of them was available in the EEA. Check availability before recommending them.
