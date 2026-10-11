@@ -32,7 +32,7 @@ SEO plugins print a JSON-LD graph in `wp_head`; WooCommerce adds `Product` data 
 - Two robots meta tags from two plugins (case reported in [G OH 2023-05](https://developers.google.com/search/help/office-hours/2023/may)) → CI-10.
 - Plugin or theme updates that block search ([G OH 2024-08](https://developers.google.com/search/help/office-hours/2024/august)) → CI-10, RJ-18.
 - "Discourage search engines" left on after launch *(inference)* → CI-10.
-- Core lazy-loads images (since 5.5; since 6.3 it skips the first content image and adds `fetchpriority`); lazy-load plugins may still hit the hero → RJ-21 [G](https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading).
+- Core lazy-loads images (since 5.5; since 6.3 it skips the first content image and adds `fetchpriority`); lazy-load plugins may still hit the hero → OP-24 [G](https://developers.google.com/search/docs/crawling-indexing/javascript/lazy-loading).
 - Reviews, prices or contact details shown only by JS widgets → RJ-01.
 - Page-builder CSS/JS inline bloat → RJ-15, RJ-17.
 

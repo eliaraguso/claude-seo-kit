@@ -2,7 +2,7 @@
 > Checked 2026-10-11. Hand-written or exported `.html` files served as they are. Host behaviour is host knowledge, not Google rules; the rules behind it are in `rendering-javascript.md` and `crawling-indexing.md`.
 
 ## Detection
-Only `.html`/`.css`/`.js` files and assets, no framework config, no build step in `package.json` (if any). Common hosts: GitHub Pages, Netlify, Cloudflare Pages, Apache, nginx. Static output of a generator (Hugo, Jekyll, Eleventy) belongs to the planned `static-generators` adapter; until it exists, use this one.
+Only `.html`/`.css`/`.js` files and assets, no framework config, no build step in `package.json` (if any). Common hosts: GitHub Pages, Netlify, Cloudflare Pages, Apache, nginx. Static output of a generator (Hugo, Jekyll, Eleventy) belongs to `static-generators.md`.
 
 ## Rendering default and options
 Every page is complete HTML: minimal JS risk. JS matters only if navigation, contact details or text are injected by scripts → RJ-01, RJ-05.
@@ -18,7 +18,7 @@ Hand-written `robots.txt` and `sitemap.xml` at the root, with a `Sitemap:` line 
 
 ## 404 handling (true status)
 The host must serve its error page with a `404` status, not `200` → RJ-06, CI-26:
-- GitHub Pages, Netlify, Cloudflare Pages: a `404.html` at the root.
+- GitHub Pages, Netlify, Cloudflare Pages: a `404.html` at the root ([GitHub](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site), [Netlify](https://docs.netlify.com/routing/redirects/redirect-options/), [Cloudflare](https://developers.cloudflare.com/pages/configuration/serving-pages/)). Their docs do not state the status code, so confirm the `404` with curl *(inference)*; without a root `404.html`, Cloudflare Pages assumes an SPA and serves `/` for unknown paths.
 - Apache: `ErrorDocument 404 /404.html`; nginx: `error_page 404 /404.html;`.
 Check with curl on a made-up URL.
 

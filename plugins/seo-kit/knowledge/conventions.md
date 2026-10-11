@@ -16,7 +16,7 @@ No numeric scores, ever. Reports group findings by this scale. Legacy labels map
 ## Markers and source tags
 
 - **⚠** has exactly one meaning: *deprecated, unsupported by Google, or otherwise not to be recommended*. It never appears on a check we recommend. A recommended check that applies only under conditions gets a `Caveat:` sentence inside its "How to verify" cell instead.
-- `[G](url)` Google Search Central documentation or blog · `[G OH YYYY-MM](url)` Google Search Office Hours · `[SEJ YYYY-MM]` Search Engine Journal (third-party view, evidence not rule) · `[Bing](url)` Bing Webmaster documentation · `[Docs vX](url)` framework or CMS documentation, with the version checked · *(inference)* a deduction no source states explicitly.
+- `[G](url)` Google documentation: Search Central documentation and blog, Merchant Center Help, Search Console Help, PageSpeed Insights and CrUX documentation (no separate `[PSI docs]`/`[CrUX docs]` tags) · `[G OH YYYY-MM](url)` Google Search Office Hours · `[GBP](url)` Google Business Profile Help · `[web.dev](url)` Google-authored web.dev guidance (not Search Central) · `[SEJ YYYY-MM]` Search Engine Journal (third-party view, evidence not rule), with the month when known, `[SEJ]` otherwise · `[Bing](url)` Bing Webmaster documentation · `[IndexNow](url)` IndexNow documentation · `[Docs vX](url)` framework or CMS documentation, with the version checked · *(inference)* a deduction no source states explicitly · *(re-verify)* a claim to confirm on the cited page (for Google, on the changelog `developers.google.com/search/updates`) before treating it as final.
 - Hierarchy: Google documentation is primary. Third-party views are reported as views. Anything marked ⚠ or listed in `myths-deprecated.md` is never recommended.
 
 ## Check IDs
@@ -95,6 +95,7 @@ Use only these, consistently, in knowledge, skills, templates, tests and evals:
 | Studio Ferri Orientamento | professional-services | it, Bologna | studioferri.example |
 | Acme Widgets | ecommerce | en | acme-widgets.example |
 | Ada Novak | personal-brand (developer) | en | adanovak.example |
+| Daily Fjord | editorial | en | dailyfjord.example |
 
 Never use real people, clients or real small businesses as examples.
 

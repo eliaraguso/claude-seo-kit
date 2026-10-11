@@ -31,7 +31,7 @@ Several yeses: the primary archetype is where most conversions happen; the other
 - **Typical goal:** get product and category pages shown in Search, Images and Shopping surfaces (product snippets, merchant listings, free listings) and turn those visits into orders. Example: Acme Widgets.
 - **Key queries:** product name, model or SKU; category + attribute ("waterproof widgets"); brand + product; comparisons and "best X for Y"; store name.
 - **Priorities:** unique product pages (own descriptions, original photos, specifications, real reviews) · `Product` + `Offer` markup (`ProductGroup` for variants) matching the visible price and availability · product data shared with Google through Merchant Center as well as markup, kept consistent with the page · one stable URL per product (and per variant if it has its own page), parameters in a consistent order · faceted navigation under control: only valuable filter combinations crawlable and indexable · category pages reachable through `<a href>` links, pagination with a distinct URL per page · store policies (returns, shipping) in Merchant Center or `OnlineStore` markup · site structure that shows which categories and products matter most.
-- **Typical risks:** filters and sort parameters creating near-infinite URL spaces (crawl wasted, duplicates); infinite scroll or "load more" without paginated URLs, so deeper products are never discovered; manufacturer descriptions copied across many sites; temporarily out-of-stock products removed or redirected to the home page (soft 404) instead of staying live with availability updated; price or availability that differ between page, markup and feed; variants indexed as duplicates without canonical or `ProductGroup`; prices and stock rendered only client-side; review markup on content the store wrote itself.
+- **Typical risks:** filters and sort parameters creating near-infinite URL spaces (crawl wasted, duplicates); infinite scroll or "load more" without paginated URLs, so deeper products are never discovered; manufacturer descriptions copied across many sites; temporarily out-of-stock products removed or redirected to the home page (soft 404) instead of staying live with availability updated (→ `ecommerce.md` EC-14, EC-15); price or availability that differ between page, markup and feed; variants indexed as duplicates without canonical or `ProductGroup`; prices and stock rendered only client-side; review markup on content the store wrote itself.
 - **Conversions:** add to cart, checkout started, purchase; secondary: newsletter sign-up, wishlist.
 - **Files to read:** `ecommerce.md`, `structured-data.md` (Product, merchant listings, variants), `crawling-indexing.md` (faceted navigation, pagination, crawl budget), `site-architecture.md`, `rendering-javascript.md`, `performance-cwv.md`, `international.md` (if multilingual).
 - **Stacks commonly seen:** `adapters/shopify.md`, `adapters/wordpress.md` (WooCommerce), `adapters/nextjs-react.md` and `adapters/nuxt-vue.md` (headless storefronts), `adapters/hosted-builders.md` (Wix, Squarespace stores), `adapters/classic-ssr.md`.
@@ -55,6 +55,7 @@ Several yeses: the primary archetype is where most conversions happen; the other
 - **Conversions:** phone calls, direction requests, bookings, Business Profile actions (website clicks, calls, directions).
 - **Files to read:** `local-seo.md`, `structured-data.md`, `crawling-indexing.md` (temporary closures), `entity-personal-brand.md`, `bing-basics.md` (Bing Places), `on-page-appearance.md`.
 - **Stacks commonly seen:** `adapters/wordpress.md`, `adapters/hosted-builders.md`, `adapters/static-html.md`, `adapters/joomla.md`.
+- **Sources:** [G](https://developers.google.com/search/docs/appearance/structured-data/local-business) · [GBP](https://support.google.com/business/answer/3038177) · [G](https://developers.google.com/search/docs/essentials/spam-policies)
 
 ## personal-brand
 - **Typical goal:** be found and chosen when someone searches the person's name (clients, employers, event organisers), and be associated with specific skills. Example: Ada Novak, developer.
@@ -64,6 +65,7 @@ Several yeses: the primary archetype is where most conversions happen; the other
 - **Conversions:** contact, clicks to professional profiles or email, CV download.
 - **Files to read:** `entity-personal-brand.md`, `structured-data.md`, `on-page-appearance.md`, `ai-search.md`.
 - **Stacks commonly seen:** `adapters/static-html.md`, `adapters/astro.md`, `adapters/static-generators.md`, `adapters/nextjs-react.md`, `adapters/gatsby.md`, `adapters/wordpress.md`, `adapters/hosted-builders.md`.
+- **Sources:** [G](https://developers.google.com/search/docs/appearance/structured-data/profile-page) · [G](https://developers.google.com/search/docs/appearance/site-names) · [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content) · [G](https://developers.google.com/search/docs/essentials/spam-policies)
 
 ## professional-services
 - **Typical goal:** consultation requests from people searching for the service, or for a problem the service solves. Example: Studio Ferri Orientamento in Bologna.
@@ -73,6 +75,7 @@ Several yeses: the primary archetype is where most conversions happen; the other
 - **Conversions:** contact form, booking, phone, email.
 - **Files to read:** `local-seo.md` (if there is a local presence), `content-quality-spam.md`, `entity-personal-brand.md`, `structured-data.md`, `site-architecture.md`.
 - **Stacks commonly seen:** `adapters/wordpress.md`, `adapters/hosted-builders.md`, `adapters/static-html.md`, `adapters/astro.md`, `adapters/joomla.md`, `adapters/drupal.md`.
+- **Sources:** [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content) · [G](https://developers.google.com/search/docs/essentials/spam-policies) · [G](https://developers.google.com/search/docs/appearance/structured-data/review-snippet) · [GBP](https://support.google.com/business/answer/3038177)
 
 ## saas-product
 - **Typical goal:** sign-ups, trials and demo requests from people searching for the problem the software solves, for alternatives, or for the product name; documentation that answers both users and prospects.
@@ -87,7 +90,7 @@ Several yeses: the primary archetype is where most conversions happen; the other
 ## Modifiers
 Modifiers are not archetypes: they add checks to whatever archetype the site has.
 - **`multilingual`** → `international.md`: add hreflang (reciprocal, self-referencing, valid codes), one URL per language or region, canonical within the same language, no forced redirects by IP or browser language; page copy is written in each site language.
-- **`marketplace-ugc`** → `content-quality-spam.md` UGC and spam rows (CQ-09, CQ-16, CQ-17): moderation, `rel="ugc"`/`nofollow` on user links, `noindex` on new users' content until it earns trust, internal search pages not indexable, third-party content not hosted to exploit the site's reputation.
+- **`marketplace-ugc`** → `content-quality-spam.md` UGC and spam rows (CQ-09, CQ-16, CQ-17): moderation, `rel="ugc"`/`nofollow` on user links, `noindex` on new users' content until it earns trust, internal search pages not indexable (decision tree: `crawling-indexing.md` › Internal search result pages), third-party content not hosted to exploit the site's reputation.
 - **`paywall`** → `editorial-news.md`: paywalled sections marked with `isAccessibleForFree: false` and `hasPart` + `cssSelector`, so Google can tell the paywall from cloaking; check that Googlebot receives the full content.
 - **`app-and-site`** → `structured-data.md` SoftwareApplication: app pages carry `SoftwareApplication`/`MobileApplication` with genuine ratings; store links crawlable; the logged-in web app stays out of the index.
 

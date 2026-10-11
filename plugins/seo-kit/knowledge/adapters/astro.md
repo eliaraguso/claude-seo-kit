@@ -10,7 +10,7 @@
 - Islands: `client:load`, `client:idle`, `client:visible` render HTML on the server, then hydrate. `client:only` skips server rendering → no indexable content there (RJ-01). `server:defer` (server islands) renders a component on demand, outside the page render: keep primary content out of it *(inference)*.
 
 ## Where title, meta, canonical and robots meta live
-In a shared layout's `<head>`, fed by props from each page: `<title>`, description, `<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)}>`, robots meta. One canonical per page → RJ-09, RJ-10.
+In a shared layout's `<head>`, fed by props from each page: `<title>`, description, `<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)}>`, robots meta. One absolute canonical per page → CI-22, RJ-09, RJ-10.
 
 ## Links and routing
 File-based routing in `src/pages/`; links are plain `<a href>` → RJ-05. Set `trailingSlash` and `build.format` so URLs, canonicals and sitemap entries agree *(inference)*.
@@ -30,7 +30,7 @@ File-based routing in `src/pages/`; links are plain `<a href>` → RJ-05. Set `t
 
 ## Common pitfalls (with check IDs)
 - Main content in a `client:only` island → RJ-01.
-- Missing `site` → relative or missing canonicals and no sitemap → RJ-09.
+- Missing `site` → relative or missing canonicals and no sitemap → CI-22, CI-08.
 - Host returns `200` for `404.html` or for unknown paths → RJ-06.
 - Content collections with a bad slug rendered with `200` in SSR mode → RJ-07.
 - Large framework islands or inline base64 images → RJ-15, RJ-17.

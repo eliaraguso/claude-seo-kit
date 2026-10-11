@@ -94,7 +94,7 @@ Severity follows the scale in `conventions.md`. "Auto" = from code or HTML; "Man
 | EN-04 | `sameAs` points only to the person's **own** profiles (professional profiles relevant to the field, e.g. GitHub for developers, ResearchGate for researchers, LinkedIn for most; social profiles), valid URLs (200), no one else's profile | Auto (status) + Manual (ownership). Caveat: raise to Critical when a `sameAs` URL points to someone else's profile (misrepresentation) | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) |
 | EN-05 | External profiles link **to the site** (bio or website field of the professional profiles relevant to the field, social profiles, Business Profile) | Manual: list of profiles | High | [G](https://developers.google.com/search/help/office-hours/2023/december) |
 | EN-06 | Stable `@id` for `Person`, `Organization`, `WebSite`; defined once and referenced from `author`/`publisher`/`mainEntity` | Auto | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) · [SEJ 2026-10, Pollitt] |
-| EN-07 | Alias of SD-10 — verify there, report once | `structured-data.md` › SD-10; site-name details (`alternateName`, all home page variants) in Facts › Site name | High | [G](https://developers.google.com/search/docs/appearance/site-names) |
+| EN-07 | Alias of SD-10 — verify there, report once | `structured-data.md` › SD-10; site-name details (`alternateName`, all home page variants) in Facts › Site name and the SERP for your own name | High | [G](https://developers.google.com/search/docs/appearance/site-names) |
 | EN-08 | Site name = real name or brand (e.g. "Ada Novak", "Studio Ferri Orientamento"), **not generic** ("Portfolio", "Full Stack Developer", "Career Guidance"); consistent with `<title>`, `og:site_name`, home page H1 | Auto | Medium | [G](https://developers.google.com/search/docs/appearance/site-names) |
 | EN-09 | `Organization` only if a brand or registered business exists; `name` = site name; `logo` ≥ 112 px, legible on white; `vatID` if there is a VAT or tax number | Auto | Medium | [G](https://developers.google.com/search/docs/appearance/structured-data/organization) |
 | EN-10 | The name has an **identical** form everywhere (middle name, accents, initials) in title, H1, JSON-LD, profiles | Auto (site) + Manual (profiles) | High | [G](https://developers.google.com/search/help/office-hours/2023/january) · [SEJ 2026-09, Clarkson-Bennett] |
@@ -115,7 +115,7 @@ Severity follows the scale in `conventions.md`. "Auto" = from code or HTML; "Man
 | EN-25 | Hosted third-party content (guest posts, sponsored articles) used to exploit the domain | Auto + judgement. Caveat: applies only when such content is present | High | [G](https://developers.google.com/search/docs/essentials/spam-policies) |
 | EN-26 | Search Console: **Domain** property verified (needed for the branded filter) | Manual | Medium | [G](https://developers.google.com/search/blog/2025/11/search-console-branded-filter) |
 | EN-27 | Platform properties added for YouTube/Instagram/X/TikTok if used | Manual | Low | [G](https://developers.google.com/search/blog/2026/07/platform-properties-social-video-guide) |
-| EN-28 | Key content of the About page in the initial HTML (SPA: SSR/prerender) | Auto: raw vs rendered HTML. Caveat: Google renders JavaScript; the risk is for crawlers that do not (see the bot table in `ai-search.md`) | Medium | [SEJ 2026-09, brand protection] |
+| EN-28 | Key content of the About page in the initial HTML (SPA: SSR/prerender) | Auto: raw vs rendered HTML. Caveat: Google renders JavaScript; the risk is for crawlers that do not (see `ai-search.md` › AI crawlers and fetchers) | Medium | [SEJ 2026-09, brand protection] |
 | EN-29 | (informational) `llms.txt`/`llms-author.txt`/"content-signal" directives: their absence is **not** an error; if present, report that Google ignores them | Auto | Low | [G](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) |
 | EN-30 | Contact details for clients, employers or recruiters in text (email, profile link, form), not only behind JS or in an image | Auto | Medium | [G](https://developers.google.com/search/docs/fundamentals/get-started-developers) |
 
@@ -130,7 +130,7 @@ Severity follows the scale in `conventions.md`. "Auto" = from code or HTML; "Man
 8. **Own content before platforms**: publish on the site, then repost on LinkedIn or dev.to with a link back; weigh full syndication case by case [G](https://developers.google.com/search/help/office-hours/2024/june). → EN-23
 9. **Real dates and updates**: do not change dates without substantial edits [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content).
 10. **Bilingual sites** (e.g. Studio Ferri Orientamento with Italian pages plus English pages for international clients): separate URLs per language, same entity (same `@id`), reciprocal hreflang; name and qualifications consistent in both languages (see `international.md`).
-11. **SPA**: title, H1, bio, contact details and JSON-LD in the served HTML (SSR/prerender); Google renders JavaScript, many AI-assistant crawlers do not (bot table in `ai-search.md`) [SEJ 2026-09]. → EN-28, EN-30
+11. **SPA**: title, H1, bio, contact details and JSON-LD in the served HTML (SSR/prerender); Google renders JavaScript, many AI-assistant crawlers do not (`ai-search.md` › AI crawlers and fetchers) [SEJ 2026-09]. → EN-28, EN-30
 
 ## Off-site checklist
 
@@ -183,7 +183,7 @@ Format: [SEJ YYYY-MM, author, evidence type and sample]. ⚠ = a claim that goes
 - ⚠ [SEJ 2026-03, Yoast "Schemamap"] a single JSON-LD endpoint for agents: no engine reads it; the useful principle (entities with consistent `@id`, no duplicates) already applies for Google.
 
 **Fabricated authors (dated update)**
-- [SEJ 2026-10, news Google] SEJ reported Google changes dated 1 October 2026 on fake authors and fact-checking. Google's helpful-content page (last updated 5 October 2026) now names AI-generated headshots, made-up names and false credentials as deceptive authorship. Exact date and scope of the update: *(re-verify)*.
+- [SEJ 2026-10, news Google] SEJ reported Google changes dated 1 October 2026 on fake authors and fact-checking. Google's helpful-content page (last updated 5 October 2026) now names AI-generated headshots, made-up names and false credentials as deceptive authorship [G](https://developers.google.com/search/docs/fundamentals/creating-helpful-content). Exact date and scope of the update: *(re-verify)*.
 
 **Homonyms**
 - [SEJ 2026-07, news Mueller + Montti opinion] `llms-author.txt` and "content-signal" are not used by any crawler; the homonym problem is solved by becoming better known (interviews, podcasts, pages), not with technical files.
