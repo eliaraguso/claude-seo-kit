@@ -2,7 +2,7 @@
 > Checked 2026-10-11 against the Joomla 5.x help (Global Configuration), the Joomla user manual (Schema.org) and the joomla-cms 5.4 source. CMS knowledge, not Google rules.
 
 ## Detection
-Signals in the README table. Also `libraries/src/`, `robots.txt.dist`, `htaccess.txt` in the root.
+Signals in the README table (repo, HTML). Also `libraries/src/`, `robots.txt.dist`, `htaccess.txt` in the root.
 
 ## Rendering default and options
 PHP templates render full HTML on the server: most RJ checks do not apply. Still relevant: extensions that load content, reviews or maps with JS → RJ-01; tabs/sliders hiding text → RJ-23.

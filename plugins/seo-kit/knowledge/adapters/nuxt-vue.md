@@ -2,7 +2,7 @@
 > Checked 2026-10-11 against Nuxt docs 4.x, Vue Router v4/v5 and @nuxtjs/i18n v10.6. Framework APIs are framework knowledge, not Google rules; the rules behind them are in `rendering-javascript.md`.
 
 ## Detection
-Nuxt: `nuxt.config.*`, `nuxt` in `package.json`; HTML: `/_nuxt/` assets, `<div id="__nuxt">`. Vue SPA: `vue` + `vue-router` without Nuxt, `index.html` with an empty mount `<div>`.
+Nuxt: `nuxt.config.*`, `nuxt` in `package.json`; HTML: `/_nuxt/` assets, `<div id="__nuxt">`, `__NUXT__` / `__NUXT_DATA__` script. Vue SPA: `vue` + `vue-router` without Nuxt, `index.html` with an empty mount `<div>`.
 
 ## Rendering default and options
 - Nuxt uses universal rendering (SSR + hydration) by default. `routeRules` per path: `prerender: true` (SSG at build), `ssr: false` (client only, non-indexable areas), `isr` / `swr` (cached). `nuxt generate` builds a fully static site (no hybrid route rules).

@@ -2,7 +2,7 @@
 > Checked 2026-10-11 against svelte.dev/docs/kit (SvelteKit 2.x and 3). Framework APIs are framework knowledge, not Google rules; the rules behind them are in `rendering-javascript.md`.
 
 ## Detection
-Signals in the README table. Also `@sveltejs/kit` in `package.json`; from 2.62 the config can live in `vite.config.js` (`sveltekit({ adapter })`), and SvelteKit 3 no longer supports `svelte.config.js`.
+Signals in the README table (repo; HTML `__sveltekit_`, `/_app/immutable/`). Also `@sveltejs/kit` in `package.json`; from 2.62 the config can live in `vite.config.js` (`sveltekit({ adapter })`), and SvelteKit 3 no longer supports `svelte.config.js`.
 
 ## Rendering default and options
 - SSR is the default, then hydration. Page options in `+page.js`/`+layout.js`: `prerender` (`true`, `false`, `'auto'`), `ssr`, `csr`.

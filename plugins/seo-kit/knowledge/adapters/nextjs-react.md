@@ -2,7 +2,7 @@
 > Checked 2026-10-11 against Next.js docs v16.4 and React Router v8.4. Framework APIs are framework knowledge, not Google rules; the rules behind them are in `rendering-javascript.md`.
 
 ## Detection
-Next.js: `next.config.*`, `next` in `package.json`, `app/` or `pages/`; HTML: `/_next/static/` assets, `__NEXT_DATA__` (Pages Router). React SPA: `vite.config.*` + `react`, `index.html` with an empty root `<div>`, no meta-framework config.
+Next.js: `next.config.*`, `next` in `package.json`, `app/` or `pages/`; HTML: `/_next/static/` assets, `__NEXT_DATA__` (Pages Router); header `X-Powered-By: Next.js` unless disabled. React SPA: `vite.config.*` + `react`, `index.html` with an empty root `<div>`, no meta-framework config.
 
 ## Rendering default and options
 - Next.js App Router: Server Components, prerendered at build unless the route uses request-time data, then server-rendered. Data fetched in `'use client'` components after mount is not in the served HTML → RJ-01.

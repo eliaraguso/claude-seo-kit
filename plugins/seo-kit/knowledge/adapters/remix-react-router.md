@@ -2,7 +2,7 @@
 > Checked 2026-10-11 against reactrouter.com (8.4.0, framework mode; same APIs as React Router 7) and v2.remix.run. Framework APIs are framework knowledge, not Google rules; the rules behind them are in `rendering-javascript.md`.
 
 ## Detection
-Signals in the README table. Also `@react-router/dev` or `@remix-run/*` in `package.json`, `app/routes.ts`, `app/root.tsx`. A plain Vite React app with `react-router` but no framework config belongs to `nextjs-react.md` (React SPA).
+Signals in the README table. Also `@react-router/dev` or `@remix-run/*` in `package.json`, `app/routes.ts`, `app/root.tsx`; HTML `__remixContext` / `__reactRouterContext`. A plain Vite React app with `react-router` but no framework config belongs to `nextjs-react.md` (React SPA).
 
 ## Rendering default and options
 - `ssr: true` (default in `react-router.config.ts`): server rendering; loaders run on the server.

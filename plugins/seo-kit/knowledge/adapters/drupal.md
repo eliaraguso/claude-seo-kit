@@ -2,7 +2,7 @@
 > Checked 2026-10-11 against drupal.org project pages (Metatag 2.2, Pathauto 8.x-1.15, Redirect 8.x-1.13, Simple XML Sitemap 4.2, Hreflang, RobotsTxt) and Drupal core 11.x source. CMS knowledge, not Google rules.
 
 ## Detection
-Signals in the README table. Also `drupal/core` in `composer.json`, `sites/default/settings.php`.
+Signals in the README table (repo, HTML, headers). Also `drupal/core` in `composer.json`, `sites/default/settings.php`.
 
 ## Rendering default and options
 Twig themes render full HTML on the server: most RJ checks do not apply. Still relevant: JS-only blocks or embeds (reviews, maps, listings loaded by AJAX) → RJ-01; decoupled front ends follow their own adapter (e.g. `nextjs-react.md`).

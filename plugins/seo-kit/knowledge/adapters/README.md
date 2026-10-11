@@ -20,23 +20,25 @@ Sections, in this order, each file under 4 KB:
 Adapters create no check IDs: pitfalls point to existing IDs (`RJ-`, `CI-`, `OP-`, `SD-`…).
 
 ## Detection table
-Check signals in the repository first, then in the served HTML or headers. When several match, the most specific wins (e.g. `next.config.*` over a generic React setup; `react-router.config.*` over a Vite React SPA). For a "planned" adapter, fall back to the closest ready one plus the topic files.
+Check signals in the repository first, then in the served HTML or response headers. When several match, the most specific wins (e.g. `next.config.*` over a generic React setup; `react-router.config.*` over a Vite React SPA). For a "planned" adapter, fall back to the closest ready one plus the topic files.
 
-| Signal in repo or HTML | Adapter | Status |
-|---|---|---|
-| `angular.json`; `@angular/core` in `package.json`; HTML `ng-version=` | [angular](angular.md) | ready |
-| `next.config.*`; `next` in `package.json`; HTML `/_next/static/`, `__NEXT_DATA__` | [nextjs-react](nextjs-react.md) | ready |
-| `vite.config.*` + `react` without a meta-framework config; empty root `<div>` in `index.html` | [nextjs-react](nextjs-react.md) (React SPA) | ready |
-| `nuxt.config.*`; HTML `/_nuxt/`, `<div id="__nuxt">`; `vue` + `vue-router` without Nuxt | [nuxt-vue](nuxt-vue.md) | ready |
-| `astro.config.*`; HTML `<astro-island>`, `/_astro/` | [astro](astro.md) | ready |
-| `wp-config.php`, `wp-content/`; HTML `<meta name="generator" content="WordPress`; WooCommerce: `wp-content/plugins/woocommerce` | [wordpress](wordpress.md) | ready |
-| Only `.html` files, no framework config or build step | [static-html](static-html.md) | ready |
-| `svelte.config.js`; `vite.config.*` with `@sveltejs/kit` in `package.json` (SvelteKit 3 no longer uses `svelte.config.js`) | [sveltekit](sveltekit.md) | ready |
-| `remix.config.*`, `react-router.config.*` | [remix-react-router](remix-react-router.md) | ready |
-| `gatsby-config.*` | [gatsby](gatsby.md) | ready |
-| `hugo.toml` / `config.toml` + `content/`; `_config.yml` (Jekyll); `.eleventy.js` / `eleventy.config.*` | [static-generators](static-generators.md) | ready |
-| `manage.py` (Django); `artisan` (Laravel); `Gemfile` + `config/routes.rb` (Rails) | [classic-ssr](classic-ssr.md) | ready |
-| `theme/layout/theme.liquid`; `shopify.theme.toml` | [shopify](shopify.md) | ready |
-| `core/lib/Drupal` | [drupal](drupal.md) | ready |
-| `administrator/` + `configuration.php` | [joomla](joomla.md) | ready |
-| HTML `data-wf-page` (Webflow); `X-Wix-*` response headers (Wix); `static1.squarespace.com` assets (Squarespace) | [hosted-builders](hosted-builders.md) | ready |
+Online-only audits (no repository) use the HTML/header column. `seo_fetch.py` reports only `server` and `cdn` per page, so fetch the raw HTML and headers yourself (e.g. `curl -s` and `curl -sI`). These are observed fingerprints, not documented interfaces: a site can remove a generator tag or a header, so confirm one signal with a second one when you can *(inference)*.
+
+| Repository signals | HTML / header signals | Adapter | Status |
+|---|---|---|---|
+| `angular.json`; `@angular/core` in `package.json` | HTML `ng-version="…"` on the root element | [angular](angular.md) | ready |
+| `next.config.*`; `next` in `package.json` | HTML `/_next/` assets, `__NEXT_DATA__` (Pages Router); header `X-Powered-By: Next.js` (unless disabled) | [nextjs-react](nextjs-react.md) | ready |
+| `vite.config.*` + `react` without a meta-framework config | HTML: empty root `<div>` and a bundled script, none of the other markers here (confirm in the repo) | [nextjs-react](nextjs-react.md) (React SPA) | ready |
+| `nuxt.config.*`; `nuxt` in `package.json`; `vue` + `vue-router` without Nuxt (Vue SPA) | HTML `/_nuxt/` assets, `<div id="__nuxt">`, `__NUXT__` / `__NUXT_DATA__` script | [nuxt-vue](nuxt-vue.md) | ready |
+| `astro.config.*` | HTML `<astro-island>` elements, `/_astro/` assets | [astro](astro.md) | ready |
+| `wp-config.php`, `wp-content/`; WooCommerce: `wp-content/plugins/woocommerce` | HTML `/wp-content/` and `/wp-includes/` paths, `<meta name="generator" content="WordPress …">`, `/wp-json/` link; WooCommerce: `woocommerce` body class | [wordpress](wordpress.md) | ready |
+| Only `.html` files, no framework config or build step | No generator tag and none of the markers in this table (weak: confirm in the repo) | [static-html](static-html.md) | ready |
+| `svelte.config.js`; `vite.config.*` with `@sveltejs/kit` in `package.json` (SvelteKit 3 no longer uses `svelte.config.js`) | HTML `__sveltekit_` in an inline script, `/_app/immutable/` assets | [sveltekit](sveltekit.md) | ready |
+| `remix.config.*`, `react-router.config.*` | HTML `window.__remixContext` (Remix) or `window.__reactRouterContext` (React Router 7) | [remix-react-router](remix-react-router.md) | ready |
+| `gatsby-config.*` | HTML `<div id="___gatsby">`, `/page-data/` requests | [gatsby](gatsby.md) | ready |
+| `hugo.toml` / `config.toml` + `content/`; `_config.yml` (Jekyll); `.eleventy.js` / `eleventy.config.*` | HTML `<meta name="generator" content="Hugo …">`, `content="Jekyll v…"` (jekyll-seo-tag), `content="Eleventy …"`; each only when the template emits it | [static-generators](static-generators.md) | ready |
+| `manage.py` (Django); `artisan` (Laravel); `Gemfile` + `config/routes.rb` (Rails) | Weak: cookies `csrftoken` (Django), `laravel_session` / `XSRF-TOKEN` (Laravel); HTML `<meta name="csrf-param" content="authenticity_token">` (Rails) | [classic-ssr](classic-ssr.md) | ready |
+| `layout/theme.liquid` + `config/settings_schema.json` at the root of a theme repo (next to `templates/`, `sections/`); `shopify.theme.toml` | HTML `cdn.shopify.com` (or `/cdn/shop/`) assets, `window.Shopify`; headers `X-ShopId`, `X-Shopify-Stage`, `Powered-By: Shopify` | [shopify](shopify.md) | ready |
+| `core/lib/Drupal` (or `web/core/lib/Drupal`); `drupal/core` in `composer.json` | Header `X-Generator: Drupal …`, `X-Drupal-Cache`; HTML `<meta name="Generator" content="Drupal …">`, `/sites/default/files/` paths | [drupal](drupal.md) | ready |
+| `administrator/` + `configuration.php` | HTML `<meta name="generator" content="Joomla! - Open Source Content Management">` (the site can remove it) | [joomla](joomla.md) | ready |
+| None (hosted platform) | Webflow: HTML `data-wf-page` / `data-wf-site`; Wix: `X-Wix-*` response headers (e.g. `X-Wix-Request-Id`); Squarespace: `static1.squarespace.com` assets | [hosted-builders](hosted-builders.md) | ready |

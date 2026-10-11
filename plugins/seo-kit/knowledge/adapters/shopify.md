@@ -2,7 +2,7 @@
 > Checked 2026-10-11 against shopify.dev theme docs and help.shopify.com. Platform knowledge, not Google rules; the rules are in `crawling-indexing.md`.
 
 ## Detection
-Signals in the README table. Also `templates/*.json`, `sections/`.
+Signals in the README table: `layout/`, `templates/*.json`, `sections/`, `config/` at the theme root.
 
 ## Rendering default and options
 Liquid renders full HTML on the server: most RJ checks do not apply. Still relevant: apps that inject reviews, size charts, FAQs or prices with JS → RJ-01; filters and "load more" without URLs → RJ-22.
