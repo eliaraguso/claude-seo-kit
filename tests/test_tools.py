@@ -69,7 +69,8 @@ class TreeCase(unittest.TestCase):
     def write(self, path, text):
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text, encoding="utf-8", newline="\n")
+        with path.open("w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
         return path
 
     def lint(self, *extra, today="2026-10-11"):
@@ -172,7 +173,7 @@ class BuildIndexTests(TreeCase):
         self.assertEqual(code, 0)
         # different date only: still clean
         idx = self.k / "INDEX.md"
-        idx.write_text(idx.read_text(encoding="utf-8").replace("2026-10-11", "2020-01-01"), encoding="utf-8", newline="\n")
+        self.write(idx, idx.read_text(encoding="utf-8").replace("2026-10-11", "2020-01-01"))
         code, _ = self.index("--check")
         self.assertEqual(code, 0)
         # a new check makes the index stale
@@ -183,7 +184,7 @@ class BuildIndexTests(TreeCase):
         self.assertIn("--- INDEX.md (current)", out)
         # hand edit is drift too
         self.index()
-        idx.write_text(idx.read_text(encoding="utf-8").replace("| High |", "| Low |"), encoding="utf-8", newline="\n")
+        self.write(idx, idx.read_text(encoding="utf-8").replace("| High |", "| Low |"))
         self.assertEqual(self.index("--check")[0], 1)
 
     def test_check_mode_missing_index(self):
