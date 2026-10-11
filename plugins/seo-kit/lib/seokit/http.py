@@ -223,11 +223,15 @@ _META_CHARSET = re.compile(rb"""<meta[^>]+?charset\s*=\s*["']?\s*([A-Za-z0-9_\-:
 
 
 def decode_text(body: bytes, content_type: str = ""):
-    """Decode a body: header charset -> <meta> -> BOM -> utf-8 -> latin-1.
+    """Decode a body in WHATWG sniffing order: BOM -> header charset -> <meta> -> utf-8 -> latin-1.
 
     Returns (text, encoding, source, warnings). Never raises on unknown charsets.
     """
     warnings: list = []
+    for bom, enc in ((codecs.BOM_UTF8, "utf-8"), (codecs.BOM_UTF16_LE, "utf-16-le"),
+                     (codecs.BOM_UTF16_BE, "utf-16-be")):
+        if body.startswith(bom):  # a byte-order mark beats any declared charset
+            return body[len(bom):].decode(enc, "replace"), enc, "bom", warnings
     m = _CT_CHARSET.search(content_type or "")
     if m:
         enc = _codec(m.group(1))
@@ -241,10 +245,6 @@ def decode_text(body: bytes, content_type: str = ""):
         if enc:
             return body.decode(enc, "replace").lstrip("\ufeff"), enc, "meta", warnings
         warnings.append(f"unknown charset {declared!r} in <meta>; ignored")
-    for bom, enc in ((codecs.BOM_UTF8, "utf-8"), (codecs.BOM_UTF16_LE, "utf-16-le"),
-                     (codecs.BOM_UTF16_BE, "utf-16-be")):
-        if body.startswith(bom):
-            return body[len(bom):].decode(enc, "replace"), enc, "bom", warnings
     try:
         return body.decode("utf-8"), "utf-8", "fallback", warnings
     except UnicodeDecodeError:

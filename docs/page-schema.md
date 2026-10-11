@@ -62,7 +62,7 @@ Compare the two outputs key by key to find content that only appears after rende
 | `url`, `final_url` | str | Requested URL and URL after redirects. `extract_dom.js` returns `location.href` for both. |
 | `status`, `chain` | int, list | `chain` items are `{url, status, location}`, with at most 10 redirects. |
 | `content_type`, `bytes`, `transfer_bytes`, `over_2mb` | | `bytes` is the decoded size. `over_2mb` flags pages larger than the 2 MB that Googlebot reads. |
-| `encoding`, `encoding_source` | str | `encoding_source` ∈ `header`, `meta`, `bom`, `fallback`. |
+| `encoding`, `encoding_source` | str | `encoding_source` ∈ `header`, `meta`, `bom`, `fallback`. WHATWG order: byte-order mark, then the Content-Type charset, then `<meta charset>`, then UTF-8, then latin-1 (flagged in `fetch_warnings`). |
 | `truncated`, `error`, `fetch_warnings`, `elapsed_ms` | | Network errors appear in `error` and never stop the run. |
 | `server`, `cdn`, `link_header` | | CDN detected from response headers. |
 | `robots_txt_allowed` | dict crawler → bool, or null | robots.txt verdict for each crawler token in `seokit.bots.BOT_TOKENS`. |

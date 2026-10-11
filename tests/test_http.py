@@ -157,6 +157,10 @@ class FetchTests(unittest.TestCase):
         self.assertEqual((text, src), ("é", "header"))
         text, enc, src, _ = seohttp.decode_text(b"\xef\xbb\xbfhello", "text/html")
         self.assertEqual((text, src), ("hello", "bom"))
+        # WHATWG order: a BOM beats the Content-Type charset (fix round 2)
+        text, enc, src, _ = seohttp.decode_text(b"\xef\xbb\xbfcaf" + "é".encode("utf-8"),
+                                                "text/html; charset=iso-8859-1")
+        self.assertEqual((text, enc, src), ("café", "utf-8", "bom"))
         text, enc, src, warns = seohttp.decode_text("é".encode("latin-1"), "")
         self.assertEqual((text, enc, src), ("é", "latin-1", "fallback"))
         self.assertTrue(warns)
